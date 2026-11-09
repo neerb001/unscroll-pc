@@ -10,6 +10,16 @@ import (
 // Ze worden gezet met sudo unscroll-ouder en komen nooit in git.
 type Geheimen map[string]string
 
+// adres maakt van wat een ouder intypt een bruikbaar adres:
+// "192.168.1.10:4533" wordt "http://192.168.1.10:4533", spaties en een / aan het eind gaan weg.
+func adres(s string) string {
+	s = strings.TrimRight(strings.TrimSpace(s), "/")
+	if s != "" && !strings.Contains(s, "://") {
+		s = "http://" + s
+	}
+	return s
+}
+
 func geheimenPad() string {
 	if p := os.Getenv("UNSCROLL_GEHEIMEN"); p != "" {
 		return p

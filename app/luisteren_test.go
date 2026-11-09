@@ -44,6 +44,19 @@ func TestShellWaarde(t *testing.T) {
 	}
 }
 
+func TestAdres(t *testing.T) {
+	for in, uit := range map[string]string{
+		"192.168.1.10:4533":         "http://192.168.1.10:4533",
+		" nas.local:13378/ ":        "http://nas.local:13378",
+		"https://muziek.example.nl": "https://muziek.example.nl",
+		"":                          "",
+	} {
+		if got := adres(in); got != uit {
+			t.Errorf("adres(%q) = %q, verwacht %q", in, got, uit)
+		}
+	}
+}
+
 func nepNavidrome(t *testing.T) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()

@@ -22,7 +22,7 @@ type Navidrome struct {
 }
 
 func nieuweNavidrome(g Geheimen) *Navidrome {
-	n := &Navidrome{URL: strings.TrimRight(g["NAVIDROME_URL"], "/"), Gebruiker: g["NAVIDROME_GEBRUIKER"], Wachtwoord: g["NAVIDROME_WACHTWOORD"]}
+	n := &Navidrome{URL: adres(g["NAVIDROME_URL"]), Gebruiker: g["NAVIDROME_GEBRUIKER"], Wachtwoord: g["NAVIDROME_WACHTWOORD"]}
 	if n.URL == "" || n.Gebruiker == "" {
 		return nil
 	}

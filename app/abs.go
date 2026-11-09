@@ -20,7 +20,7 @@ type ABS struct {
 }
 
 func nieuweABS(g Geheimen, apparaat string) *ABS {
-	a := &ABS{URL: strings.TrimRight(g["ABS_URL"], "/"), Token: g["ABS_TOKEN"], apparaat: apparaat}
+	a := &ABS{URL: adres(g["ABS_URL"]), Token: g["ABS_TOKEN"], apparaat: apparaat}
 	if a.URL == "" || a.Token == "" {
 		return nil
 	}
