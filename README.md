@@ -30,6 +30,13 @@ Klikbare mockup: open [`docs/mockup.html`](docs/mockup.html) in een browser.
 5. **Zelfstandig.** Werkt los van andere systemen, met speakers eraan. Koppelen aan een NAS of Music Assistant kan, maar hoeft niet.
 6. **Licht.** Moet vlot draaien op een 32-bit netbook met 1 GB geheugen.
 
+### Ook Spotify zonder algoritme
+
+- **Geen autoplay.** Unscroll bepaalt zelf de wachtrij: een album speelt af en stopt dan. Bij librespot staat autoplay uit.
+- **Geen aanbevelingen.** De app vraagt nooit om "Made for you", Daily Mix, Discover Weekly of radio op basis van een nummer.
+- **Alleen goedgekeurde albums en lijsten.** Zoeken in heel Spotify staat standaard uit, omdat ook de volgorde van zoekresultaten door een algoritme wordt bepaald.
+- **Tip voor ouders:** gebruik een eigen Spotify-profiel voor het kind en keur geen door Spotify gemaakte mixen goed. Spotify leert nog steeds van wat er geluisterd wordt; dat zie je niet op Unscroll, wel in de officiële app.
+
 ## Wat erin zit (en wat er nog komt)
 
 | Onderdeel | Inhoud | Status |
