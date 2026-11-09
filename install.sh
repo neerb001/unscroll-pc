@@ -14,13 +14,24 @@ HIER="$(cd "$(dirname "$0")" && pwd)"
 [[ "${VERSION_ID:-}" == "12" ]] || echo "Note: tested on Debian 12, you have ${PRETTY_NAME:-unknown}."
 
 echo "==> Installing packages"
-apt-get update
-DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+# Offline installation: if a "debs" folder with a package index sits next to this script
+# (see the offline bundle), apt uses only that folder and needs no internet.
+APT=(apt-get)
+OFFLINE_LIST=""
+if [[ -f "$HIER/debs/Packages.gz" ]]; then
+  echo "    offline bundle found, not using the internet"
+  OFFLINE_LIST=/etc/apt/sources.list.d/unscroll-offline.list
+  echo "deb [trusted=yes] file:$HIER/debs ./" > "$OFFLINE_LIST"
+  APT=(apt-get -o Dir::Etc::sourcelist="$OFFLINE_LIST" -o Dir::Etc::sourceparts=- -o APT::Get::List-Cleanup=0)
+fi
+"${APT[@]}" update
+DEBIAN_FRONTEND=noninteractive "${APT[@]}" install -y --no-install-recommends \
   cage foot fonts-jetbrains-mono \
-  network-manager alsa-utils mpv \
+  network-manager wpasupplicant alsa-utils mpv \
   curl jq ca-certificates zram-tools \
   avahi-daemon libnss-mdns \
   sudo
+[[ -n "$OFFLINE_LIST" ]] && rm -f "$OFFLINE_LIST"
 
 echo "==> Saving memory with zram"
 sed -i 's/^#\?PERCENT=.*/PERCENT=50/' /etc/default/zramswap || true

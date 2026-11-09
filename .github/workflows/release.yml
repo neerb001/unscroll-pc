@@ -27,7 +27,7 @@ jobs:
           go vet ./...
           go test ./...
       - name: shellcheck
-        run: shellcheck install.sh scripts/unscroll-sessie scripts/unscroll-update scripts/unscroll-ouder
+        run: shellcheck install.sh scripts/*
       - name: geen geheimen in de repository
         run: |
           if git ls-files | grep -E '(^|/)(geheimen\.env|ouders\.yaml|update\.conf)$'; then

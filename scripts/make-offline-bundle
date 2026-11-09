@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# Builds an offline bundle: this repository + the app + all Debian 12 packages it needs,
+# so a device without internet can be installed from a USB stick.
+#
+# Usage (any Linux machine with apt and internet, no root needed):
+#   scripts/make-offline-bundle [arch] [version]
+#   arch: i386 (default, old netbooks), amd64, arm64
+#   version: release tag to include, default: the latest release
+#
+# Result: unscroll-offline-<arch>/ next to this repository. Copy that folder to a USB stick,
+# then on the device:  cd /media/.../unscroll-offline-<arch> && sudo bash install.sh
+set -euo pipefail
+
+ARCH="${1:-i386}"
+TAG="${2:-}"
+REPO="${REPO:-neerb001/unscroll-pc}"
+HIER="$(cd "$(dirname "$0")/.." && pwd)"
+UIT="$(dirname "$HIER")/unscroll-offline-$ARCH"
+WERK="$(mktemp -d)"; trap 'rm -rf "$WERK"' EXIT
+
+case "$ARCH" in
+  i386) GOARCH=386 ;;
+  amd64) GOARCH=amd64 ;;
+  arm64) GOARCH=arm64 ;;
+  *) echo "Unknown arch $ARCH"; exit 1 ;;
+esac
+
+PAKKETTEN="cage foot fonts-jetbrains-mono network-manager wpasupplicant alsa-utils mpv curl jq
+ca-certificates zram-tools avahi-daemon libnss-mdns sudo git unzip
+firmware-misc-nonfree firmware-atheros firmware-realtek"
+
+echo "==> Debian archive keys"
+R="$WERK/root"
+mkdir -p "$R"/etc/apt/{apt.conf.d,preferences.d,trusted.gpg.d,sources.list.d} "$R"/var/lib/apt/lists/partial \
+  "$R"/var/cache/apt/archives/partial "$R"/var/lib/dpkg
+touch "$R/var/lib/dpkg/status"
+KEYDEB="$WERK/keyring.deb"
+curl -fsSL -o "$KEYDEB" "https://deb.debian.org/debian/pool/main/d/debian-archive-keyring/debian-archive-keyring_2023.3+deb12u2_all.deb"
+dpkg-deb -x "$KEYDEB" "$WERK/kr"
+cp "$WERK"/kr/etc/apt/trusted.gpg.d/debian-archive-bookworm-*.asc "$R/etc/apt/trusted.gpg.d/"
+
+cat > "$R/etc/apt/sources.list" <<EOF
+deb [arch=$ARCH] https://deb.debian.org/debian bookworm main contrib non-free non-free-firmware
+deb [arch=$ARCH] https://deb.debian.org/debian bookworm-updates main contrib non-free non-free-firmware
+deb [arch=$ARCH] https://deb.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware
+EOF
+
+O=(-o "Dir=$R" -o "Dir::State::status=$R/var/lib/dpkg/status" -o "APT::Architecture=$ARCH"
+   -o "APT::Architectures::=$ARCH" -o Debug::NoLocking=1 -o APT::Sandbox::User="$(id -un)"
+   -o "Dir::Etc::trusted=$R/etc/apt/trusted.gpg" -o "Dir::Etc::trustedparts=$R/etc/apt/trusted.gpg.d")
+
+echo "==> Downloading packages for $ARCH"
+apt-get "${O[@]}" update
+# shellcheck disable=SC2086
+apt-get "${O[@]}" install --download-only -y --no-install-recommends $PAKKETTEN
+
+echo "==> Assembling $UIT"
+rm -rf "$UIT"; mkdir -p "$UIT/debs"
+git -C "$HIER" archive HEAD | tar -x -C "$UIT"
+cp "$R"/var/cache/apt/archives/*.deb "$UIT/debs/"
+(cd "$UIT/debs" && dpkg-scanpackages --multiversion . /dev/null 2>/dev/null | gzip -9 > Packages.gz)
+
+echo "==> Adding the app from GitHub"
+if [[ -z "$TAG" ]]; then
+  TAG="$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest" | jq -r .tag_name)"
+fi
+BASIS="https://github.com/$REPO/releases/download/$TAG/unscroll-linux-$GOARCH"
+curl -fsSL -o "$UIT/unscroll" "$BASIS"
+curl -fsSL -o "$WERK/sum" "$BASIS.sha256"
+[[ "$(awk '{print $1}' "$WERK/sum")" == "$(sha256sum "$UIT/unscroll" | awk '{print $1}')" ]] || { echo "Checksum mismatch"; exit 1; }
+chmod +x "$UIT/unscroll"
+
+echo
+echo "Done: $UIT ($(du -sh "$UIT" | cut -f1), app $TAG)"

@@ -78,6 +78,12 @@ Anything that runs Debian 12. Intended for:
    sudo unscroll-ouder
    ```
 
+**No internet on the device?** Use the offline bundle: Debian packages for 32-bit plus the app
+(about 230 MB). Install Debian with "do not configure the network", copy the bundle to a USB
+stick and run `sudo bash install.sh` from the bundle folder. The installer detects the `debs`
+folder and does not use the internet. Build it yourself with `scripts/make-offline-bundle`
+(on any Linux machine with apt) or ask in the issues.
+
 After booting, the child account logs in automatically and the app starts full screen
 (`cage` with the `foot` terminal). There is no desktop, no browser and no free shell.
 
