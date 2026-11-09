@@ -38,7 +38,7 @@ jobs:
         run: |
           V="$(tr -d ' \n' < librespot/VERSIE)"
           mkdir -p uit
-          docker run --rm --platform ${{ matrix.platform }} -v "$PWD/uit:/uit" -e V="$V" debian:bookworm \
+          docker run --rm --network host --platform ${{ matrix.platform }} -v "$PWD/uit:/uit" -e V="$V" debian:bookworm \
             ${{ matrix.wrap }} bash -euxc '
               apt-get update
               apt-get install -y --no-install-recommends ca-certificates curl build-essential pkg-config libasound2-dev
