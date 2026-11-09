@@ -65,7 +65,10 @@ install -m 0755 "$HIER/scripts/unscroll-ouder" /usr/local/sbin/unscroll-ouder
 chown root:root /etc/unscroll/ouders.yaml /etc/unscroll/update.conf
 chmod 0644 /etc/unscroll/ouders.yaml /etc/unscroll/update.conf
 
-install -d -o "$KIND" -g "$KIND" "/home/$KIND/.config/foot"
+# both folders explicitly: install -d would otherwise create ~/.config as root,
+# and then the app cannot save its settings
+install -d -o "$KIND" -g "$KIND" "/home/$KIND/.config" "/home/$KIND/.config/foot"
+chown "$KIND:$KIND" "/home/$KIND/.config"
 install -m 0644 -o "$KIND" -g "$KIND" "$HIER/config/foot.ini" "/home/$KIND/.config/foot/foot.ini"
 
 echo "==> Installing the app"

@@ -46,7 +46,7 @@ The project started on an old Asus Eee PC, hence the "PC" in the name.
 | Listen | Navidrome, radio dial, audiobooks and podcasts from Audiobookshelf with progress, sleep timer | ✅ phase 1 |
 | Read + Today | E-books (EPUB) from Audiobookshelf, weather, alarm, moon, seasons and seasonal festivals | ⏳ phase 2 |
 | Spotify | Approved playlists only, explicit tracks filtered, autoplay off (librespot) | ⏳ phase 3 |
-| Ask the buddy | AI via the Anthropic API with budgets, filters and a weekly summary for parents | ⏳ phase 4 |
+| Ask the buddy | AI via the Anthropic API with budgets, filters and a weekly summary for parents | ✅ phase 4 |
 | Discover | Computer lab (learn Linux through missions), Python, animal of the day, nature journal | ⏳ phase 5 |
 | Puzzles | Sudoku, chess problems, riddles. No timer, no score | ⏳ phase 5 |
 | Writing nook | Private diary and stories | ⏳ phase 5 |
@@ -127,6 +127,12 @@ after 10 minutes without a key press.
 
 ## The AI buddy (phase 4)
 
+Press `3` (the tab carries the buddy's name). Set the API key with `sudo unscroll-ouder`; create it at
+[console.anthropic.com](https://console.anthropic.com) and set a monthly spend limit there.
+The buddy answers with `claude-opus-5-5` by default and every question and answer is checked by
+`claude-haiku-5-5`; both can be changed under `maatje:` in `/etc/unscroll/ouders.yaml`
+(for example `model: "claude-sonnet-5-5"` to spend less).
+
 The buddy is a helper, not a friend: it only speaks when asked and helps the child think
 instead of thinking for them. Limits depend on the kind of use:
 
@@ -137,9 +143,14 @@ instead of thinking for them. Limits depend on the kind of use:
 | Free questions | Curiosity: "how does it work?" | 15 a day |
 | Overall | | 45 minutes a day, a break after 20 minutes, closed during quiet time |
 
-Safety: personal details are filtered out before anything is sent, every question and answer
-gets a second suitability check, heavy topics are referred to the parents, and a "is this
-right?" button teaches that AI can be wrong.
+Safety: personal details (e-mail, phone, address, postcode, IBAN, the child's own name) are filtered
+out on the device before anything is sent, every question and answer gets a second suitability check,
+heavy topics are referred to the parents (with an ntfy notification that does not include the question),
+and `Tab` on an empty line asks "is this right?", which teaches that AI can be wrong.
+
+Parents see the questions of the past week in parent mode: open the buddy tab and press `w`.
+Stories written together are saved in the writing nook (`~/.local/share/unscroll/verhalen`);
+parents only see that a story was written, not the story itself.
 
 Parents set the limits with `sudo unscroll-ouder`. The defaults and the buddy's instructions
 are part of the app and are tuned through updates as we learn from real use.

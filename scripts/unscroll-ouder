@@ -78,6 +78,9 @@ echo "Audiobooks and podcasts: Audiobookshelf. Use the child's own account, so t
 echo "Find the key in Audiobookshelf: Settings > Users > (child) > API token, or Settings > API Keys."
 zet_env ABS_URL "$(vraag 'Audiobookshelf address, for example http://192.168.1.10:13378' "$(huidig ABS_URL)")"
 zet_env ABS_TOKEN "$(geheim 'Audiobookshelf API token or API key of the child account')"
+echo
+echo "AI buddy: create an API key at https://console.anthropic.com and set a monthly spend limit there."
+echo "Limits per day and the model are in $OUDERS (section maatje)."
 zet_env ANTHROPIC_API_KEY "$(geheim 'Anthropic API key for the AI buddy')"
 
 chown root:root "$OUDERS"; chmod 0644 "$OUDERS"

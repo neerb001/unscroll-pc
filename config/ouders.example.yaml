@@ -30,7 +30,7 @@ ntfy:
   url: "https://ntfy.sh"
   topic: ""
 
-# Limits of the AI buddy (arrives in phase 4).
+# Limits of the AI buddy.
 # Leave out a line to use the default from the app;
 # defaults are tuned through updates as we learn from real use.
 maatje:
@@ -41,4 +41,7 @@ maatje:
   beurten_per_verhaalsessie: 30
   vrije_vragen_per_dag: 15         # separate "how does it work?" questions
   max_minuten_per_dag: 45
-  pauze_na_minuten: 20
+  pauze_na_minuten: 20             # then a 10 minute break
+  leeftijd: 11                     # so the buddy talks at the right level
+  # model: "claude-opus-5-5"       # the model that answers (default); cheaper: claude-sonnet-5-5 or claude-haiku-5-5
+  # controle_model: "claude-haiku-5-5"  # the fast model that checks every question and answer

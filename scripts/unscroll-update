@@ -19,6 +19,13 @@ REPO=""; GITHUB_TOKEN=""; KANAAL="stable"
 [[ -f /etc/unscroll/geheimen.env ]] && . /etc/unscroll/geheimen.env
 [[ -n "$REPO" && "$REPO" != "OWNER/REPO" ]] || { echo "No REPO set in $CONF"; exit 0; }
 
+# Repair: older installers created ~/.config of the child as root, so the app could
+# not save its settings there. Cheap to check on every run.
+KIND="${KIND:-kind}"
+if [[ -d "/home/$KIND/.config" ]] && [[ "$(stat -c %U "/home/$KIND/.config")" != "$KIND" ]]; then
+  chown "$KIND:$KIND" "/home/$KIND/.config" && echo "Fixed the owner of /home/$KIND/.config"
+fi
+
 [[ "${1:-}" == "--nu" ]] || sleep $((RANDOM % 60))
 
 case "$(uname -m)" in

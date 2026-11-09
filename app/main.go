@@ -30,7 +30,7 @@ const (
 // sleutels in de vertalingen per tabblad
 var tabSleutels = []string{"tab.start", "tab.listen", "tab.read", "", "tab.discover", "tab.puzzles", "tab.write", "tab.today", "tab.system"}
 var menuSleutels = []string{"", "menu.listen", "menu.read", "menu.buddy", "menu.discover", "menu.puzzles", "menu.write", "menu.today", "menu.system"}
-var straksSleutels = map[int]string{tabLezen: "soon.read", tabMaatje: "soon.buddy", tabOntdekken: "soon.discover", tabDenksport: "soon.puzzles", tabSchrijfhoek: "soon.write", tabVandaag: "soon.today"}
+var straksSleutels = map[int]string{tabLezen: "soon.read", tabOntdekken: "soon.discover", tabDenksport: "soon.puzzles", tabSchrijfhoek: "soon.write", tabVandaag: "soon.today"}
 
 type tickMsg time.Time
 type statusMsg struct {
@@ -64,10 +64,12 @@ type model struct {
 	ontgrendeld  time.Time
 	laatsteToets time.Time
 	melding      string
+	bewaarFout   string // blijft staan zolang bewaren niet lukt
 	meldingTot   time.Time
 	wifi, accu   string
 	vol          int
 	l            *luister
+	mj           *maatjeStaat
 }
 
 func nieuwModel() model {
@@ -83,7 +85,9 @@ func nieuwModel() model {
 		ti.Prompt = ""
 		m.velden = append(m.velden, ti)
 	}
-	m.l = nieuwLuister(laadGeheimen())
+	geheim := laadGeheimen()
+	m.l = nieuwLuister(geheim)
+	m.mj = nieuwMaatjeStaat(geheim, o)
 	m.pin = textinput.New()
 	m.pin.EchoMode = textinput.EchoPassword
 	m.pin.CharLimit = 8
@@ -150,7 +154,10 @@ func (m *model) bewaar() {
 		m.inst.Maatje = "Bliep"
 	}
 	if err := m.inst.bewaar(); err != nil {
-		m.zeg(m.t("msg.saveerr", err.Error()))
+		m.bewaarFout = m.t("msg.saveerr", err.Error())
+		m.zeg(m.bewaarFout)
+	} else {
+		m.bewaarFout = ""
 	}
 }
 
@@ -161,6 +168,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	case tickMsg:
 		m.nu = time.Time(msg)
+		m.maatjeTik(m.nu)
 		if m.ouderModus && m.nu.Sub(m.laatsteToets) > 10*time.Minute {
 			m.ouderModus = false
 			m.zeg(m.t("msg.parentauto"))
@@ -180,6 +188,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case meldingMsg:
 		m.zeg(string(msg))
 		return m, nil
+	case maatjeMsg:
+		cmd := m.maatjeBericht(msg)
+		return m, cmd
 	case lijstMsg, startMsg, spelerMsg:
 		cmd := m.luisterBericht(msg)
 		return m, cmd
@@ -249,6 +260,11 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 	if m.tab == tabLuisteren {
 		if cmd, ok := m.toetsLuisteren(msg); ok {
+			return m, cmd
+		}
+	}
+	if m.tab == tabMaatje {
+		if cmd, ok := m.toetsMaatje(msg); ok {
 			return m, cmd
 		}
 	}
@@ -379,6 +395,8 @@ func (m model) View() string {
 		inhoud = m.viewSysteem(p)
 	case m.tab == tabLuisteren:
 		inhoud = m.viewLuisteren(p)
+	case m.tab == tabMaatje:
+		inhoud = m.viewMaatje(p)
 	default:
 		inhoud = m.viewStraks(p)
 	}
@@ -537,6 +555,9 @@ func (m model) viewSysteem(p palet) string {
 		dim.Render(m.t("sys.keys")),
 		dim.Render(m.t("sys.saved")),
 	}, "\n")
+	if m.bewaarFout != "" {
+		eigen += "\n\n" + lipgloss.NewStyle().Foreground(p.rood).Width((m.breed-10)/2).Render(m.bewaarFout+" "+m.t("msg.saveask"))
+	}
 
 	vol := m.t("sys.unknown")
 	if m.vol >= 0 {

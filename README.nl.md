@@ -45,7 +45,7 @@ Het project begon op een oude Asus EeePC, vandaar de "PC" in de naam.
 | Luisteren | Navidrome, radio met draaiknop, luisterboeken en podcasts uit Audiobookshelf met voortgang, slaaptimer | ✅ fase 1 |
 | Lezen + Vandaag | E-boeken (EPUB) uit Audiobookshelf, weer, wekker, maan, seizoen en jaarfeesten | ⏳ fase 2 |
 | Spotify | Alleen goedgekeurde afspeellijsten, expliciete nummers gefilterd, autoplay uit (librespot) | ⏳ fase 3 |
-| Vraag het maatje | AI via de Anthropic-API met dagbudget, filters en weekoverzicht voor ouders | ⏳ fase 4 |
+| Vraag het maatje | AI via de Anthropic-API met dagbudget, filters en weekoverzicht voor ouders | ✅ fase 4 |
 | Ontdekken | Computerlab (Linux leren met missies), Python, dier van de dag, natuurdagboek | ⏳ fase 5 |
 | Denksport | Sudoku, schaakpuzzels, raadsels. Geen timer, geen score | ⏳ fase 5 |
 | Schrijfhoek | Privé dagboek en verhalen | ⏳ fase 5 |
@@ -119,6 +119,12 @@ Ouders kunnen het avondslot pauzeren in de ouderstand (`8`, dan `o` en de pincod
 
 ## Het AI-maatje (fase 4)
 
+Druk op `3` (het tabblad heeft de naam van het maatje). Zet de API-sleutel met `sudo unscroll-ouder`;
+maak hem aan op [console.anthropic.com](https://console.anthropic.com) en stel daar een maandlimiet in.
+Het maatje antwoordt standaard met `claude-opus-5-5` en elke vraag en elk antwoord wordt gecontroleerd
+door `claude-haiku-5-5`. Beide kun je wijzigen onder `maatje:` in `/etc/unscroll/ouders.yaml`
+(bijvoorbeeld `model: "claude-sonnet-5-5"` om minder uit te geven).
+
 Het maatje is een hulpje, geen vriend: het praat alleen als het iets gevraagd wordt en helpt
 nadenken in plaats van voor het kind te denken. De grenzen gaan per soort gebruik:
 
@@ -129,9 +135,15 @@ nadenken in plaats van voor het kind te denken. De grenzen gaan per soort gebrui
 | Vrije vragen | Nieuwsgierigheid: "hoe werkt het?" | 15 per dag |
 | Alles samen | | 45 minuten per dag, pauze na 20 minuten, dicht tijdens het avondslot |
 
-Veiligheid: persoonsgegevens worden weggefilterd voordat er iets wordt verstuurd, elke vraag
-en elk antwoord krijgt een tweede controle op geschiktheid, zware onderwerpen worden
-doorverwezen naar de ouders, en een "klopt dit?"-knop leert dat AI fouten kan maken.
+Veiligheid: persoonsgegevens (e-mail, telefoon, adres, postcode, IBAN, de eigen naam van het kind)
+worden op het apparaat weggefilterd voordat er iets wordt verstuurd, elke vraag en elk antwoord krijgt
+een tweede controle op geschiktheid, zware onderwerpen worden doorverwezen naar de ouders (met een
+ntfy-melding zonder de vraag zelf), en `Tab` op een lege regel vraagt "klopt dit wel?", wat leert dat
+AI fouten kan maken.
+
+Ouders zien de vragen van de afgelopen week in de ouderstand: open het tabblad van het maatje en druk
+op `w`. Samen geschreven verhalen komen in de schrijfhoek (`~/.local/share/unscroll/verhalen`); ouders
+zien alleen dat er een verhaal is geschreven, niet het verhaal zelf.
 
 Ouders stellen de grenzen in met `sudo unscroll-ouder`. De standaardwaarden en de instructies
 voor het maatje zitten in de app en worden via updates bijgesteld op basis van ervaringen.

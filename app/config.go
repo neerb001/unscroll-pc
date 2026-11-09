@@ -109,11 +109,16 @@ type MaatjeGrenzen struct {
 	VrijeVragenPerDag     int  `yaml:"vrije_vragen_per_dag"`
 	MaxMinutenPerDag      int  `yaml:"max_minuten_per_dag"`
 	PauzeNaMinuten        int  `yaml:"pauze_na_minuten"`
+
+	Leeftijd      int    `yaml:"leeftijd"`       // zodat het maatje op het goede niveau praat
+	Model         string `yaml:"model"`          // het model dat antwoordt
+	ControleModel string `yaml:"controle_model"` // het snelle model dat vragen en antwoorden controleert
 }
 
 func standaardMaatje() MaatjeGrenzen {
 	return MaatjeGrenzen{Aan: true, HuiswerkSessiesPerDag: 2, BeurtenPerHuiswerk: 40, VerhaalSessiesPerDag: 1,
-		BeurtenPerVerhaal: 30, VrijeVragenPerDag: 15, MaxMinutenPerDag: 45, PauzeNaMinuten: 20}
+		BeurtenPerVerhaal: 30, VrijeVragenPerDag: 15, MaxMinutenPerDag: 45, PauzeNaMinuten: 20,
+		Leeftijd: 11, Model: "claude-opus-5-5", ControleModel: "claude-haiku-5-5"}
 }
 
 func standaardOuders() Ouders {
@@ -143,6 +148,16 @@ func laadOuders() (Ouders, error) {
 		return o, err
 	}
 	err = yaml.Unmarshal(data, &o)
+	s := standaardMaatje()
+	if o.Maatje.Model == "" {
+		o.Maatje.Model = s.Model
+	}
+	if o.Maatje.ControleModel == "" {
+		o.Maatje.ControleModel = s.ControleModel
+	}
+	if o.Maatje.Leeftijd < 6 || o.Maatje.Leeftijd > 18 {
+		o.Maatje.Leeftijd = s.Leeftijd
+	}
 	if o.MaxVolume <= 0 || o.MaxVolume > 100 {
 		o.MaxVolume = 70
 	}
