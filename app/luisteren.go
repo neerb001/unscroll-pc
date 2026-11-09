@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -22,6 +23,8 @@ const (
 	soortPodcast
 	soortAflevering
 	soortZender
+	soortSpLijst  // goedgekeurd Spotify-album of -playlist
+	soortSpNummer // nummer op Spotify
 )
 
 const (
@@ -29,10 +32,11 @@ const (
 	bronBoeken
 	bronPodcasts
 	bronRadio
+	bronSpotify
 	aantalBronnen
 )
 
-var bronSleutels = []string{"listen.music", "listen.books", "listen.podcasts", "listen.radio"}
+var bronSleutels = []string{"listen.music", "listen.books", "listen.podcasts", "listen.radio", "listen.spotify"}
 
 var slaapStappen = []int{0, 15, 30, 45, 60}
 
@@ -122,6 +126,8 @@ type luister struct {
 	nav      *Navidrome
 	abs      *ABS
 	sp       *Speler
+	spotify  *Spotify
+	lspot    *Librespot
 	nu       *afspelen
 	pollID   int
 	slaapTot time.Time
@@ -130,7 +136,8 @@ type luister struct {
 
 func nieuwLuister(g Geheimen) *luister {
 	apparaat, _ := os.Hostname()
-	l := &luister{nav: nieuweNavidrome(g), abs: nieuweABS(g, "unscroll-"+apparaat), sp: nieuweSpeler()}
+	l := &luister{nav: nieuweNavidrome(g), abs: nieuweABS(g, "unscroll-"+apparaat), sp: nieuweSpeler(),
+		spotify: nieuweSpotify(g), lspot: &Librespot{naam: spotifyApparaatNaam()}}
 	l.zoek = textinput.New()
 	l.zoek.Prompt = "/ "
 	l.zoek.CharLimit = 30
@@ -162,6 +169,19 @@ func laadCmd(bron int, sleutel string, f func() ([]item, error)) tea.Cmd {
 		items, err := f()
 		return lijstMsg{bron, sleutel, items, err}
 	}
+}
+
+// poll vraagt over een tel (Spotify: twee tellen) hoe het afspelen ervoor staat.
+func (m *model) poll(a *afspelen) tea.Cmd {
+	l := m.l
+	if a.soort == soortSpNummer {
+		sp, id, lijst := l.spotify, l.pollID, a.items
+		return tea.Tick(2*time.Second, func(time.Time) tea.Msg {
+			st, err := sp.Stand(lijst)
+			return spelerMsg{id, st, err}
+		})
+	}
+	return pollCmd(l.sp, l.pollID)
 }
 
 func pollCmd(sp *Speler, id int) tea.Cmd {
@@ -221,6 +241,16 @@ func (m *model) laadWortel() tea.Cmd {
 			return nietIngesteld()
 		}
 		return nieuw("podcasts", func() ([]item, error) { return l.abs.Items("podcast") })
+	case bronSpotify:
+		if l.spotify == nil {
+			return nietIngesteld()
+		}
+		if len(m.ouders.Spotify.Goedgekeurd) == 0 {
+			l.stapels[l.bron] = []lijst{{titel: titel, fout: m.t("listen.spempty")}}
+			return nil
+		}
+		links := m.ouders.Spotify.Goedgekeurd
+		return nieuw("spotify", func() ([]item, error) { return l.spotify.Goedgekeurd(links) })
 	default:
 		var items []item
 		for _, z := range m.ouders.zenders() {
@@ -262,6 +292,19 @@ func (m *model) open() tea.Cmd {
 		return m.speel(&afspelen{soort: soortNummer, titel: it.titel, sub: it.sub, items: nummers})
 	case soortZender:
 		return m.speel(&afspelen{soort: soortZender, titel: it.titel, items: []item{it}})
+	case soortSpLijst:
+		expliciet := m.ouders.Spotify.ExplicietMag
+		return dieper("sp:"+it.id, func() ([]item, error) {
+			items, _, err := l.spotify.Nummers(it.id, expliciet)
+			return items, err
+		})
+	case soortSpNummer:
+		z := lj.zichtbaar()
+		var nummers []item
+		for _, i := range z[lj.sel:] {
+			nummers = append(nummers, lj.items[i])
+		}
+		return m.speel(&afspelen{soort: soortSpNummer, titel: it.titel, sub: it.sub, items: nummers})
 	case soortBoek:
 		return m.speel(&afspelen{soort: soortBoek, titel: it.titel, sub: it.sub, items: []item{it}})
 	case soortAflevering:
@@ -289,9 +332,19 @@ func (m *model) speel(a *afspelen) tea.Cmd {
 	if m.dicht() && a.soort == soortBoek && l.slaapTot.IsZero() {
 		m.zetSlaap(30)
 	}
-	sp, abs := l.sp, l.abs
+	sp, abs, spot, lspot := l.sp, l.abs, l.spotify, l.lspot
 	begin := func() tea.Msg {
 		switch a.soort {
+		case soortSpNummer:
+			sp.LeegAlsActief()
+			if err := lspot.Start(); err != nil {
+				return startMsg{a, err}
+			}
+			var uris []string
+			for _, it := range a.items {
+				uris = append(uris, it.url)
+			}
+			return startMsg{a, spot.Speel(uris)}
 		case soortNummer, soortZender:
 			var urls []string
 			for _, it := range a.items {
@@ -356,8 +409,12 @@ func (m *model) stopHuidig(stilte bool) tea.Cmd {
 	if a == nil {
 		return nil
 	}
-	sp, abs := l.sp, l.abs
+	sp, abs, spot := l.sp, l.abs, l.spotify
 	return func() tea.Msg {
+		if a.soort == soortSpNummer {
+			_ = spot.Pauze(true)
+			return nil
+		}
 		if stilte {
 			sp.Leeg()
 		}
@@ -404,15 +461,24 @@ func (m *model) luisterBericht(msg tea.Msg) tea.Cmd {
 		}
 		if msg.err != nil {
 			l.nu = nil
-			if msg.err == errGeenMpv {
+			switch {
+			case msg.err == errGeenMpv:
 				m.zeg(m.t("listen.nompv"))
-			} else {
+			case errors.Is(msg.err, errGeenLibrespot):
+				m.zeg(m.t("listen.nolibrespot"))
+			case errors.Is(msg.err, errNietGekoppeld):
+				m.zeg(m.t("listen.splink"))
+			case errors.Is(msg.err, errGeenApparaat):
+				m.zeg(m.t("listen.spnodevice"))
+			case errors.Is(msg.err, errSpotifyIngelogd):
+				m.zeg(m.t("listen.splogin"))
+			default:
 				m.zeg(m.t("listen.err", msg.err.Error()))
 			}
 			return nil
 		}
 		msg.a.laatsteSync = time.Now()
-		return pollCmd(l.sp, l.pollID)
+		return m.poll(msg.a)
 	case spelerMsg:
 		a := l.nu
 		if msg.id != l.pollID || a == nil {
@@ -461,7 +527,7 @@ func (m *model) luisterBericht(msg tea.Msg) tea.Cmd {
 			a.laatsteSync = nu
 			cmds = append(cmds, m.bijwerkCmd(a))
 		}
-		return tea.Batch(append(cmds, pollCmd(l.sp, l.pollID))...)
+		return tea.Batch(append(cmds, m.poll(a))...)
 	}
 	return nil
 }
@@ -478,6 +544,10 @@ func (m *model) bijwerkCmd(a *afspelen) tea.Cmd {
 }
 
 func (m *model) pauzeCmd(aan bool) tea.Cmd {
+	if a := m.l.nu; a != nil && a.soort == soortSpNummer {
+		spot := m.l.spotify
+		return func() tea.Msg { _ = spot.Pauze(aan); return nil }
+	}
 	sp := m.l.sp
 	var bij tea.Cmd
 	if aan && m.l.nu != nil {
@@ -577,6 +647,10 @@ func (m *model) toetsLuisteren(msg tea.KeyMsg) (tea.Cmd, bool) {
 			if k == "left" {
 				sec = -30
 			}
+			if l.nu.soort == soortSpNummer {
+				spot, naar := l.spotify, l.nu.stand.Pos+sec
+				return func() tea.Msg { spot.Spoel(naar); return nil }, true
+			}
 			sp := l.sp
 			return func() tea.Msg { sp.Spoel(sec); return nil }, true
 		}
@@ -612,6 +686,13 @@ func (m *model) toetsLuisteren(msg tea.KeyMsg) (tea.Cmd, bool) {
 			return m.stopHuidig(true), true
 		}
 	case "n", "p":
+		if l.nu != nil && l.nu.soort == soortSpNummer {
+			spot := l.spotify
+			if k == "n" {
+				return func() tea.Msg { spot.Volgende(); return nil }, true
+			}
+			return func() tea.Msg { spot.Vorige(); return nil }, true
+		}
 		if l.nu != nil && l.nu.soort == soortNummer {
 			sp := l.sp
 			if k == "n" {
@@ -781,7 +862,7 @@ func (m model) viewNu(p palet, breed int) string {
 	} else {
 		regels = append(regels, lipgloss.NewStyle().Bold(true).Width(breed).Render(a.titel))
 		sub := a.sub
-		if a.soort == soortNummer {
+		if a.soort == soortNummer || a.soort == soortSpNummer {
 			it := a.huidig()
 			regels[0] = lipgloss.NewStyle().Bold(true).Width(breed).Render(it.titel)
 			sub = it.sub
@@ -832,7 +913,7 @@ func (m model) nuKort() string {
 		return m.t("listen.nothing")
 	}
 	t := a.titel
-	if a.soort == soortNummer {
+	if a.soort == soortNummer || a.soort == soortSpNummer {
 		t = a.huidig().titel
 	}
 	if a.stand.Pauze {

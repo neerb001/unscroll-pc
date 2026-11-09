@@ -641,6 +641,16 @@ func main() {
 		case "--version", "-v":
 			fmt.Println(versie)
 			return
+		case "--spotify-login":
+			if len(os.Args) < 3 {
+				fmt.Fprintln(os.Stderr, "usage: unscroll --spotify-login CLIENT_ID")
+				os.Exit(2)
+			}
+			if err := spotifyInloggen(os.Args[2], os.Stdin, os.Stdout); err != nil {
+				fmt.Fprintln(os.Stderr, "Spotify login failed:", err)
+				os.Exit(1)
+			}
+			return
 		case "--pin-hash":
 			if len(os.Args) < 3 {
 				fmt.Fprintln(os.Stderr, "usage: unscroll --pin-hash 1234")
@@ -656,6 +666,7 @@ func main() {
 	p := tea.NewProgram(begin, tea.WithAltScreen())
 	_, err := p.Run()
 	begin.l.sp.Afsluiten()                            // mpv stoppen
+	begin.l.lspot.Stop()                              // librespot stoppen
 	fmt.Fprint(os.Stdout, "\x1b]110\x07\x1b]111\x07") // terminalkleuren terug
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "unscroll:", err)
