@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Start de app als enige programma op het scherm: cage (kiosk) met daarin foot (terminal).
+# Sluit de app af, dan start hij gewoon opnieuw. Er is geen vrije shell om in terecht te komen.
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+export WLR_RENDERER="${WLR_RENDERER:-pixman}"   # oude videochips: software-rendering is het betrouwbaarst
+export TERM=foot
+
+while true; do
+  # zonder -s: wisselen naar een andere console (Ctrl+Alt+F2) is uitgeschakeld
+  cage -- foot --config "$HOME/.config/foot/foot.ini" /usr/local/bin/eee
+  sleep 1
+done

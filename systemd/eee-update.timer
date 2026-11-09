@@ -1,0 +1,10 @@
+[Unit]
+Description=Elke 15 minuten kijken of er een nieuwe versie is
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=15min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

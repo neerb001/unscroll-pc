@@ -1,0 +1,22 @@
+# Instellingen voor de ouders. Dit bestand is van root:
+# het kind kan het lezen, maar niet wijzigen.
+# Plek op het apparaat: /etc/eee/ouders.yaml
+
+avondslot:
+  schooldagen: "20:00"     # zondag t/m donderdag
+  weekend: "20:30"         # vrijdag- en zaterdagavond
+  open: "07:00"            # vanaf dan is alles weer open
+  lezen_mag: true          # e-boeken blijven open tijdens het slot
+  luisterboek_mag: true    # luisterboek met slaaptimer blijft open
+
+# Pincode voor de ouderstand. Maak de hash met:
+#   eee --pin-hash 1234
+pin_sha256: ""
+
+max_volume: 70
+
+# "Hulp vragen" stuurt een melding naar jullie telefoons via ntfy.
+# Kies een lang, moeilijk te raden topic en abonneer je erop in de ntfy-app.
+ntfy:
+  url: "https://ntfy.sh"
+  topic: ""

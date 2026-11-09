@@ -1,0 +1,114 @@
+# Kinderkamer-terminal (werktitel)
+
+Een rustige luister- en ontdekcomputer voor kinderen, op een oude laptop of een Raspberry Pi.
+Muziek, luisterboeken, podcasts, radio en e-boeken, een AI-maatje met duidelijke grenzen,
+denksport en een privé schrijfhoek. Alles in één toetsenbord-gestuurde terminal-app.
+
+**Zonder spelletjes, feeds, aanbevelingen, autoplay, likes of streaks.**
+Het kind kiest zelf, uit een collectie die de ouders samenstellen.
+
+> *A calm, keyboard-driven listening and discovery computer for kids, built for old laptops
+> and Raspberry Pis. No games, no feeds, no algorithms. Dutch first, translations welcome.*
+
+![mockup](docs/mockup.html) · Open [`docs/mockup.html`](docs/mockup.html) in een browser voor een klikbare mockup.
+
+---
+
+## Uitgangspunten
+
+1. **Geen feeds, geen algoritmes.** Geen "aanbevolen voor jou", geen eindeloos scrollen, geen automatisch doorspelen.
+2. **Geen spelletjes, punten of streaks.** Niets wat beloont voor "nog even".
+3. **Rust in de avond.** Het avondslot hoort bij het systeem: na bedtijd blijven alleen lezen en een luisterboek met slaaptimer over (in te stellen).
+4. **Eerlijk.** Het kind weet wat ouders kunnen zien. De schrijfhoek is privé.
+5. **Zelfstandig.** Werkt los van andere systemen, met speakers eraan. Koppelen aan een NAS of Music Assistant kan, maar hoeft niet.
+6. **Licht.** Moet vlot draaien op een 32-bit netbook met 1 GB geheugen.
+
+## Wat erin zit (en wat er nog komt)
+
+| Onderdeel | Inhoud | Status |
+|---|---|---|
+| Start | Begroeting, menu, avondslot, eigen naam in blokletters | ✅ fase 0 |
+| Systeem | Naam computer, eigen naam, naam en gezicht van het maatje, 5 kleurthema's, wifi, accu, volume met maximum, hulp vragen (ntfy) | ✅ fase 0 |
+| Avondslot | Aparte tijden voor school- en weekendavonden, openingstijd, wat er na het slot nog mag, pincode voor ouders | ✅ fase 0 |
+| Updates | Nieuwe versies via GitHub-releases, met checksum-controle en terugval | ✅ fase 0 |
+| Luisteren | Navidrome, radio met draaiknop, luisterboeken en podcasts uit Audiobookshelf, slaaptimer | ⏳ fase 1 |
+| Lezen + Vandaag | E-boeken (EPUB) uit Audiobookshelf, weer, wekker, maan, seizoen en jaarfeesten | ⏳ fase 2 |
+| Spotify | Alleen goedgekeurde afspeellijsten, expliciete nummers gefilterd, autoplay uit (librespot) | ⏳ fase 3 |
+| Vraag het maatje | AI via de Anthropic-API met dagbudget, filters en weekoverzicht voor ouders | ⏳ fase 4 |
+| Ontdekken | Computerlab (Linux leren met missies), Python, dier van de dag, natuurdagboek | ⏳ fase 5 |
+| Denksport | Sudoku, schaakpuzzels, raadsels. Geen timer, geen score | ⏳ fase 5 |
+| Schrijfhoek | Privé dagboek en verhalen | ⏳ fase 5 |
+
+## Geschikte apparaten
+
+Alles wat Debian 12 draait. Getest en bedoeld voor:
+
+| Apparaat | Architectuur | Opmerking |
+|---|---|---|
+| Asus EeePC en andere netbooks | 386 (32-bit) | Het startpunt van dit project. 1 GB geheugen is genoeg. |
+| Oude laptops (ThinkPad, Dell, HP) | amd64 | Vaak voor een paar tientjes tweedehands te vinden |
+| Ex-school Chromebooks met Intel | amd64 | Eerst ombouwen met de firmware van MrChromebox |
+| Raspberry Pi 4 / 5 met scherm en toetsenbord | arm64 | Raspberry Pi OS Lite (Bookworm) |
+| Raspberry Pi 400 / 500 | arm64 | Computer in een toetsenbord: alleen nog een scherm erbij |
+| Draagbare Pi-terminals (uConsole, DevTerm) | arm64 | Een echte "cyberdeck" |
+
+## Installeren
+
+1. Installeer **Debian 12** minimaal (alleen "SSH-server" en "standaard systeemhulpmiddelen", geen bureaublad).
+2. Zet deze repository op het apparaat en draai als root:
+   ```bash
+   REPO=OWNER/REPO bash install.sh
+   ```
+3. Maak een pincode voor de ouderstand en zet de uitkomst in `/etc/eee/ouders.yaml`:
+   ```bash
+   eee --pin-hash 1234
+   ```
+4. Pas de tijden van het avondslot aan in `/etc/eee/ouders.yaml` en herstart.
+
+Na het opstarten logt het kinderaccount automatisch in en start de app op het hele scherm
+(`cage` met de terminal `foot`). Er is geen bureaublad, geen browser en geen vrije shell.
+
+## Updates
+
+- Een push van een tag (`v0.2.0`) laat GitHub Actions de app bouwen voor 386, amd64, arm64 en arm, met een `sha256`-bestand per binary.
+- Het apparaat kijkt elke 15 minuten of er een nieuwe release is (`eee-update.timer`), controleert de checksum en of de nieuwe versie start, en zet hem klaar. De vorige versie blijft bewaard.
+- Pre-releases (`v0.2.0-test`) gaan alleen naar apparaten met `KANAAL="test"` in `/etc/eee/update.conf`.
+- Is de repository privé, zet dan een fine-grained token met alleen-lezen rechten in `/etc/eee/geheimen.env`.
+
+## Instellingen
+
+| Bestand | Van wie | Inhoud |
+|---|---|---|
+| `~/.config/eee/instellingen.json` | het kind | naam, maatje, gezicht, kleurthema |
+| `/etc/eee/ouders.yaml` | ouders (root) | avondslot, pincode, maximaal volume, ntfy-topic |
+| `/etc/eee/update.conf` | ouders (root) | repository en updatekanaal |
+| `/etc/eee/geheimen.env` | ouders (root) | tokens en API-sleutels, nooit in git |
+
+## Ontwikkelen
+
+```bash
+cd app
+go test ./...
+go run .                      # draait in je eigen terminal
+EEE_OUDERS=../config/ouders.example.yaml go run .
+CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -o eee .
+```
+
+De app is geschreven in Go met [Bubble Tea](https://github.com/charmbracelet/bubbletea) en
+[Lip Gloss](https://github.com/charmbracelet/lipgloss), zodat het één klein bestand is dat ook
+op oude 32-bit hardware vlot draait.
+
+## Mappen
+
+```
+app/        de terminal-app (Go)
+scripts/    eee-sessie (kioskstart) en eee-update (updater)
+systemd/    timer en service voor de updater
+config/     voorbeelden van de instellingen en de terminal-configuratie
+docs/       klikbare mockup
+install.sh  installatie op een verse Debian 12
+```
+
+## Licentie
+
+Nog te kiezen.

@@ -1,0 +1,769 @@
+<title>Eee Kinderkamer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Figtree:wght@400;500;600&display=swap">
+<style>
+  /* Layout: een netbook op een bureau; in het scherm van 1024×600 draait de kinder-terminal met tabbladen onderin */
+  :root {
+    --page: #e6e8ec; --page-ink: #1f2430; --page-muted: #5c6575; --chip: #d5d9e0;
+    --bezel: #212327; --bezel-hi: #35383e; --key: #2a2d33;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: "Figtree", "Segoe UI", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --page: #0f1115; --page-ink: #e7eaf0; --page-muted: #8b93a3; --chip: #1d2128; --bezel: #1b1d21; --bezel-hi: #2c2f35; --key: #24272c; color-scheme: dark; }
+  }
+  :root[data-theme="dark"] { --page: #0f1115; --page-ink: #e7eaf0; --page-muted: #8b93a3; --chip: #1d2128; --bezel: #1b1d21; --bezel-hi: #2c2f35; --key: #24272c; color-scheme: dark; }
+
+  /* kleurthema's van de terminal (instelbaar in Systeem) */
+  .screen { --bg: #1a1b26; --bg2: #16161e; --sel: #283457; --line: #3b4261; --fg: #c0caf5; --dim: #6b7399; --acc: #7aa2f7; --acc2: #bb9af7; --cyan: #7dcfff; --green: #9ece6a; --yellow: #e0af68; --orange: #ff9e64; --red: #f7768e; }
+  .screen[data-skin="ruimte"] { --bg: #12161d; --bg2: #0d1015; --sel: #1f2a3a; --line: #2e3846; --fg: #d8dee8; --dim: #7a8697; --acc: #ff8a3d; --acc2: #6cb6ff; --cyan: #79c0ff; --green: #7ee787; --yellow: #f2cc60; --orange: #ff8a3d; --red: #ff6b6b; }
+  .screen[data-skin="tovenaar"] { --bg: #1c1315; --bg2: #150e10; --sel: #3a2125; --line: #4a2f33; --fg: #f1e6d0; --dim: #9b8676; --acc: #e3b341; --acc2: #d9776a; --cyan: #e8c97a; --green: #a9c47a; --yellow: #e3b341; --orange: #e08e45; --red: #e0605e; }
+  .screen[data-skin="bos"] { --bg: #151b15; --bg2: #101510; --sel: #243324; --line: #2f3d2e; --fg: #e3ead9; --dim: #829178; --acc: #8fc27a; --acc2: #d4b06a; --cyan: #a8d49a; --green: #8fc27a; --yellow: #e6c56b; --orange: #d99a5b; --red: #d9776a; }
+  .screen[data-skin="oceaan"] { --bg: #0f1a24; --bg2: #0b141c; --sel: #17324a; --line: #22384c; --fg: #dbe8f0; --dim: #7b93a6; --acc: #4fd1c5; --acc2: #7aa8ff; --cyan: #7fe0d2; --green: #7fd99a; --yellow: #f0cf72; --orange: #f2a65a; --red: #f07a7a; }
+
+  body {
+    background: var(--page); color: var(--page-ink); font-family: var(--sans); margin: 0;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 28px 40px;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 22px; }
+  header h1 { font: 800 clamp(22px, 3.2vw, 32px)/1.15 var(--mono); margin: 0; letter-spacing: -0.02em; text-wrap: balance; }
+  header p { margin: 6px 0 0; color: var(--page-muted); max-width: 66ch; line-height: 1.5; }
+
+  .stage { overflow-x: auto; padding-bottom: 6px; }
+  .netbook { min-width: 720px; max-width: 1060px; margin: 0 auto; }
+  .lid { background: linear-gradient(180deg, var(--bezel-hi), var(--bezel) 18%); border-radius: 18px 18px 6px 6px; padding: 22px 64px 26px; position: relative; box-shadow: 0 1px 0 rgba(255,255,255,.08) inset, 0 20px 40px rgba(0,0,0,.25); }
+  .lid::before, .lid::after { content: ""; position: absolute; top: 50%; width: 30px; height: 120px; transform: translateY(-50%); background: radial-gradient(circle, rgba(0,0,0,.55) 1.2px, transparent 1.6px) 0 0 / 7px 7px; border-radius: 8px; }
+  .lid::before { left: 17px; } .lid::after { right: 17px; }
+  .cam { position: absolute; top: 8px; left: 50%; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: #0b0c0f; box-shadow: 0 0 0 2px #2a2d32; }
+  .screen { aspect-ratio: 1024 / 600; max-width: 100%; border-radius: 3px; overflow: hidden; container-type: inline-size; position: relative; box-shadow: 0 0 0 2px #0b0c0f; outline: none; }
+  .base { height: 26px; margin: 0 -14px; border-radius: 0 0 16px 16px; background: linear-gradient(180deg, var(--bezel-hi), var(--bezel)); box-shadow: 0 14px 28px rgba(0,0,0,.25); position: relative; }
+  .base::after { content: ""; position: absolute; left: 50%; top: 0; width: 120px; height: 7px; margin-left: -60px; background: var(--key); border-radius: 0 0 8px 8px; }
+
+  /* ---------- terminal ---------- */
+  .term { position: absolute; inset: 0; display: grid; grid-template-rows: 1fr auto; font-family: var(--mono); font-size: 1.3cqw; line-height: 1.45; color: var(--fg); background: var(--bg); font-variant-numeric: tabular-nums; transition: background .3s ease, color .3s ease; }
+  .term.klein { font-size: 1.16cqw; } .term.groot { font-size: 1.48cqw; }
+  .view { padding: 1.6cqw 1.8cqw 1.1cqw; overflow: hidden; display: none; min-height: 0; align-content: start; }
+  .view.on { display: grid; }
+  .dim { color: var(--dim); } .acc { color: var(--acc); } .acc2 { color: var(--acc2); } .cyan { color: var(--cyan); } .green { color: var(--green); } .yellow { color: var(--yellow); } .orange { color: var(--orange); } .red { color: var(--red); } .b { font-weight: 600; }
+  pre { margin: 0; font: inherit; white-space: pre; }
+  .panel { border: 1px solid var(--line); border-radius: .55cqw; padding: 1.1cqw 1.1cqw .8cqw; position: relative; min-width: 0; }
+  .panel > .pt { position: absolute; top: -0.85em; left: .9cqw; background: var(--bg); padding: 0 .5cqw; color: var(--acc); font-weight: 600; transition: background .3s ease; }
+  .panel.hot { border-color: var(--acc); }
+  .head { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: baseline; gap: 1cqw; }
+  .head .h { font-weight: 800; }
+  .tag { display: inline-block; padding: 0 .5cqw; border-radius: .3cqw; background: color-mix(in srgb, var(--yellow) 16%, transparent); color: var(--yellow); white-space: nowrap; }
+  .lock { color: var(--green); }
+  button.t { font: inherit; color: inherit; background: transparent; border: 0; padding: 0; cursor: pointer; text-align: left; }
+  .t:focus-visible, .tabs button:focus-visible, .term input:focus-visible, .term textarea:focus-visible { outline: 1px solid var(--yellow); outline-offset: 1px; }
+  .chip { display: inline-block; padding: .05cqw .6cqw; border: 1px solid var(--line); border-radius: .35cqw; color: var(--dim); white-space: nowrap; }
+  .chip[aria-pressed="true"] { border-color: var(--acc); color: var(--bg); background: var(--acc); font-weight: 600; }
+  .row { display: flex; flex-wrap: wrap; gap: .5cqw; }
+  .bar { height: .65cqw; background: var(--bg2); border-radius: .4cqw; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--acc); border-radius: .4cqw; transition: width .3s ease; }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: .15cqw 1.2cqw; } .kv .r { text-align: right; }
+  .term input, .term textarea { font: inherit; color: var(--fg); background: transparent; border: 0; border-bottom: 1px dashed var(--line); outline: none; caret-color: var(--acc); padding: 0 .2cqw; min-width: 0; }
+  .term input::placeholder, .term textarea::placeholder { color: var(--dim); }
+
+  .status { display: flex; justify-content: space-between; align-items: center; background: var(--bg2); border-top: 1px solid var(--line); padding: .3cqw .8cqw; gap: 1cqw; white-space: nowrap; }
+  .tabs { display: flex; gap: .2cqw; }
+  .tabs button { font: inherit; color: var(--dim); background: transparent; border: 0; padding: .05cqw .55cqw; border-radius: .3cqw; cursor: pointer; }
+  .tabs button:hover { color: var(--fg); }
+  .tabs button[aria-pressed="true"] { background: var(--acc); color: var(--bg); font-weight: 600; }
+  .sess { color: var(--bg); background: var(--green); font-weight: 600; padding: .05cqw .6cqw; border-radius: .3cqw; margin-right: .3cqw; }
+  .toast { position: absolute; right: 1.5cqw; bottom: 3.3cqw; background: var(--sel); color: var(--fg); border: 1px solid var(--acc); padding: .5cqw 1cqw; border-radius: .4cqw; opacity: 0; transition: opacity .25s ease; pointer-events: none; font-family: var(--mono); font-size: 1.2cqw; }
+  .toast.show { opacity: 1; }
+
+  /* start */
+  #v-start { grid-template-columns: 1.35fr 1fr; gap: 2cqw; }
+  .logo { color: var(--acc); line-height: 1.02; font-weight: 800; font-size: .92em; }
+  .menu { list-style: none; margin: 1cqw 0 0; padding: 0; display: grid; gap: .1cqw; }
+  .menu li { display: grid; grid-template-columns: 2cqw 11.5cqw 1fr; gap: .8cqw; padding: .28cqw .8cqw; border-radius: .35cqw; cursor: pointer; }
+  .menu li .k { color: var(--dim); } .menu li .n { font-weight: 600; } .menu li .d { color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .menu li[aria-selected="true"] { background: var(--sel); } .menu li[aria-selected="true"] .k { color: var(--yellow); } .menu li[aria-selected="true"] .n { color: var(--acc); }
+  .side { display: grid; gap: 1.6cqw; align-content: start; padding-top: .8cqw; }
+
+  /* luisteren */
+  #v-luister { grid-template-columns: 11cqw 1.2fr 1fr; gap: 1.2cqw; grid-template-rows: auto 1fr; }
+  .src { display: grid; gap: .2cqw; align-content: start; }
+  .src button { font: inherit; color: var(--dim); background: transparent; border: 0; text-align: left; padding: .25cqw .6cqw; border-radius: .3cqw; cursor: pointer; }
+  .src button[aria-pressed="true"] { background: var(--sel); color: var(--acc); font-weight: 600; }
+  .list { display: grid; gap: .1cqw; align-content: start; }
+  .list button { font: inherit; color: var(--fg); background: transparent; border: 0; text-align: left; padding: .2cqw .6cqw; border-radius: .3cqw; cursor: pointer; display: flex; justify-content: space-between; gap: 1cqw; }
+  .list button:hover { background: var(--sel); }
+  .list button .dim { white-space: nowrap; }
+  .np { display: grid; gap: .6cqw; align-content: start; }
+  .cover { color: var(--acc2); line-height: 1; font-size: .9em; }
+  .ctl { display: flex; gap: 1.2cqw; font-size: 1.2em; }
+  .dial { grid-column: 2 / -1; display: flex; align-items: center; gap: 1cqw; }
+  .dial .stations { flex: 1; display: flex; justify-content: space-between; color: var(--dim); border-top: 1px solid var(--line); padding-top: .3cqw; position: relative; }
+  .dial .stations span.on { color: var(--yellow); font-weight: 600; }
+
+  /* lezen */
+  #v-lees { grid-template-columns: 1fr 2.1fr; gap: 1.4cqw; }
+  .page { line-height: 1.75; max-width: 62ch; }
+  .page p { margin: 0 0 .9cqw; }
+
+  /* maatje */
+  #v-maatje { grid-template-columns: 13cqw 1fr; grid-template-rows: auto 1fr auto; gap: 1cqw 1.6cqw; }
+  .face { font-size: 2.2em; color: var(--acc); font-weight: 800; text-align: center; padding-top: .6cqw; }
+  .chat { display: flex; flex-direction: column; justify-content: flex-end; gap: .8cqw; overflow: hidden; min-height: 0; }
+  .me { color: var(--cyan); }
+  .bub { border-left: 2px solid var(--acc); padding-left: 1cqw; }
+  .ask { grid-column: 2; display: flex; gap: .8cqw; align-items: center; }
+  .ask input { flex: 1; }
+
+  /* ontdekken */
+  #v-ontdek { grid-template-columns: 1.25fr 1fr; grid-template-rows: auto auto auto; gap: 1.7cqw 1.2cqw; }
+  .lab { background: var(--bg2); border-radius: .4cqw; padding: .6cqw .8cqw; height: 13cqw; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; }
+  .lab form { display: flex; gap: .6cqw; } .lab input { flex: 1; border: 0; }
+
+  /* denksport */
+  #v-denk { grid-template-columns: auto 1fr 1fr; gap: 1.7cqw 1.4cqw; grid-template-rows: auto auto; }
+  .sudoku { display: grid; grid-template-columns: repeat(9, 2.25cqw); grid-auto-rows: 2.25cqw; border: 2px solid var(--acc); width: max-content; }
+  .sudoku button { font: inherit; border: 0; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: transparent; color: var(--cyan); cursor: pointer; padding: 0; }
+  .sudoku button.given { color: var(--fg); font-weight: 600; cursor: default; }
+  .sudoku button.c3 { border-right: 2px solid var(--acc); } .sudoku button.r3 { border-bottom: 2px solid var(--acc); }
+  .sudoku button.sel { background: var(--sel); }
+  .sudoku button.bad { color: var(--red); }
+  .board { display: grid; grid-template-columns: repeat(8, 2.05cqw); grid-auto-rows: 2.05cqw; width: max-content; border: 1px solid var(--line); }
+  .board span { display: grid; place-items: center; font-size: 1.35em; line-height: 1; }
+  .board span.l { background: color-mix(in srgb, var(--fg) 14%, var(--bg)); } .board span.d { background: color-mix(in srgb, var(--acc) 22%, var(--bg)); }
+  .files { display: grid; grid-template-columns: repeat(8, 2.05cqw); color: var(--dim); text-align: center; font-size: .85em; }
+
+  /* schrijfhoek */
+  #v-schrijf { grid-template-columns: 1fr 2fr; gap: 1.4cqw; }
+  #v-schrijf textarea { width: 100%; height: 25cqw; resize: none; border: 1px dashed var(--line); border-radius: .4cqw; padding: .8cqw; line-height: 1.6; box-sizing: border-box; }
+
+  /* vandaag */
+  #v-vandaag { grid-template-columns: 1.2fr 1fr 1fr; grid-template-rows: auto auto auto; gap: 1.7cqw 1.2cqw; }
+  .rain { display: grid; grid-template-columns: repeat(24, 1fr); gap: .15cqw; align-items: end; height: 3.6cqw; margin-top: .4cqw; }
+  .rain i { display: block; background: var(--cyan); border-radius: .15cqw .15cqw 0 0; min-height: 2px; opacity: .85; }
+
+  /* systeem */
+  #v-systeem { grid-template-columns: 1.35fr 1fr; gap: 1.4cqw; grid-template-rows: auto 1fr; }
+  .set { display: grid; grid-template-columns: 11cqw 1fr; gap: .55cqw 1cqw; align-items: center; }
+  .set input { width: 100%; }
+  .sw { display: inline-block; width: .9em; height: .9em; border-radius: 2px; vertical-align: -0.1em; margin-right: .3cqw; }
+  .btns { display: grid; gap: .4cqw; }
+  .btns button { font: inherit; color: var(--fg); background: var(--bg2); border: 1px solid var(--line); border-radius: .35cqw; padding: .3cqw .8cqw; text-align: left; cursor: pointer; }
+  .btns button:hover { border-color: var(--acc); }
+  .mini { display: grid; grid-template-columns: 7cqw 1fr 2.5cqw 2.5cqw; gap: .6cqw; align-items: center; }
+  .mini button { font: inherit; color: var(--fg); background: var(--bg2); border: 1px solid var(--line); border-radius: .3cqw; cursor: pointer; padding: 0; }
+
+  /* avondstand */
+  .lockscreen { position: absolute; inset: 0 0 2.6cqw 0; display: grid; place-items: center; background: color-mix(in srgb, var(--bg2) 92%, transparent); font-family: var(--mono); font-size: 1.3cqw; color: var(--fg); outline: none; }
+  .lockbox { text-align: center; display: grid; gap: .6cqw; justify-items: center; max-width: 60cqw; }
+  .lockscreen .chip { font-size: 1.1em; padding: .3cqw 1cqw; color: var(--fg); }
+  .lockscreen .chip:hover { border-color: var(--acc); }
+
+  /* onder het apparaat */
+  .notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px 28px; }
+  .note h2 { font: 600 13px/1.3 var(--mono); letter-spacing: .04em; text-transform: uppercase; color: var(--page-muted); margin: 0 0 6px; }
+  .note p, .note li { margin: 0; line-height: 1.5; font-size: 14px; }
+  .note ul { margin: 0; padding-left: 18px; display: grid; gap: 3px; }
+  kbd { font: 600 12px var(--mono); padding: 1px 6px; border-radius: 5px; border: 1px solid var(--page-muted); background: var(--chip); color: var(--page-ink); }
+  @media (prefers-reduced-motion: reduce) { .term, .bar i, .toast, .panel > .pt { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Eee voor de kinderkamer</h1>
+    <p>Mockup van de luister- en ontdekcomputer op de oude EeePC: muziek, Spotify, luisterboeken, podcasts, radio, e-boeken, een AI-maatje met grenzen, denksport en een privé schrijfhoek. Zonder spelletjes, feeds of algoritmes. Kijk ook bij Systeem: daar pas je naam, maatje en kleuren aan.</p>
+  </header>
+
+  <div class="stage">
+    <div class="netbook">
+      <div class="lid">
+        <span class="cam" aria-hidden="true"></span>
+        <div class="screen" id="screen" tabindex="0" aria-label="Scherm van de EeePC (mockup)">
+          <div class="term" id="term">
+
+            <!-- 0 START -->
+            <section class="view on" id="v-start">
+              <div>
+                <pre class="logo" id="logo" aria-hidden="true"></pre>
+                <div class="dim" style="margin-top:.8cqw">luister- en ontdekcomputer · debian 12 · 1024 MB</div>
+                <div class="green" id="greet" style="margin-top:.3cqw">Goedemiddag!</div>
+                <ul class="menu" id="menu" role="listbox" aria-label="Hoofdmenu">
+                  <li role="option" data-go="luister"><span class="k">1</span><span class="n">Luisteren</span><span class="d">muziek, Spotify, luisterboeken, podcasts, radio</span></li>
+                  <li role="option" data-go="lees"><span class="k">2</span><span class="n">Lezen</span><span class="d">e-boeken uit je eigen bibliotheek</span></li>
+                  <li role="option" data-go="maatje"><span class="k">3</span><span class="n">Vraag <span class="buddy-name">Bliep</span></span><span class="d">je slimme maatje</span></li>
+                  <li role="option" data-go="ontdek"><span class="k">4</span><span class="n">Ontdekken</span><span class="d">computerlab, programmeren, dieren, natuur</span></li>
+                  <li role="option" data-go="denk"><span class="k">5</span><span class="n">Denksport</span><span class="d">sudoku, schaakpuzzel, raadsel</span></li>
+                  <li role="option" data-go="schrijf"><span class="k">6</span><span class="n">Schrijfhoek</span><span class="d">privé dagboek en verhalen</span></li>
+                  <li role="option" data-go="vandaag"><span class="k">7</span><span class="n">Vandaag</span><span class="d">weer, wekker, maan, seizoen</span></li>
+                  <li role="option" data-go="systeem"><span class="k">8</span><span class="n">Systeem</span><span class="d">naam, kleuren, wifi, volume, hulp</span></li>
+                </ul>
+              </div>
+              <div class="side">
+                <div class="panel"><span class="pt">buiten</span>
+                  <div><span class="b" style="font-size:1.5em">12°</span> <span class="cyan">regen om 16:00</span></div>
+                  <div class="dim">neem een jas mee naar zwemles</div>
+                </div>
+                <div class="panel"><span class="pt">nu</span>
+                  <div class="acc2" id="np-mini">♪ Harry Potter en de Steen der Wijzen</div>
+                  <div class="dim">hoofdstuk 7 · 41% · Play:1 kinderkamer</div>
+                </div>
+                <div class="panel"><span class="pt">vandaag</span>
+                  <div class="kv">
+                    <span class="dim">denksport</span><span class="r">3 puzzels klaar voor je</span>
+                    <span class="dim">vragen aan <span class="buddy-name">Bliep</span></span><span class="r"><span class="budget">25</span> over</span>
+                    <span class="dim">avondstand</span><span class="r yellow bedtime">20:00</span>
+                    <span class="dim">volgend feest</span><span class="r green" id="feast-mini">Sint-Maarten</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 1 LUISTEREN -->
+            <section class="view" id="v-luister">
+              <div class="head" style="grid-column:1/-1"><span class="h">Luisteren</span><span class="dim">geen aanbevelingen, geen autoplay: na het album stopt het</span></div>
+              <div class="src" id="src">
+                <button type="button" id="src-muziek" data-src="muziek" aria-pressed="false">Muziek</button>
+                <button type="button" id="src-spotify" data-src="spotify" aria-pressed="false">Spotify</button>
+                <button type="button" id="src-boek" data-src="boek" aria-pressed="true">Luisterboeken</button>
+                <button type="button" id="src-podcast" data-src="podcast" aria-pressed="false">Podcasts</button>
+                <button type="button" id="src-radio" data-src="radio" aria-pressed="false">Radio</button>
+              </div>
+              <div class="panel"><span class="pt" id="list-title">luisterboeken</span><div class="list" id="list"></div></div>
+              <div class="panel hot np"><span class="pt">nu speelt</span>
+<pre class="cover" aria-hidden="true">▗▄▄▄▄▄▄▄▄▄▄▖
+▐ ░▒▓██▓▒░ ▌
+▐  ▄▀▀▀▀▄  ▌
+▐ ▐ ◆  ◆ ▌ ▌
+▐  ▀▄▄▄▄▀  ▌
+▝▀▀▀▀▀▀▀▀▀▀▘</pre>
+                <div class="b" id="np-title">Harry Potter en de Steen der Wijzen</div>
+                <div class="dim" id="np-sub">hoofdstuk 7 · luisterboek</div>
+                <div class="bar"><i id="np-bar" style="width:41%"></i></div>
+                <div class="ctl"><button class="t" type="button" id="b-prev" aria-label="Vorige">⏮</button><button class="t" type="button" id="b-play" aria-label="Pauze">⏸</button><button class="t" type="button" id="b-next" aria-label="Volgende">⏭</button></div>
+                <div class="row"><button class="t chip" type="button" id="sleep" aria-pressed="false">slaaptimer uit</button><span class="chip">volume 40% · max 70%</span></div>
+              </div>
+              <div class="dial" id="dial" hidden>
+                <button class="t" type="button" id="dial-l" aria-label="Vorige zender">◀</button>
+                <div class="stations" id="stations"></div>
+                <button class="t" type="button" id="dial-r" aria-label="Volgende zender">▶</button>
+              </div>
+            </section>
+
+            <!-- 2 LEZEN -->
+            <section class="view" id="v-lees">
+              <div class="panel"><span class="pt">mijn boekenplank</span>
+                <div class="list">
+                  <button type="button" class="t"><span class="acc">▸ Het signaal van Kepler-9</span><span class="dim">38%</span></button>
+                  <button type="button" class="t"><span>De Hobbit</span><span class="dim">nieuw</span></button>
+                  <button type="button" class="t"><span>Griekse mythen</span><span class="dim">12%</span></button>
+                  <button type="button" class="t"><span>Robots bouwen voor beginners</span><span class="dim">nieuw</span></button>
+                  <button type="button" class="t"><span>Dieren van de nacht</span><span class="dim">uit</span></button>
+                </div>
+                <div class="dim" style="margin-top:1cqw">boeken komen uit Audiobookshelf<br>en werken ook zonder internet</div>
+              </div>
+              <div class="panel hot"><span class="pt">Het signaal van Kepler-9 · hoofdstuk 3</span>
+                <div class="page">
+                  <p>Het lampje op het bedieningspaneel knipperde al drie keer. Lina schoof haar stoel dichterbij en hield haar adem in. <span class="acc">Piep. Piep-piep. Piep.</span></p>
+                  <p>"Dat is geen storing," fluisterde robot T-4 naast haar. "Dat is een patroon. Iemand probeert ons iets te vertellen."</p>
+                  <p>Buiten het raampje draaide de rode planeet langzaam onder hen door. Lina pakte haar schrift en begon de piepjes op te schrijven: kort, kort-kort, kort.</p>
+                </div>
+                <div class="dim" style="display:flex;justify-content:space-between;margin-top:.6cqw"><span>← → bladeren · b bladwijzer · + − letters</span><span>pagina 41 van 108 · voorbeeldtekst</span></div>
+              </div>
+            </section>
+
+            <!-- 3 MAATJE -->
+            <section class="view" id="v-maatje">
+              <div class="head"><span class="h">Vraag <span class="buddy-name">Bliep</span></span><span class="dim"><span class="budget">25</span> vragen over vandaag · niet na <span class="bedtime">20:00</span></span></div>
+              <div style="display:grid;gap:1cqw;align-content:start">
+                <pre class="face buddy-face">[◉_◉]</pre>
+                <div class="dim" style="text-align:center"><span class="buddy-name">Bliep</span><br>hulpje, geen vriend</div>
+                <div class="row" id="modes" style="flex-direction:column">
+                  <button type="button" class="t chip" data-mode="hoe" aria-pressed="true">Hoe werkt het?</button>
+                  <button type="button" class="t chip" data-mode="huiswerk" aria-pressed="false">Huiswerkcoach</button>
+                  <button type="button" class="t chip" data-mode="overhoren" aria-pressed="false">Overhoren</button>
+                  <button type="button" class="t chip" data-mode="verhaal" aria-pressed="false">Samen een verhaal</button>
+                  <button type="button" class="t chip" data-mode="dieren" aria-pressed="false">Dieren</button>
+                  <button type="button" class="t chip" data-mode="mythen" aria-pressed="false">Mythen</button>
+                </div>
+              </div>
+              <div class="chat" id="chat">
+                <div><span class="me">jij ❯</span> Kan een lichtzwaard echt bestaan?</div>
+                <div class="bub">Goede vraag! Licht stopt niet zomaar na een meter: het gaat gewoon door, zoals een zaklamp in de nacht. Daarom kun je met licht geen "staaf" maken. Wetenschappers kunnen wel heel heet <span class="acc">plasma</span> maken, zoals in een bliksemflits. Maar dat vasthouden in de vorm van een zwaard? Dat kan nog niemand.<br><span class="dim">Wil je weten wat plasma precies is?</span></div>
+                <div><span class="me">jij ❯</span> ja</div>
+                <div class="bub">Plasma is de vierde vorm van stoffen, naast vast, vloeibaar en gas. Als je een gas superheet maakt, gaan de deeltjes uit elkaar en geven ze licht. Je ziet het in bliksem, in het noorderlicht en in de zon zelf.</div>
+              </div>
+              <form class="ask" id="ask-form" autocomplete="off">
+                <span class="me">jij ❯</span>
+                <input id="ask" name="ask" placeholder="stel een vraag over hoe iets werkt" aria-label="Vraag aan het maatje">
+              </form>
+            </section>
+
+            <!-- 4 ONTDEKKEN -->
+            <section class="view" id="v-ontdek">
+              <div class="head"><span class="h">Ontdekken</span><span class="dim">missies zonder punten: klaar is klaar</span></div>
+              <div class="panel hot" style="grid-row: span 2"><span class="pt">computerlab · missie 3</span>
+                <div>Ergens in de map <span class="acc">ruimteschip</span> zit een verborgen bestand met de code voor de luchtsluis. Vind het!</div>
+                <div class="dim" style="margin:.3cqw 0 .6cqw">tip: verborgen bestanden beginnen met een punt · typ <span class="cyan">help</span></div>
+                <div class="lab" id="lab">
+                  <div class="dim">oefenomgeving · hier kun je niets kapotmaken</div>
+                  <form id="lab-form" autocomplete="off"><span class="green">leerling@eee:<span id="lab-cwd">~</span>$</span><input id="lab-in" name="lab" aria-label="Commando in het computerlab"></form>
+                </div>
+              </div>
+              <div class="panel"><span class="pt">dier van de dag · Wikipedia</span>
+                <div class="b">De slechtvalk</div>
+                <div>Bij een duikvlucht haalt hij meer dan 300 km/u: daarmee is hij het snelste dier ter wereld. In Nederland broedt hij soms hoog op kerktorens en fabrieksschoorstenen.</div>
+              </div>
+              <div class="panel"><span class="pt">programmeren · python</span>
+<pre><span class="acc2">from</span> eee <span class="acc2">import</span> weer, mijn_lamp
+
+<span class="acc2">if</span> weer.regen_binnen(minuten=<span class="orange">60</span>):
+    mijn_lamp.kleur(<span class="green">"blauw"</span>)   <span class="dim"># alleen jouw kamerlamp</span></pre>
+              </div>
+              <div class="panel" style="grid-column: 1 / -1"><span class="pt">natuurdagboek</span>
+                <div class="row" style="gap:2.4cqw"><span><span class="dim">7 nov</span> roodborstje bij de pergola</span><span><span class="dim">2 nov</span> eerste vorst op het gras</span><span><span class="dim">28 okt</span> laatste blad van de catalpa</span></div>
+              </div>
+            </section>
+
+            <!-- 5 DENKSPORT -->
+            <section class="view" id="v-denk">
+              <div class="head"><span class="h">Denksport</span><span class="dim">geen timer, geen score · <span class="b">3</span> puzzels per dag</span></div>
+              <div class="panel hot"><span class="pt">sudoku</span><div class="sudoku" id="sudoku"></div><div class="dim" style="margin-top:.5cqw">klik een vakje, typ 1 tot 9</div></div>
+              <div class="panel"><span class="pt">schaakpuzzel · wit speelt</span>
+                <div style="display:flex;gap:1cqw"><div><div class="board" id="board"></div><div class="files"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div></div></div>
+                <div style="margin-top:.6cqw">Mat in één zet. Welke zet?</div>
+                <form id="chess-form" style="display:flex;gap:.6cqw" autocomplete="off"><span class="green">&gt;</span><input id="chess-in" name="chess" placeholder="bijvoorbeeld Te8" aria-label="Jouw zet"></form>
+                <div id="chess-out" class="dim"></div>
+              </div>
+              <div class="panel"><span class="pt">raadsel</span>
+                <div>Een slak zit onderin een put van 10 meter. Overdag kruipt hij 3 meter omhoog, 's nachts glijdt hij 2 meter terug. Na hoeveel dagen is hij boven?</div>
+                <form id="riddle-form" style="display:flex;gap:.6cqw;margin-top:.6cqw" autocomplete="off"><span class="green">&gt;</span><input id="riddle-in" name="riddle" placeholder="aantal dagen" aria-label="Antwoord raadsel"></form>
+                <div id="riddle-out" class="dim"><button type="button" class="t" id="riddle-hint">hint nodig?</button></div>
+              </div>
+            </section>
+
+            <!-- 6 SCHRIJFHOEK -->
+            <section class="view" id="v-schrijf">
+              <div class="panel"><span class="pt"><span class="lock">🔒</span> alleen voor jou</span>
+                <div class="list">
+                  <button type="button" class="t"><span class="acc">▸ Nieuw stuk</span><span></span></button>
+                  <button type="button" class="t"><span>De robot die bang was voor regen</span><span class="dim">3 nov</span></button>
+                  <button type="button" class="t"><span>Dagboek</span><span class="dim">1 nov</span></button>
+                  <button type="button" class="t"><span>Missie naar Kepler-9</span><span class="dim">27 okt</span></button>
+                </div>
+                <div class="dim" style="margin-top:1cqw">niemand anders kan dit lezen, ook papa en mama niet. <span class="buddy-name">Bliep</span> leest alleen mee als jij daarom vraagt.</div>
+              </div>
+              <div class="panel hot"><span class="pt">nieuw stuk</span>
+                <textarea id="schrijf" name="schrijf" aria-label="Schrijfvlak" placeholder="Begin hier te schrijven. Ctrl+S bewaart, Ctrl+B vraagt Bliep om tips."></textarea>
+              </div>
+            </section>
+
+            <!-- 7 VANDAAG -->
+            <section class="view" id="v-vandaag">
+              <div class="head"><span class="h" id="today-head">Vandaag</span><span class="tag">weer en planning zijn voorbeelden</span></div>
+              <div class="panel hot"><span class="pt">weer</span>
+                <div><span class="b" style="font-size:1.6em">12°</span> <span class="dim">/ 6°</span> <span class="cyan">lichte regen</span></div>
+                <div>regen vanaf <span class="cyan">16:00</span>, neem een jas mee</div>
+                <div class="rain" id="rain" aria-label="Regen per uur"></div>
+                <div class="dim" style="display:flex;justify-content:space-between"><span>00</span><span>12</span><span>23</span></div>
+              </div>
+              <div class="panel"><span class="pt">wekker en planning</span>
+                <div class="kv"><span class="dim">wekker</span><span class="r">07:15 <span class="dim">· Mandalorian-thema</span></span>
+                <span class="dim">16:00</span><span class="r">zwemles</span>
+                <span class="dim">avondstand</span><span class="r yellow bedtime">20:00</span></div>
+              </div>
+              <div class="panel"><span class="pt">aan de hemel</span>
+                <div id="moon"></div>
+                <div class="dim">ISS komt over om 18:47 · zichtbaar 4 minuten</div>
+              </div>
+              <div class="panel" style="grid-column: 1 / -1"><span class="pt">seizoen en jaarfeest</span>
+                <div id="season"></div>
+              </div>
+            </section>
+
+            <!-- 8 SYSTEEM -->
+            <section class="view" id="v-systeem">
+              <div class="panel hot" style="grid-row: span 2"><span class="pt">maak hem van jou</span>
+                <div class="set">
+                  <label for="s-pc">naam computer</label><input id="s-pc" maxlength="9" autocomplete="off">
+                  <label for="s-kid">jouw naam</label><input id="s-kid" maxlength="14" placeholder="zodat ik je kan begroeten" autocomplete="off">
+                  <label for="s-buddy">naam maatje</label><input id="s-buddy" maxlength="12" autocomplete="off">
+                  <span>gezicht maatje</span><div class="row" id="s-face"></div>
+                  <span>kleuren</span><div class="row" id="s-skin"></div>
+                  <span>letters</span><div class="row" id="s-size"></div>
+                </div>
+                <div class="dim" style="margin-top:.8cqw">wijzigingen worden meteen bewaard</div>
+              </div>
+              <div class="panel"><span class="pt">apparaat</span>
+                <div class="kv" style="margin-bottom:.4cqw"><span class="dim">wifi</span><span class="r green">Thuis ▂▄▆█</span><span class="dim">accu</span><span class="r">71% · aan de lader</span><span class="dim">versie</span><span class="r">0.3.1 · bijwerken gaat vanzelf</span></div>
+                <div class="mini"><span class="dim">volume</span><div class="bar"><i id="vol-bar" style="width:57%"></i></div><button type="button" id="vol-dn" aria-label="Zachter">−</button><button type="button" id="vol-up" aria-label="Harder">+</button></div>
+                <div class="mini" style="margin-top:.4cqw"><span class="dim">helderheid</span><div class="bar"><i id="br-bar" style="width:70%"></i></div><button type="button" id="br-dn" aria-label="Donkerder">−</button><button type="button" id="br-up" aria-label="Lichter">+</button></div>
+              </div>
+              <div class="panel"><span class="pt">acties</span>
+                <div class="btns">
+                  <button type="button" id="help">✉ Hulp vragen <span class="dim">· stuurt een berichtje naar je ouders</span></button>
+                  <button type="button" id="restart">↻ Opnieuw opstarten</button>
+                  <button type="button" id="parent">🔒 Ouderinstellingen <span class="dim">· pincode</span></button>
+                </div>
+                <div id="parent-box" hidden style="margin-top:.6cqw">
+                  <form id="pin-form" style="display:flex;gap:.6cqw" autocomplete="off"><span class="dim">pincode</span><input id="pin" name="pin" inputmode="numeric" maxlength="4" aria-label="Pincode ouders"></form>
+                  <div id="parent-out" class="dim"></div>
+                </div>
+              </div>
+            </section>
+
+            <div class="status">
+              <div class="tabs" id="tabs">
+                <span class="sess" id="sess">eee</span>
+                <button type="button" id="tab-start" data-go="start" aria-pressed="true">0:start</button>
+                <button type="button" id="tab-luister" data-go="luister" aria-pressed="false">1:luister</button>
+                <button type="button" id="tab-lees" data-go="lees" aria-pressed="false">2:lees</button>
+                <button type="button" id="tab-maatje" data-go="maatje" aria-pressed="false">3:<span class="buddy-low">bliep</span></button>
+                <button type="button" id="tab-ontdek" data-go="ontdek" aria-pressed="false">4:ontdek</button>
+                <button type="button" id="tab-denk" data-go="denk" aria-pressed="false">5:denk</button>
+                <button type="button" id="tab-schrijf" data-go="schrijf" aria-pressed="false">6:schrijf</button>
+                <button type="button" id="tab-vandaag" data-go="vandaag" aria-pressed="false">7:vandaag</button>
+                <button type="button" id="tab-systeem" data-go="systeem" aria-pressed="false">8:systeem</button>
+              </div>
+              <div><span class="acc2">♪</span> <span class="dim">·</span> <span class="green">wifi</span> <span class="dim">·</span> <span id="clock">16:20</span></div>
+            </div>
+          </div>
+          <div class="lockscreen" id="lock" tabindex="-1" hidden>
+            <div class="lockbox">
+              <pre class="face buddy-face" aria-hidden="true">[◉_◉]</pre>
+              <div class="b" style="font-size:1.35em">Het is <span id="lock-time">20:00</span>. Tijd om tot rust te komen.</div>
+              <div class="dim">Ga slapen of lees nog even. De rest is weer open om <span id="lock-open">07:00</span>.</div>
+              <div class="row" style="justify-content:center;margin-top:1cqw">
+                <button type="button" class="t chip" id="lock-lees">📖 verder lezen</button>
+                <button type="button" class="t chip" id="lock-boek">🎧 luisterboek met slaaptimer</button>
+                <span class="dim" id="lock-none" hidden>Welterusten!</span>
+              </div>
+              <button type="button" class="t dim" id="lock-end" style="margin-top:1.6cqw">(mockup) avondstand stoppen</button>
+            </div>
+          </div>
+          <div class="toast" id="toast" role="status"></div>
+        </div>
+      </div>
+      <div class="base" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <div class="note"><h2>Bediening</h2>
+      <ul>
+        <li>Klik eerst in het scherm, dan <kbd>0</kbd> tot <kbd>8</kbd> voor de tabbladen</li>
+        <li><kbd>↑</kbd> <kbd>↓</kbd> <kbd>Enter</kbd> in het startmenu, <kbd>Esc</kbd> terug naar start</li>
+        <li>Probeer het computerlab, de sudoku en de schaakpuzzel</li>
+      </ul>
+    </div>
+    <div class="note"><h2>Zelf aan te passen (Systeem)</h2>
+      <p>Naam van de computer, je eigen naam, naam en gezicht van het maatje, vijf kleurthema's en de lettergrootte. Bedtijd, volume, AI-budget en goedgekeurde lijsten zitten achter de pincode van de ouders.</p>
+    </div>
+    <div class="note"><h2>Let op</h2>
+      <p>Dit is een mockup. Weer, planning, boeken en antwoorden van het maatje zijn voorbeelden. Je instellingen worden alleen in deze browser bewaard.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const term = $('term'), screen = $('screen');
+  const P = { school: '20:00', weekend: '20:30', open: '07:00', lees: true, boek: true };
+  let locked = false;
+  const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  let tt; function say(m) { const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 2000); }
+
+  /* ---------- instellingen ---------- */
+  const FACES = ['[◉_◉]', '(^‿^)', '<•_•>', '{o_o}', '[■_■]'];
+  const SKINS = [['nacht', 'Nachtlucht', '#7aa2f7'], ['ruimte', 'Ruimtestation', '#ff8a3d'], ['tovenaar', 'Tovenaarsschool', '#e3b341'], ['bos', 'Bos', '#8fc27a'], ['oceaan', 'Oceaan', '#4fd1c5']];
+  const SIZES = [['klein', 'klein'], ['normaal', 'normaal'], ['groot', 'groot']];
+  const DEF = { pc: 'EEE', kid: '', buddy: 'Bliep', face: 0, skin: 'nacht', size: 'normaal' };
+  let S = Object.assign({}, DEF);
+  try { const raw = localStorage.getItem('eee-kinderkamer'); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch (e) {}
+  function save() { try { localStorage.setItem('eee-kinderkamer', JSON.stringify(S)); } catch (e) {} }
+
+  // blokletters voor de naam van de computer
+  const F = {
+    A: [' ## ', '#  #', '####', '#  #', '#  #'], B: ['### ', '#  #', '### ', '#  #', '### '], C: [' ###', '#   ', '#   ', '#   ', ' ###'],
+    D: ['### ', '#  #', '#  #', '#  #', '### '], E: ['####', '#   ', '### ', '#   ', '####'], F: ['####', '#   ', '### ', '#   ', '#   '],
+    G: [' ###', '#   ', '# ##', '#  #', ' ###'], H: ['#  #', '#  #', '####', '#  #', '#  #'], I: ['###', ' # ', ' # ', ' # ', '###'],
+    J: ['  ##', '   #', '   #', '#  #', ' ## '], K: ['#  #', '# # ', '##  ', '# # ', '#  #'], L: ['#   ', '#   ', '#   ', '#   ', '####'],
+    M: ['#   #', '## ##', '# # #', '#   #', '#   #'], N: ['#  #', '## #', '# ##', '#  #', '#  #'], O: [' ## ', '#  #', '#  #', '#  #', ' ## '],
+    P: ['### ', '#  #', '### ', '#   ', '#   '], Q: [' ## ', '#  #', '#  #', '# ##', ' ###'], R: ['### ', '#  #', '### ', '# # ', '#  #'],
+    S: [' ###', '#   ', ' ## ', '   #', '### '], T: ['###', ' # ', ' # ', ' # ', ' # '], U: ['#  #', '#  #', '#  #', '#  #', ' ## '],
+    V: ['#   #', '#   #', '#   #', ' # # ', '  #  '], W: ['#   #', '#   #', '# # #', '## ##', '#   #'], X: ['#  #', '#  #', ' ## ', '#  #', '#  #'],
+    Y: ['# #', '# #', ' # ', ' # ', ' # '], Z: ['####', '   #', ' ## ', '#   ', '####'], ' ': ['  ', '  ', '  ', '  ', '  '], '-': ['   ', '   ', '###', '   ', '   '],
+    0: [' ## ', '#  #', '#  #', '#  #', ' ## '], 1: [' # ', '## ', ' # ', ' # ', '###'], 2: ['### ', '   #', ' ## ', '#   ', '####'], 3: ['### ', '   #', ' ## ', '   #', '### '],
+    4: ['#  #', '#  #', '####', '   #', '   #'], 5: ['####', '#   ', '### ', '   #', '### '], 6: [' ## ', '#   ', '### ', '#  #', ' ## '], 7: ['####', '   #', '  # ', ' #  ', ' #  '],
+    8: [' ## ', '#  #', ' ## ', '#  #', ' ## '], 9: [' ## ', '#  #', ' ###', '   #', ' ## '],
+  };
+  const norm = s => s.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  function block(name) {
+    const chars = [...norm(name || 'EEE')].filter(c => F[c]);
+    const rows = ['', '', '', '', ''];
+    chars.forEach((c, i) => F[c].forEach((r, k) => { rows[k] += (i ? ' ' : '') + r.replace(/#/g, '█'); }));
+    return rows.join('\n');
+  }
+  function greeting() {
+    const h = new Date().getHours();
+    return h < 6 ? 'Goedenacht' : h < 12 ? 'Goedemorgen' : h < 18 ? 'Goedemiddag' : 'Goedenavond';
+  }
+  function apply() {
+    screen.dataset.skin = S.skin;
+    term.classList.toggle('klein', S.size === 'klein'); term.classList.toggle('groot', S.size === 'groot');
+    $('logo').textContent = block(S.pc);
+    $('sess').textContent = (norm(S.pc).trim() || 'eee').toLowerCase();
+    $('greet').textContent = `${greeting()}${S.kid ? ', ' + S.kid : ''}! Kies met ↑ ↓ en Enter, of druk op een cijfer.`;
+    document.querySelectorAll('.buddy-name').forEach(e => e.textContent = S.buddy || 'Bliep');
+    document.querySelectorAll('.buddy-low').forEach(e => e.textContent = (S.buddy || 'bliep').toLowerCase().slice(0, 8));
+    document.querySelectorAll('.buddy-face').forEach(e => e.textContent = FACES[S.face] || FACES[0]);
+    $('ask').placeholder = placeholders[mode];
+    renderChoices();
+  }
+  function renderChoices() {
+    $('s-face').innerHTML = FACES.map((f, i) => `<button type="button" class="t chip" id="face-${i}" data-face="${i}" aria-pressed="${i === S.face}">${esc(f)}</button>`).join('');
+    $('s-skin').innerHTML = SKINS.map(([k, n, c]) => `<button type="button" class="t chip" id="skin-${k}" data-skin="${k}" aria-pressed="${k === S.skin}"><span class="sw" style="background:${c}"></span>${n}</button>`).join('');
+    $('s-size').innerHTML = SIZES.map(([k, n]) => `<button type="button" class="t chip" id="size-${k}" data-size="${k}" aria-pressed="${k === S.size}">${n}</button>`).join('');
+  }
+  $('s-pc').value = S.pc; $('s-kid').value = S.kid; $('s-buddy').value = S.buddy;
+  $('s-pc').addEventListener('input', e => { S.pc = e.target.value; save(); apply(); });
+  $('s-kid').addEventListener('input', e => { S.kid = e.target.value.trim(); save(); apply(); });
+  $('s-buddy').addEventListener('input', e => { S.buddy = e.target.value.trim() || 'Bliep'; save(); apply(); });
+  $('v-systeem').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.face) { S.face = +b.dataset.face; save(); apply(); }
+    if (b.dataset.skin) { S.skin = b.dataset.skin; save(); apply(); }
+    if (b.dataset.size) { S.size = b.dataset.size; save(); apply(); }
+  });
+
+  /* ---------- navigatie ---------- */
+  const order = ['start', 'luister', 'lees', 'maatje', 'ontdek', 'denk', 'schrijf', 'vandaag', 'systeem'];
+  let cur = 'start', sel = 0;
+  function go(name) {
+    if (!order.includes(name)) return;
+    if (locked) {
+      const ok = (name === 'lees' && P.lees) || (name === 'luister' && P.boek);
+      if (!ok) { $('lock').hidden = false; $('lock').focus({ preventScroll: true }); return; }
+    }
+    cur = name;
+    order.forEach(k => $('v-' + k).classList.toggle('on', k === name));
+    document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.go === name)));
+    sudokuSel = -1; drawSudoku();
+    screen.focus({ preventScroll: true });
+  }
+  $('tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) go(b.dataset.go); });
+  const items = [...document.querySelectorAll('#menu li')];
+  const mark = () => items.forEach((li, i) => li.setAttribute('aria-selected', String(i === sel)));
+  items.forEach((li, i) => { li.addEventListener('click', () => go(li.dataset.go)); li.addEventListener('mouseenter', () => { sel = i; mark(); }); });
+  mark();
+
+  document.addEventListener('keydown', e => {
+    if (e.target.matches('input, textarea')) { if (e.key === 'Escape') { e.target.blur(); go('start'); } return; }
+    if (document.activeElement !== screen && !screen.contains(document.activeElement)) return;
+    if (cur === 'denk' && sudokuSel >= 0 && /^[0-9]$/.test(e.key)) { e.preventDefault(); setCell(+e.key); return; }
+    if (e.key === 'Escape') { go('start'); return; }
+    if (/^[0-8]$/.test(e.key)) { go(order[+e.key]); return; }
+    if (cur === 'start') {
+      if (e.key === 'ArrowDown') { e.preventDefault(); sel = (sel + 1) % items.length; mark(); }
+      if (e.key === 'ArrowUp') { e.preventDefault(); sel = (sel - 1 + items.length) % items.length; mark(); }
+      if (e.key === 'Enter') go(items[sel].dataset.go);
+    }
+    if (cur === 'luister' && src === 'radio') { if (e.key === 'ArrowRight') turn(1); if (e.key === 'ArrowLeft') turn(-1); }
+  });
+
+  /* ---------- luisteren ---------- */
+  const LIB = {
+    muziek: ['muziek · navidrome', [['John Williams', '12 albums'], ['Ludwig Göransson', '4 albums'], ['Kraftwerk', '9 albums'], ['Daft Punk', '5 albums'], ['Queen', '15 albums'], ['Kinderen voor Kinderen', '22 albums']]],
+    spotify: ['spotify · goedgekeurd door ouders', [['Star Wars filmmuziek', '48 nummers'], ['The Mandalorian soundtrack', '31 nummers'], ['Harry Potter filmmuziek', '62 nummers'], ['Rustig huiswerk maken', '40 nummers'], ['Gezinslijst zondag', '55 nummers']]],
+    boek: ['luisterboeken · audiobookshelf', [['Harry Potter en de Steen der Wijzen', '41%'], ['Harry Potter en de Geheime Kamer', 'nieuw'], ['De brief voor de koning', 'uit'], ['Koning van Katoren', '12%'], ['Het leven van een Loser', '68%']]],
+    podcast: ['podcasts · door ouders gekozen', [['Dierenweetjes', '2 nieuw'], ['Ruimtevaart voor kids', '1 nieuw'], ['Griekse mythen verteld', '0 nieuw'], ['+ podcast aanvragen bij ouders', '']]],
+    radio: ['radio · goedgekeurde zenders', [['NPO Radio 2', ''], ['NPO 3FM', ''], ['NPO Klassiek', ''], ['Kink', ''], ['Radio 538', ''], ['Sky Radio', '']]],
+  };
+  let src = 'boek', station = 2;
+  function drawList() {
+    const [title, rows] = LIB[src];
+    $('list-title').textContent = title;
+    $('list').innerHTML = rows.map(([a, b], i) => `<button type="button" id="item-${src}-${i}" data-i="${i}"><span>${esc(a)}</span><span class="dim">${esc(b)}</span></button>`).join('');
+    $('dial').hidden = src !== 'radio';
+    if (src === 'radio') drawDial();
+  }
+  function play(title, sub, pct) {
+    $('np-title').textContent = title; $('np-sub').textContent = sub; $('np-bar').style.width = pct + '%';
+    $('np-mini').textContent = '♪ ' + title;
+  }
+  $('src').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; src = b.dataset.src; document.querySelectorAll('#src button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawList(); });
+  $('list').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const [name, info] = LIB[src][1][+b.dataset.i];
+    if (name.startsWith('+')) { say('Aanvraag verstuurd naar je ouders'); return; }
+    if (src === 'radio') { station = +b.dataset.i; drawDial(); play(name, 'live radio', 100); return; }
+    const sub = { muziek: 'artiest · navidrome', spotify: 'afspeellijst · spotify', boek: 'luisterboek · verder waar je was', podcast: 'nieuwste aflevering' }[src];
+    play(name, sub, parseInt(info) || 3);
+  });
+  function drawDial() {
+    const rows = LIB.radio[1];
+    $('stations').innerHTML = rows.map(([n], i) => `<span class="${i === station ? 'on' : ''}">${i === station ? '▼ ' : ''}${esc(n.replace('NPO ', ''))}</span>`).join('');
+  }
+  function turn(d) { const n = LIB.radio[1].length; station = (station + d + n) % n; drawDial(); play(LIB.radio[1][station][0], 'live radio · draaiknop', 100); }
+  $('dial-l').addEventListener('click', () => turn(-1)); $('dial-r').addEventListener('click', () => turn(1));
+  let playing = true;
+  $('b-play').addEventListener('click', () => { playing = !playing; $('b-play').textContent = playing ? '⏸' : '▶'; $('b-play').setAttribute('aria-label', playing ? 'Pauze' : 'Afspelen'); });
+  $('b-prev').addEventListener('click', () => say('Vorige')); $('b-next').addEventListener('click', () => say('Volgende'));
+  const sleeps = ['slaaptimer uit', 'slaaptimer 15 min', 'slaaptimer 30 min', 'slaaptimer 60 min'];
+  let sl = 0; $('sleep').addEventListener('click', () => { sl = (sl + 1) % sleeps.length; $('sleep').textContent = sleeps[sl]; $('sleep').setAttribute('aria-pressed', String(sl > 0)); });
+  drawList();
+
+  /* ---------- maatje ---------- */
+  let budget = 25, mode = 'hoe';
+  const placeholders = { hoe: 'stel een vraag over hoe iets werkt', huiswerk: 'waar loop je vast bij je huiswerk?', overhoren: 'wat wil je oefenen? bijvoorbeeld tafel van 7', verhaal: 'begin het verhaal met één zin', dieren: 'welk dier wil je beter leren kennen?', mythen: 'over welke mythe wil je iets weten?' };
+  const answers = {
+    hoe: 'Dat zoek ik graag met je uit! In de echte versie krijg je hier een uitleg op jouw niveau, met een vraag terug zodat je zelf verder denkt.',
+    huiswerk: 'Ik geef je geen antwoord, maar wel een hint. Wat weet je al wel over deze som? Schrijf de eerste stap eens op.',
+    overhoren: 'Daar gaan we! 7 × 8 = ? Neem je tijd, er is geen klok.',
+    verhaal: 'Mooi begin! Mijn zin: "Achter de dakkapel klonk ineens een zacht gezoem, alsof er iets landde." Nu jij weer.',
+    dieren: 'Leuk dier! In de echte versie haal ik eerst de feiten uit Wikipedia, zodat je weet dat het klopt.',
+    mythen: 'In de Griekse mythen draait veel om helden, goden en slimme listen. Over welke held wil je het verhaal horen?',
+  };
+  $('modes').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; mode = b.dataset.mode; document.querySelectorAll('#modes button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); $('ask').placeholder = placeholders[mode]; });
+  $('ask-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const inp = $('ask'); const q = inp.value.trim(); if (!q) return;
+    const chat = $('chat'); let a, shown = q;
+    if (budget <= 0) a = 'Je vragen voor vandaag zijn op. Morgen kun je weer verder. Misschien kun je het intussen opzoeken in een boek?';
+    else if (/(\d[\s-]?){8,}|@\w|straat|laan|weg\s\d|adres|wachtwoord/i.test(q)) { shown = q.replace(/(\d[\s-]?){8,}/g, '[nummer weggelaten]').replace(/\S+@\S+/g, '[e-mail weggelaten]'); a = 'Dat soort gegevens, zoals je adres, telefoonnummer of wachtwoord, deel je niet met mij. Ik heb het weggelaten. Wat wilde je eigenlijk vragen?'; }
+    else if (/pest|bang|verdrietig|eng|alleen/i.test(q)) a = 'Wat goed dat je dit zegt. Dit is iets om met papa of mama te bespreken, die kunnen je echt helpen. Wil je dat ik een berichtje naar ze stuur dat je wilt praten?';
+    else a = answers[mode];
+    if (budget > 0) budget--;
+    document.querySelectorAll('.budget').forEach(x => x.textContent = budget);
+    chat.insertAdjacentHTML('beforeend', `<div><span class="me">jij ❯</span> ${esc(shown)}</div><div class="bub">${a}</div>`);
+    while (chat.children.length > 6) chat.firstElementChild.remove();
+    inp.value = '';
+  });
+
+  /* ---------- computerlab ---------- */
+  const FS = { '~': ['ruimteschip', 'notities.txt'], '~/ruimteschip': ['brug', 'motorruimte', 'logboek.txt', '.luchtsluis-code'] };
+  const FILES = { '~/notities.txt': 'Missie 3: de code staat ergens verstopt in het ruimteschip.', '~/ruimteschip/logboek.txt': 'Dag 12: de robot heeft iets verstopt. Hij zei: "kijk goed, ook naar wat je niet ziet."', '~/ruimteschip/.luchtsluis-code': '🚀 Code: 1956. Missie 3 voltooid! Volgende missie: wie mag dit bestand lezen? (chmod)' };
+  let cwd = '~';
+  function labOut(html) { const lab = $('lab'); lab.insertBefore(Object.assign(document.createElement('div'), { innerHTML: html }), $('lab-form')); while (lab.children.length > 9) lab.removeChild(lab.children[1]); }
+  $('lab-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const inp = $('lab-in'); const c = inp.value.trim(); inp.value = ''; if (!c) return;
+    labOut(`<span class="green">leerling@eee:${cwd}$</span> ${esc(c)}`);
+    const [cmd, arg] = c.split(/\s+/);
+    if (cmd === 'help') labOut('<span class="dim">probeer: ls, ls -a, cd &lt;map&gt;, cd .., cat &lt;bestand&gt;, pwd, whoami, free</span>');
+    else if (cmd === 'ls') labOut((FS[cwd] || []).filter(f => arg === '-a' || !f.startsWith('.')).map(f => FS[cwd + '/' + f] || ['brug', 'motorruimte'].includes(f) ? `<span class="acc">${f}/</span>` : f).join('  ') + (arg === '-a' ? '' : ''));
+    else if (cmd === 'cd') { if (!arg || arg === '~' || arg === '..') cwd = '~'; else if (FS[cwd + '/' + arg.replace(/\/$/, '')]) cwd = cwd + '/' + arg.replace(/\/$/, ''); else if (['brug', 'motorruimte'].includes(arg)) labOut('<span class="dim">die kamer is nog op slot (volgende missie)</span>'); else labOut(`cd: ${esc(arg)}: map bestaat niet`); $('lab-cwd').textContent = cwd; }
+    else if (cmd === 'cat') { const f = FILES[cwd + '/' + (arg || '')]; labOut(f ? `<span class="yellow">${f}</span>` : `cat: ${esc(arg || '')}: bestand niet gevonden`); }
+    else if (cmd === 'pwd') labOut('/home/leerling' + cwd.slice(1));
+    else if (cmd === 'whoami') labOut('leerling');
+    else if (cmd === 'free') labOut('geheugen: 1024 MB totaal · 312 MB in gebruik · <span class="dim">best weinig voor een computer!</span>');
+    else labOut(`${esc(cmd)}: commando niet gevonden <span class="dim">· typ help</span>`);
+  });
+
+  /* ---------- denksport ---------- */
+  const PUZ = '530070000600195000098000060800060003400803001700020006060000280000419005000080079';
+  const SOL = '534678912672195348198342567859761423426853791713924856961537284287419635345286179';
+  const grid = PUZ.split('').map(Number);
+  let sudokuSel = -1;
+  function drawSudoku() {
+    $('sudoku').innerHTML = grid.map((v, i) => {
+      const r = Math.floor(i / 9), c = i % 9, given = PUZ[i] !== '0';
+      const cls = [given ? 'given' : '', c % 3 === 2 && c < 8 ? 'c3' : '', r % 3 === 2 && r < 8 ? 'r3' : '', i === sudokuSel ? 'sel' : '', !given && v && v !== +SOL[i] ? 'bad' : ''].join(' ');
+      return `<button type="button" id="cell-${i}" class="${cls}" data-i="${i}" aria-label="rij ${r + 1} kolom ${c + 1}">${v || ''}</button>`;
+    }).join('');
+  }
+  function setCell(n) {
+    if (sudokuSel < 0 || PUZ[sudokuSel] !== '0') return;
+    grid[sudokuSel] = n; drawSudoku();
+    if (grid.join('') === SOL) say('Sudoku af! Morgen een nieuwe.');
+  }
+  $('sudoku').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; const i = +b.dataset.i; sudokuSel = PUZ[i] === '0' ? i : -1; drawSudoku(); screen.focus({ preventScroll: true }); });
+  drawSudoku();
+  // schaak: wit Kg1, Te1, pionnen f2 g2 h2; zwart Kg8, pionnen f7 g7 h7
+  const pieces = { g1: '♔', e1: '♖', f2: '♙', g2: '♙', h2: '♙', g8: '♚', f7: '♟', g7: '♟', h7: '♟' };
+  let html = '';
+  for (let r = 8; r >= 1; r--) for (let c = 0; c < 8; c++) { const sq = 'abcdefgh'[c] + r; html += `<span class="${(r + c) % 2 ? 'l' : 'd'}">${pieces[sq] || ''}</span>`; }
+  $('board').innerHTML = html;
+  $('chess-form').addEventListener('submit', e => { e.preventDefault(); const v = $('chess-in').value.trim().toLowerCase().replace(/[#+x\s]/g, ''); $('chess-out').innerHTML = /^(t|r)?e8$|^e1e8$/.test(v) ? '<span class="green">Mat! De toren naar e8, en de eigen pionnen houden de koning gevangen.</span>' : 'Nog niet. Kijk eens naar de achterste rij van zwart.'; });
+  $('riddle-form').addEventListener('submit', e => { e.preventDefault(); const v = parseInt($('riddle-in').value, 10); $('riddle-out').innerHTML = v === 8 ? '<span class="green">Klopt! Op dag 8 kruipt hij van 7 naar 10 meter en is hij boven.</span>' : 'Nog niet. Let op de laatste dag: glijdt hij dan nog terug?'; });
+  $('riddle-hint').addEventListener('click', () => { $('riddle-out').textContent = 'Hint: elke volle dag komt hij 1 meter verder. Maar wat gebeurt er op de dag dat hij de rand haalt?'; });
+
+  /* ---------- vandaag ---------- */
+  const rain = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 5, 7, 6, 4, 2, 1, 0];
+  $('rain').innerHTML = rain.map((v, h) => `<i style="height:${v ? 10 + v * 12 : 2}%" title="${h}:00 · ${v / 2} mm"></i>`).join('');
+  const now = new Date();
+  $('today-head').textContent = 'Vandaag · ' + now.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' });
+  // maanfase
+  const syn = 29.530588853, ref = Date.UTC(2000, 0, 6, 18, 14);
+  const age = (((now - ref) / 864e5) % syn + syn) % syn, f = age / syn;
+  const phases = [['nieuwe maan', '●'], ['wassende sikkel', '☽'], ['eerste kwartier', '◐'], ['wassende maan', '◐'], ['volle maan', '○'], ['afnemende maan', '◑'], ['laatste kwartier', '◑'], ['afnemende sikkel', '☾']];
+  const ph = phases[Math.floor(((f + 1 / 16) % 1) * 8)];
+  $('moon').innerHTML = `<span class="yellow" style="font-size:1.4em">${ph[1]}</span> ${ph[0]} <span class="dim">· dag ${Math.floor(age) + 1} van ${Math.round(syn)}</span>`;
+  // seizoen en jaarfeesten (vrije school)
+  function easter(y) { const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, g = Math.floor((8 * b + 13) / 25), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451), mo = Math.floor((h + l - 7 * m + 114) / 31), da = ((h + l - 7 * m + 114) % 31) + 1; return new Date(y, mo - 1, da); }
+  function advent(y) { const x = new Date(y, 11, 25), dow = x.getDay(); return new Date(y, 11, 25 - (dow === 0 ? 7 : dow) - 21); }
+  const feasts = y => {
+    const ea = easter(y);
+    return [[new Date(y, 0, 6), 'Driekoningen', 'een ster maken voor het raam'], [new Date(y, 1, 2), 'Maria Lichtmis', 'de dagen worden langer, een kaars aansteken'], [ea, 'Pasen', 'eieren verven en kijken wat er al bloeit'], [new Date(ea.getFullYear(), ea.getMonth(), ea.getDate() + 49), 'Pinksteren', 'een pinksterkroon maken'], [new Date(y, 5, 24), 'Sint-Jan', 'het langste licht, een vuurtje buiten'], [new Date(y, 8, 29), 'Michaël', 'de draak verslaan: moed voor de donkere tijd'], [new Date(y, 10, 11), 'Sint-Maarten', 'een lampion maken en delen met een ander'], [advent(y), 'Advent', 'de adventstuin en elke week een kaarsje meer'], [new Date(y, 11, 5), 'Sinterklaas', 'gedichten schrijven en surprises maken'], [new Date(y, 11, 25), 'Kerst', 'het licht in de donkerste tijd']];
+  };
+  const today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const next = [...feasts(now.getFullYear()), ...feasts(now.getFullYear() + 1)].filter(([d]) => d >= today0).sort((a, b) => a[0] - b[0])[0];
+  const days = Math.round((next[0] - today0) / 864e5);
+  const mth = now.getMonth(), dd = now.getDate();
+  const season = (mth < 2 || (mth === 2 && dd < 20) || (mth === 11 && dd >= 21)) ? 'Winter' : (mth < 5 || (mth === 5 && dd < 21)) ? 'Lente' : (mth < 8 || (mth === 8 && dd < 22)) ? 'Zomer' : 'Herfst';
+  const when = days === 0 ? 'vandaag' : days === 1 ? 'morgen' : `over ${days} dagen`;
+  $('season').innerHTML = `<span class="b">${season}</span> <span class="dim">·</span> volgende jaarfeest: <span class="green b">${next[1]}</span> ${when} <span class="dim">·</span> idee: ${next[2]}`;
+  $('feast-mini').textContent = `${next[1]} · ${when}`;
+
+  /* ---------- systeem ---------- */
+  let vol = 57, br = 70;
+  const setBar = (id, v) => $(id).style.width = v + '%';
+  $('vol-up').addEventListener('click', () => { vol = Math.min(100, vol + 7); if (vol > 70) { vol = 70; say('Maximaal volume is 70% (ingesteld door je ouders)'); } setBar('vol-bar', vol / 0.7 * 0.7); });
+  $('vol-dn').addEventListener('click', () => { vol = Math.max(0, vol - 7); setBar('vol-bar', vol); });
+  $('br-up').addEventListener('click', () => { br = Math.min(100, br + 10); setBar('br-bar', br); });
+  $('br-dn').addEventListener('click', () => { br = Math.max(10, br - 10); setBar('br-bar', br); });
+  $('help').addEventListener('click', () => say('Berichtje gestuurd: "Kun je even komen helpen?"'));
+  $('restart').addEventListener('click', () => say('Opnieuw opstarten (mockup)'));
+  $('parent').addEventListener('click', () => { $('parent-box').hidden = !$('parent-box').hidden; if (!$('parent-box').hidden) $('pin').focus(); });
+  $('pin-form').addEventListener('submit', e => {
+    e.preventDefault();
+    if (!/^\d{4}$/.test($('pin').value)) { $('parent-out').textContent = 'Vul 4 cijfers in.'; return; }
+    $('pin-form').hidden = true;
+    $('parent-out').innerHTML = `
+      <div class="b acc" style="margin-bottom:.3cqw">avondslot</div>
+      <div class="set" style="grid-template-columns:9cqw 1fr;gap:.35cqw .8cqw">
+        <label for="p-school">schooldagen</label><span>dicht om <input id="p-school" type="time" value="${P.school}" style="width:7cqw"></span>
+        <label for="p-weekend">weekend</label><span>dicht om <input id="p-weekend" type="time" value="${P.weekend}" style="width:7cqw"></span>
+        <label for="p-open">weer open</label><span>om <input id="p-open" type="time" value="${P.open}" style="width:7cqw"></span>
+        <span>na het slot</span><span class="row"><button type="button" class="t chip" id="p-lees" aria-pressed="${P.lees}">lezen mag</button><button type="button" class="t chip" id="p-boek" aria-pressed="${P.boek}">luisterboek + slaaptimer</button></span>
+      </div>
+      <div class="dim" style="margin-top:.4cqw">maatje 25 vragen/dag · denksport 3/dag · max volume 70%</div>
+      <button type="button" class="t chip" id="p-demo" style="margin-top:.5cqw">▸ bekijk de avondstand</button>`;
+    ['school', 'weekend', 'open'].forEach(k => $('p-' + k).addEventListener('change', e => { P[k] = e.target.value; updateBedtime(); }));
+    ['lees', 'boek'].forEach(k => $('p-' + k).addEventListener('click', e => { P[k] = !P[k]; e.currentTarget.setAttribute('aria-pressed', String(P[k])); }));
+    $('p-demo').addEventListener('click', () => setLock(true));
+  });
+
+  /* ---------- avondslot ---------- */
+  function bedtimeToday() { const d = new Date().getDay(); return (d === 5 || d === 6) ? P.weekend : P.school; }
+  function updateBedtime() { document.querySelectorAll('.bedtime').forEach(e => e.textContent = bedtimeToday()); }
+  function setLock(on) {
+    locked = on;
+    $('lock').hidden = !on;
+    $('lock-time').textContent = bedtimeToday(); $('lock-open').textContent = P.open;
+    $('lock-lees').hidden = !P.lees; $('lock-boek').hidden = !P.boek;
+    $('lock-none').hidden = P.lees || P.boek;
+    if (on) { cur = 'start'; order.forEach(k => $('v-' + k).classList.toggle('on', k === 'start')); document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.go === 'start'))); $('lock').focus({ preventScroll: true }); }
+  }
+  $('lock-lees').addEventListener('click', () => { $('lock').hidden = true; go('lees'); });
+  $('lock-boek').addEventListener('click', () => { $('lock').hidden = true; src = 'boek'; document.querySelectorAll('#src button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.src === 'boek'))); drawList(); sl = 2; $('sleep').textContent = sleeps[sl]; $('sleep').setAttribute('aria-pressed', 'true'); go('luister'); });
+  $('lock-end').addEventListener('click', () => setLock(false));
+  updateBedtime();
+
+  /* ---------- klok ---------- */
+  const tick = () => { $('clock').textContent = new Date().toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' }); };
+  tick(); setInterval(tick, 30000);
+  apply();
+})();
+</script>
