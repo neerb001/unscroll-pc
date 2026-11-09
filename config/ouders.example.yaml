@@ -30,6 +30,15 @@ ntfy:
   url: "https://ntfy.sh"
   topic: ""
 
+# Spotify (needs Premium): only these albums and playlists can be played, in order,
+# without autoplay or recommendations. Copy the links from the Spotify app (Share > Copy link).
+# Playlists work best when you made them yourself.
+spotify:
+  goedgekeurd: []
+  #  - "https://open.spotify.com/album/..."
+  #  - "https://open.spotify.com/playlist/..."
+  expliciet_mag: false   # songs marked explicit are left out
+
 # Limits of the AI buddy.
 # Leave out a line to use the default from the app;
 # defaults are tuned through updates as we learn from real use.

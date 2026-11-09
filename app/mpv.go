@@ -157,6 +157,16 @@ func (s *Speler) Volgende() { _, _ = s.Opdracht("playlist-next") }
 func (s *Speler) Vorige()   { _, _ = s.Opdracht("playlist-prev") }
 func (s *Speler) Leeg()     { _, _ = s.Opdracht("stop") }
 
+// LeegAlsActief stopt het afspelen, maar start mpv niet als hij nog niet draait.
+func (s *Speler) LeegAlsActief() {
+	s.mu.Lock()
+	actief := s.conn != nil
+	s.mu.Unlock()
+	if actief {
+		s.Leeg()
+	}
+}
+
 // Afsluiten stopt mpv helemaal (bij het afsluiten van de app).
 func (s *Speler) Afsluiten() {
 	s.mu.Lock()

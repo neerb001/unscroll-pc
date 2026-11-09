@@ -78,6 +78,14 @@ jobs:
           # het updater-script installeert deze op de apparaten (sessie, updater, ouderhulp)
           tar -czf dist/unscroll-scripts.tar.gz -C scripts unscroll-sessie unscroll-update unscroll-ouder
           (cd dist && sha256sum unscroll-scripts.tar.gz > unscroll-scripts.tar.gz.sha256)
+      - name: librespot meeleveren
+        if: steps.versie.outputs.nieuw == 'ja'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # gebouwd door librespot.yml; ontbreekt hij nog, dan gaat deze versie zonder librespot
+          LR="librespot-$(tr -d ' \n' < librespot/VERSIE)"
+          gh release download "$LR" -p 'librespot-linux-*' -D dist || echo "No $LR release yet."
       - name: tag en release maken
         if: steps.versie.outputs.nieuw == 'ja'
         env:

@@ -96,6 +96,12 @@ type Ouders struct {
 	} `yaml:"ntfy"`
 	Maatje MaatjeGrenzen `yaml:"maatje"`
 	Radio  []Zender      `yaml:"radio"`
+
+	// Spotify: alleen deze albums en playlists (links uit de Spotify-app), zonder expliciete nummers.
+	Spotify struct {
+		Goedgekeurd  []string `yaml:"goedgekeurd"`
+		ExplicietMag bool     `yaml:"expliciet_mag"`
+	} `yaml:"spotify"`
 }
 
 // MaatjeGrenzen zijn de grenzen van het AI-maatje. De standaardwaarden zitten in de app

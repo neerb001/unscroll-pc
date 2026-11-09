@@ -42,10 +42,11 @@ AUTH=()
 if [[ "$KANAAL" == "stable" ]]; then
   API="https://api.github.com/repos/$REPO/releases/latest"
 else
-  API="https://api.github.com/repos/$REPO/releases?per_page=1"
+  API="https://api.github.com/repos/$REPO/releases?per_page=20"
 fi
 INFO="$(curl -fsSL "${AUTH[@]}" -H "Accept: application/vnd.github+json" "$API")" || { echo "GitHub not reachable"; exit 0; }
-[[ "$KANAAL" == "stable" ]] || INFO="$(jq '.[0]' <<<"$INFO")"
+# test channel: newest release of the app itself (the librespot releases are not app versions)
+[[ "$KANAAL" == "stable" ]] || INFO="$(jq '[.[] | select(.tag_name | startswith("v"))][0]' <<<"$INFO")"
 
 VERSIE="$(jq -r '.tag_name' <<<"$INFO")"
 [[ -n "$VERSIE" && "$VERSIE" != "null" ]] || { echo "No release found"; exit 0; }
@@ -93,6 +94,23 @@ if [[ -n "$TAR_URL" && -n "$TSUM_URL" ]] && haal "$TAR_URL" "$TMP/scripts.tgz" &
     echo "Scripts updated."
   else
     echo "Scripts package not valid, keeping the current scripts."
+  fi
+fi
+
+# librespot (the Spotify speaker) comes along when the release has it for this processor.
+LR_URL="$(asset_url "librespot-linux-$ARCH")"
+LR_SUM_URL="$(asset_url "librespot-linux-$ARCH.sha256")"
+if [[ -n "$LR_URL" && -n "$LR_SUM_URL" ]] && haal "$LR_SUM_URL" "$TMP/librespot.sha256"; then
+  WIL="$(awk '{print $1}' "$TMP/librespot.sha256")"
+  HEB="$(sha256sum /usr/local/bin/librespot 2>/dev/null | awk '{print $1}' || true)"
+  if [[ "$WIL" != "$HEB" ]]; then
+    if haal "$LR_URL" "$TMP/librespot" && [[ "$(sha256sum "$TMP/librespot" | awk '{print $1}')" == "$WIL" ]] \
+       && chmod 0755 "$TMP/librespot" && "$TMP/librespot" --version >/dev/null 2>&1; then
+      install -m 0755 "$TMP/librespot" /usr/local/bin/librespot
+      echo "librespot updated."
+    else
+      echo "librespot package not valid, keeping the current one."
+    fi
   fi
 fi
 

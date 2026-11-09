@@ -44,7 +44,7 @@ Het project begon op een oude Asus EeePC, vandaar de "PC" in de naam.
 | Updates | Nieuwe versies via GitHub-releases, met checksum-controle en terugval | ✅ fase 0 |
 | Luisteren | Navidrome, radio met draaiknop, luisterboeken en podcasts uit Audiobookshelf met voortgang, slaaptimer | ✅ fase 1 |
 | Lezen + Vandaag | E-boeken (EPUB) uit Audiobookshelf, weer, wekker, maan, seizoen en jaarfeesten | ⏳ fase 2 |
-| Spotify | Alleen goedgekeurde afspeellijsten, expliciete nummers gefilterd, autoplay uit (librespot) | ⏳ fase 3 |
+| Spotify | Alleen goedgekeurde afspeellijsten, expliciete nummers gefilterd, autoplay uit (librespot) | ✅ fase 3 |
 | Vraag het maatje | AI via de Anthropic-API met dagbudget, filters en weekoverzicht voor ouders | ✅ fase 4 |
 | Ontdekken | Computerlab (Linux leren met missies), Python, dier van de dag, natuurdagboek | ⏳ fase 5 |
 | Denksport | Sudoku, schaakpuzzels, raadsels. Geen timer, geen score | ⏳ fase 5 |
@@ -117,9 +117,28 @@ Ouders kunnen het avondslot pauzeren in de ouderstand (`8`, dan `o` en de pincod
 | `/etc/unscroll/update.conf` | ouders (root) | repository en updatekanaal |
 | `/etc/unscroll/geheimen.env` | ouders (root) | tokens en API-sleutels, nooit in git |
 
+## Spotify zonder algoritme (fase 3)
+
+Vraagt Spotify Premium (Duo werkt; met Family krijgt het kind een eigen account en loopt zijn
+luistergedrag niet door het jouwe). Het geluid komt uit [librespot](https://github.com/librespot-org/librespot),
+een Spotify Connect-speaker die de updater installeert (`/usr/local/bin/librespot`, niet voor 32-bit ARM).
+De app bestuurt hem via de Spotify Web API en speelt alleen wat jullie hebben goedgekeurd.
+
+Eenmalig, op een telefoon of computer:
+1. Maak een app aan op [developer.spotify.com/dashboard](https://developer.spotify.com/dashboard), vink Web API aan
+   en voeg de redirect URI `http://127.0.0.1:8898/callback` toe. Kopieer de Client ID.
+2. Doe op het apparaat `sudo unscroll-ouder`, vul de Client ID in, log in (de ouderhulp toont een link;
+   je komt uit op een pagina die niet laadt, kopieer dat adres terug) en koppel de speaker op dezelfde manier.
+   Gebruik voor allebei hetzelfde Spotify-account.
+3. Keur albums en playlists goed: zet hun links onder `spotify: goedgekeurd:` in `/etc/unscroll/ouders.yaml`.
+
+In de app: `1` Luisteren, `Tab` naar Spotify. Een goedgekeurd album of playlist speelt op volgorde en stopt dan.
+Begint er iets anders te spelen op de speaker (autoplay, of iemand die hem vanaf een ander apparaat overneemt),
+dan pauzeert de app het.
+
 ## Het AI-maatje (fase 4)
 
-Druk op `3` (het tabblad heeft de naam van het maatje). Zet de API-sleutel met `sudo unscroll-ouder`;
+Druk op `3` (het tabblad heeft de naam van het maatje). Zet de API-sleutel en kies het model met `sudo unscroll-ouder`;
 maak hem aan op [console.anthropic.com](https://console.anthropic.com) en stel daar een maandlimiet in.
 Het maatje antwoordt standaard met `claude-opus-5-5` en elke vraag en elk antwoord wordt gecontroleerd
 door `claude-haiku-5-5`. Beide kun je wijzigen onder `maatje:` in `/etc/unscroll/ouders.yaml`
