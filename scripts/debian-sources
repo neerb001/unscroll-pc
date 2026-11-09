@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Sets the normal Debian 12 package sources (needed after an offline install from the bundle)
+# and disables the installer cd-rom entry. Safe to run more than once.
+# Usage (as root):  bash debian-sources
+set -euo pipefail
+[[ $EUID -eq 0 ]] || { echo "Run as root"; exit 1; }
+
+sed -i 's/^deb cdrom/# deb cdrom/' /etc/apt/sources.list 2>/dev/null || true
+C="main contrib non-free non-free-firmware"
+cat > /etc/apt/sources.list.d/debian.list <<EOF
+deb https://deb.debian.org/debian bookworm $C
+deb https://deb.debian.org/debian bookworm-updates $C
+deb https://security.debian.org/debian-security bookworm-security $C
+EOF
+echo "Debian package sources set. Updating the package lists..."
+apt-get update
