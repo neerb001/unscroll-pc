@@ -1,6 +1,6 @@
 # Instellingen voor de ouders. Dit bestand is van root:
 # het kind kan het lezen, maar niet wijzigen.
-# Plek op het apparaat: /etc/eee/ouders.yaml
+# Plek op het apparaat: /etc/unscroll/ouders.yaml
 
 avondslot:
   schooldagen: "20:00"     # zondag t/m donderdag
@@ -10,7 +10,7 @@ avondslot:
   luisterboek_mag: true    # luisterboek met slaaptimer blijft open
 
 # Pincode voor de ouderstand. Maak de hash met:
-#   eee --pin-hash 1234
+#   unscroll --pin-hash 1234
 pin_sha256: ""
 
 max_volume: 70

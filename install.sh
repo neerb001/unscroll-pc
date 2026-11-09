@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Installeert de kinderkamer-terminal op een verse Debian 12 (32-bit of 64-bit).
+# Installeert Unscroll op een verse Debian 12 (32-bit of 64-bit).
 # Gebruik (als root):  bash install.sh
 # Opnieuw draaien is veilig: het script overschrijft alleen zijn eigen bestanden.
 set -euo pipefail
@@ -27,34 +27,34 @@ systemctl enable --now zramswap.service || true
 
 echo "==> Kinderaccount '$KIND' (zonder beheerrechten)"
 if ! id "$KIND" &>/dev/null; then
-  adduser --disabled-password --gecos "Kinderkamer" "$KIND"
+  adduser --disabled-password --gecos "Unscroll" "$KIND"
 fi
 for g in audio video netdev render input; do getent group "$g" >/dev/null && usermod -aG "$g" "$KIND"; done
 gpasswd -d "$KIND" sudo 2>/dev/null || true
 
 echo "==> Bestanden plaatsen"
-install -d -m 0755 /etc/eee /opt/eee/releases
-install -m 0755 "$HIER/scripts/eee-sessie" /usr/local/bin/eee-sessie
-install -m 0755 "$HIER/scripts/eee-update" /usr/local/sbin/eee-update
-[[ -f /etc/eee/ouders.yaml ]] || install -m 0644 "$HIER/config/ouders.example.yaml" /etc/eee/ouders.yaml
-[[ -f /etc/eee/update.conf ]] || sed "s#OWNER/REPO#$REPO#" "$HIER/config/update.example.conf" > /etc/eee/update.conf
-[[ -f /etc/eee/geheimen.env ]] || { install -m 0640 -g "$KIND" "$HIER/config/geheimen.example.env" /etc/eee/geheimen.env; }
-chown root:root /etc/eee/ouders.yaml /etc/eee/update.conf
-chmod 0644 /etc/eee/ouders.yaml /etc/eee/update.conf
+install -d -m 0755 /etc/unscroll /opt/unscroll/releases
+install -m 0755 "$HIER/scripts/unscroll-sessie" /usr/local/bin/unscroll-sessie
+install -m 0755 "$HIER/scripts/unscroll-update" /usr/local/sbin/unscroll-update
+[[ -f /etc/unscroll/ouders.yaml ]] || install -m 0644 "$HIER/config/ouders.example.yaml" /etc/unscroll/ouders.yaml
+[[ -f /etc/unscroll/update.conf ]] || sed "s#OWNER/REPO#$REPO#" "$HIER/config/update.example.conf" > /etc/unscroll/update.conf
+[[ -f /etc/unscroll/geheimen.env ]] || { install -m 0640 -g "$KIND" "$HIER/config/geheimen.example.env" /etc/unscroll/geheimen.env; }
+chown root:root /etc/unscroll/ouders.yaml /etc/unscroll/update.conf
+chmod 0644 /etc/unscroll/ouders.yaml /etc/unscroll/update.conf
 
 install -d -o "$KIND" -g "$KIND" "/home/$KIND/.config/foot"
 install -m 0644 -o "$KIND" -g "$KIND" "$HIER/config/foot.ini" "/home/$KIND/.config/foot/foot.ini"
 
 echo "==> App installeren"
-if [[ -x "$HIER/eee" ]]; then
+if [[ -x "$HIER/unscroll" ]]; then
   # handmatig meegeleverde binary (bijvoorbeeld zelf gebouwd)
-  install -d /opt/eee/releases/lokaal
-  install -m 0755 "$HIER/eee" /opt/eee/releases/lokaal/eee
-  ln -sfn /opt/eee/releases/lokaal /opt/eee/huidig
+  install -d /opt/unscroll/releases/lokaal
+  install -m 0755 "$HIER/unscroll" /opt/unscroll/releases/lokaal/unscroll
+  ln -sfn /opt/unscroll/releases/lokaal /opt/unscroll/huidig
 else
-  /usr/local/sbin/eee-update --nu || echo "Nog geen release gevonden; de updater probeert het later opnieuw."
+  /usr/local/sbin/unscroll-update --nu || echo "Nog geen release gevonden; de updater probeert het later opnieuw."
 fi
-ln -sfn /opt/eee/huidig/eee /usr/local/bin/eee
+ln -sfn /opt/unscroll/huidig/unscroll /usr/local/bin/unscroll
 
 echo "==> Automatisch inloggen op tty1 en direct de app starten"
 install -d /etc/systemd/system/getty@tty1.service.d
@@ -64,18 +64,18 @@ ExecStart=
 ExecStart=-/sbin/agetty --autologin $KIND --noclear %I \$TERM
 EOF
 cat > "/home/$KIND/.bash_profile" <<'EOF'
-# Start de kinderkamer-terminal op het scherm (alleen op tty1).
+# Start Unscroll op het scherm (alleen op tty1).
 if [[ "$(tty)" == "/dev/tty1" ]]; then
-  exec /usr/local/bin/eee-sessie
+  exec /usr/local/bin/unscroll-sessie
 fi
 EOF
 chown "$KIND:$KIND" "/home/$KIND/.bash_profile"
 
 echo "==> Updater elke 15 minuten"
-install -m 0644 "$HIER/systemd/eee-update.service" /etc/systemd/system/
-install -m 0644 "$HIER/systemd/eee-update.timer" /etc/systemd/system/
+install -m 0644 "$HIER/systemd/unscroll-update.service" /etc/systemd/system/
+install -m 0644 "$HIER/systemd/unscroll-update.timer" /etc/systemd/system/
 systemctl daemon-reload
-systemctl enable --now eee-update.timer
+systemctl enable --now unscroll-update.timer
 
 echo "==> Volume beperken en bewaren"
 amixer -q set Master 40% unmute 2>/dev/null || true
@@ -85,9 +85,9 @@ cat <<EOF
 
 Klaar. Nog drie dingen:
   1. Stel een pincode in voor de ouders:
-       /usr/local/bin/eee --pin-hash 1234
-     en zet de uitkomst bij pin_sha256 in /etc/eee/ouders.yaml
-  2. Pas de avondslot-tijden aan in /etc/eee/ouders.yaml
+       /usr/local/bin/unscroll --pin-hash 1234
+     en zet de uitkomst bij pin_sha256 in /etc/unscroll/ouders.yaml
+  2. Pas de avondslot-tijden aan in /etc/unscroll/ouders.yaml
   3. Herstart: sudo reboot  (daarna start de app vanzelf)
 
 Wifi instellen kan met: sudo nmtui

@@ -1,16 +1,23 @@
-# Kinderkamer-terminal (werktitel)
+# Unscroll PC
 
-Een rustige luister- en ontdekcomputer voor kinderen, op een oude laptop of een Raspberry Pi.
-Muziek, luisterboeken, podcasts, radio en e-boeken, een AI-maatje met duidelijke grenzen,
-denksport en een privé schrijfhoek. Alles in één toetsenbord-gestuurde terminal-app.
+**A calm computer for curious kids. No feeds, no algorithms.**
+*Nothing pulls at you. You pull.*
 
-**Zonder spelletjes, feeds, aanbevelingen, autoplay, likes of streaks.**
-Het kind kiest zelf, uit een collectie die de ouders samenstellen.
+Unscroll verandert een oude laptop, netbook of Raspberry Pi in een rustige luister- en
+ontdekcomputer voor kinderen: muziek, luisterboeken, podcasts, radio en e-boeken, een
+AI-maatje met duidelijke grenzen, denksport en een privé schrijfhoek. Alles in één
+toetsenbord-gestuurde terminal-app, zonder bureaublad en zonder browser.
 
-> *A calm, keyboard-driven listening and discovery computer for kids, built for old laptops
-> and Raspberry Pis. No games, no feeds, no algorithms. Dutch first, translations welcome.*
+**Zonder spelletjes, feeds, aanbevelingen, autoplay, likes of streaks.** Het kind kiest zelf,
+uit een collectie die de ouders samenstellen. Zelfs het AI-maatje praat alleen als het iets
+gevraagd wordt, houdt gesprekken kort en helpt nadenken in plaats van voor je te denken.
 
-![mockup](docs/mockup.html) · Open [`docs/mockup.html`](docs/mockup.html) in een browser voor een klikbare mockup.
+Het project begon op een oude Asus EeePC, vandaar de "PC" in de naam.
+
+> *Unscroll turns an old laptop, netbook or Raspberry Pi into a calm listening and discovery
+> computer for kids. Dutch first, translations welcome.*
+
+Klikbare mockup: open [`docs/mockup.html`](docs/mockup.html) in een browser.
 
 ---
 
@@ -57,13 +64,13 @@ Alles wat Debian 12 draait. Getest en bedoeld voor:
 1. Installeer **Debian 12** minimaal (alleen "SSH-server" en "standaard systeemhulpmiddelen", geen bureaublad).
 2. Zet deze repository op het apparaat en draai als root:
    ```bash
-   REPO=OWNER/REPO bash install.sh
+   REPO=<account>/unscroll-pc bash install.sh
    ```
-3. Maak een pincode voor de ouderstand en zet de uitkomst in `/etc/eee/ouders.yaml`:
+3. Maak een pincode voor de ouderstand en zet de uitkomst in `/etc/unscroll/ouders.yaml`:
    ```bash
-   eee --pin-hash 1234
+   unscroll --pin-hash 1234
    ```
-4. Pas de tijden van het avondslot aan in `/etc/eee/ouders.yaml` en herstart.
+4. Pas de tijden van het avondslot aan in `/etc/unscroll/ouders.yaml` en herstart.
 
 Na het opstarten logt het kinderaccount automatisch in en start de app op het hele scherm
 (`cage` met de terminal `foot`). Er is geen bureaublad, geen browser en geen vrije shell.
@@ -71,18 +78,18 @@ Na het opstarten logt het kinderaccount automatisch in en start de app op het he
 ## Updates
 
 - Een push van een tag (`v0.2.0`) laat GitHub Actions de app bouwen voor 386, amd64, arm64 en arm, met een `sha256`-bestand per binary.
-- Het apparaat kijkt elke 15 minuten of er een nieuwe release is (`eee-update.timer`), controleert de checksum en of de nieuwe versie start, en zet hem klaar. De vorige versie blijft bewaard.
-- Pre-releases (`v0.2.0-test`) gaan alleen naar apparaten met `KANAAL="test"` in `/etc/eee/update.conf`.
-- Is de repository privé, zet dan een fine-grained token met alleen-lezen rechten in `/etc/eee/geheimen.env`.
+- Het apparaat kijkt elke 15 minuten of er een nieuwe release is (`unscroll-update.timer`), controleert de checksum en of de nieuwe versie start, en zet hem klaar. De vorige versie blijft bewaard.
+- Pre-releases (`v0.2.0-test`) gaan alleen naar apparaten met `KANAAL="test"` in `/etc/unscroll/update.conf`.
+- Is de repository privé, zet dan een fine-grained token met alleen-lezen rechten in `/etc/unscroll/geheimen.env`.
 
 ## Instellingen
 
 | Bestand | Van wie | Inhoud |
 |---|---|---|
-| `~/.config/eee/instellingen.json` | het kind | naam, maatje, gezicht, kleurthema |
-| `/etc/eee/ouders.yaml` | ouders (root) | avondslot, pincode, maximaal volume, ntfy-topic |
-| `/etc/eee/update.conf` | ouders (root) | repository en updatekanaal |
-| `/etc/eee/geheimen.env` | ouders (root) | tokens en API-sleutels, nooit in git |
+| `~/.config/unscroll/instellingen.json` | het kind | naam, maatje, gezicht, kleurthema |
+| `/etc/unscroll/ouders.yaml` | ouders (root) | avondslot, pincode, maximaal volume, ntfy-topic |
+| `/etc/unscroll/update.conf` | ouders (root) | repository en updatekanaal |
+| `/etc/unscroll/geheimen.env` | ouders (root) | tokens en API-sleutels, nooit in git |
 
 ## Ontwikkelen
 
@@ -90,8 +97,8 @@ Na het opstarten logt het kinderaccount automatisch in en start de app op het he
 cd app
 go test ./...
 go run .                      # draait in je eigen terminal
-EEE_OUDERS=../config/ouders.example.yaml go run .
-CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -o eee .
+UNSCROLL_OUDERS=../config/ouders.example.yaml go run .
+CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -o unscroll .
 ```
 
 De app is geschreven in Go met [Bubble Tea](https://github.com/charmbracelet/bubbletea) en
@@ -102,7 +109,7 @@ op oude 32-bit hardware vlot draait.
 
 ```
 app/        de terminal-app (Go)
-scripts/    eee-sessie (kioskstart) en eee-update (updater)
+scripts/    unscroll-sessie (kioskstart) en unscroll-update (updater)
 systemd/    timer en service voor de updater
 config/     voorbeelden van de instellingen en de terminal-configuratie
 docs/       klikbare mockup

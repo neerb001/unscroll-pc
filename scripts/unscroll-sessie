@@ -7,6 +7,6 @@ export TERM=foot
 
 while true; do
   # zonder -s: wisselen naar een andere console (Ctrl+Alt+F2) is uitgeschakeld
-  cage -- foot --config "$HOME/.config/foot/foot.ini" /usr/local/bin/eee
+  cage -- foot --config "$HOME/.config/foot/foot.ini" /usr/local/bin/unscroll
   sleep 1
 done

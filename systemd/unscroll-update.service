@@ -1,9 +1,9 @@
 [Unit]
-Description=Kinderkamer-terminal bijwerken vanaf GitHub
+Description=Unscroll bijwerken vanaf GitHub
 Wants=network-online.target
 After=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/sbin/eee-update
+ExecStart=/usr/local/sbin/unscroll-update
 Nice=10

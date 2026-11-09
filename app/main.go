@@ -1,4 +1,4 @@
-// Eee: luister- en ontdekcomputer voor de kinderkamer.
+// Unscroll: een rustige luister- en ontdekcomputer voor kinderen.
 // Draait als volledig-scherm terminal-app op een oude 32-bit netbook.
 package main
 
@@ -143,7 +143,7 @@ func (m *model) focusOp(f int) {
 func (m *model) bewaarVelden() {
 	m.inst.Computer = strings.TrimSpace(m.velden[0].Value())
 	if m.inst.Computer == "" {
-		m.inst.Computer = "EEE"
+		m.inst.Computer = standaardInstellingen().Computer
 	}
 	m.inst.Naam = strings.TrimSpace(m.velden[1].Value())
 	m.inst.Maatje = strings.TrimSpace(m.velden[2].Value())
@@ -510,7 +510,7 @@ func (m model) viewSysteem(p palet) string {
 		apparaat += "\n\n" + lipgloss.NewStyle().Foreground(p.geel).Bold(true).Render("ouderstand") + "\n" +
 			fmt.Sprintf("avondslot  school %s · weekend %s · open %s\n", a.Schooldagen, a.Weekend, a.Open) +
 			fmt.Sprintf("na het slot  lezen %s · luisterboek %s\n", jaNee(a.LezenMag), jaNee(a.LuisterboekMag)) +
-			dim.Render("wijzigen in /etc/eee/ouders.yaml") + "\n" +
+			dim.Render("wijzigen in /etc/unscroll/ouders.yaml") + "\n" +
 			"[t] avondslot 30 min uit · [Q] app afsluiten · [o] ouderstand uit"
 	}
 	breed := (m.breed - 10) / 2
@@ -531,7 +531,7 @@ func jaNee(b bool) string {
 func (m model) viewStatus(p palet) string {
 	sessie := strings.ToLower(strings.TrimSpace(m.inst.Computer))
 	if sessie == "" {
-		sessie = "eee"
+		sessie = "unscroll"
 	}
 	delen := []string{lipgloss.NewStyle().Background(p.groen).Foreground(p.bg).Bold(true).Render(" " + sessie + " ")}
 	for i, n := range tabNamen {
@@ -571,7 +571,7 @@ func main() {
 			return
 		case "--pin-hash":
 			if len(os.Args) < 3 {
-				fmt.Fprintln(os.Stderr, "gebruik: eee --pin-hash 1234")
+				fmt.Fprintln(os.Stderr, "gebruik: unscroll --pin-hash 1234")
 				os.Exit(2)
 			}
 			fmt.Println(pinHash(os.Args[2]))
@@ -582,7 +582,7 @@ func main() {
 	_, err := p.Run()
 	fmt.Fprint(os.Stdout, "\x1b]110\x07\x1b]111\x07") // terminalkleuren terug
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "eee:", err)
+		fmt.Fprintln(os.Stderr, "unscroll:", err)
 		os.Exit(1)
 	}
 }

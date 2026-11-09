@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 # Haalt de nieuwste release van GitHub op en zet die klaar.
-# Draait als root via eee-update.timer. Met --nu wordt niet eerst willekeurig gewacht.
+# Draait als root via unscroll-update.timer. Met --nu wordt niet eerst willekeurig gewacht.
 #
 # Werking:
 #   1. vraag de nieuwste release op via de GitHub-API
 #   2. download de binary voor deze processor en het sha256-bestand
 #   3. controleer de checksum en of de binary start (--version)
-#   4. zet hem in /opt/eee/releases/<versie> en wijs /opt/eee/huidig ernaar
+#   4. zet hem in /opt/unscroll/releases/<versie> en wijs /opt/unscroll/huidig ernaar
 #   5. de vorige versie blijft staan; bij een fout blijft alles zoals het was
 set -euo pipefail
 
-CONF=/etc/eee/update.conf
+CONF=/etc/unscroll/update.conf
 REPO=""; GITHUB_TOKEN=""; KANAAL="stable"
 [[ -f "$CONF" ]] && . "$CONF"
-[[ -f /etc/eee/geheimen.env ]] && . /etc/eee/geheimen.env
+[[ -f /etc/unscroll/geheimen.env ]] && . /etc/unscroll/geheimen.env
 [[ -n "$REPO" && "$REPO" != "OWNER/REPO" ]] || { echo "Geen REPO ingesteld in $CONF"; exit 0; }
 
 [[ "${1:-}" == "--nu" ]] || sleep $((RANDOM % 60))
@@ -40,36 +40,36 @@ INFO="$(curl -fsSL "${AUTH[@]}" -H "Accept: application/vnd.github+json" "$API")
 VERSIE="$(jq -r '.tag_name' <<<"$INFO")"
 [[ -n "$VERSIE" && "$VERSIE" != "null" ]] || { echo "Geen release gevonden"; exit 0; }
 
-HUIDIG="$(readlink -f /opt/eee/huidig 2>/dev/null | xargs -r basename || true)"
+HUIDIG="$(readlink -f /opt/unscroll/huidig 2>/dev/null | xargs -r basename || true)"
 if [[ "$HUIDIG" == "$VERSIE" ]]; then
   echo "Al bijgewerkt ($VERSIE)"; exit 0
 fi
 
 asset_url() { jq -r --arg n "$1" '.assets[] | select(.name==$n) | .url' <<<"$INFO"; }
-BIN_URL="$(asset_url "eee-linux-$ARCH")"
-SUM_URL="$(asset_url "eee-linux-$ARCH.sha256")"
+BIN_URL="$(asset_url "unscroll-linux-$ARCH")"
+SUM_URL="$(asset_url "unscroll-linux-$ARCH.sha256")"
 [[ -n "$BIN_URL" && -n "$SUM_URL" ]] || { echo "Release $VERSIE heeft geen bestand voor $ARCH"; exit 1; }
 
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
 haal() { curl -fsSL "${AUTH[@]}" -H "Accept: application/octet-stream" -o "$2" "$1"; }
-haal "$BIN_URL" "$TMP/eee"
-haal "$SUM_URL" "$TMP/eee.sha256"
+haal "$BIN_URL" "$TMP/unscroll"
+haal "$SUM_URL" "$TMP/unscroll.sha256"
 
-VERWACHT="$(awk '{print $1}' "$TMP/eee.sha256")"
-GEMETEN="$(sha256sum "$TMP/eee" | awk '{print $1}')"
+VERWACHT="$(awk '{print $1}' "$TMP/unscroll.sha256")"
+GEMETEN="$(sha256sum "$TMP/unscroll" | awk '{print $1}')"
 [[ "$VERWACHT" == "$GEMETEN" ]] || { echo "Checksum klopt niet, update afgebroken"; exit 1; }
 
-chmod 0755 "$TMP/eee"
-"$TMP/eee" --version >/dev/null || { echo "Nieuwe versie start niet, update afgebroken"; exit 1; }
+chmod 0755 "$TMP/unscroll"
+"$TMP/unscroll" --version >/dev/null || { echo "Nieuwe versie start niet, update afgebroken"; exit 1; }
 
-install -d "/opt/eee/releases/$VERSIE"
-install -m 0755 "$TMP/eee" "/opt/eee/releases/$VERSIE/eee"
-[[ -n "$HUIDIG" ]] && ln -sfn "/opt/eee/releases/$HUIDIG" /opt/eee/vorige
-ln -sfn "/opt/eee/releases/$VERSIE" /opt/eee/huidig.nieuw
-mv -Tf /opt/eee/huidig.nieuw /opt/eee/huidig
-ln -sfn /opt/eee/huidig/eee /usr/local/bin/eee
+install -d "/opt/unscroll/releases/$VERSIE"
+install -m 0755 "$TMP/unscroll" "/opt/unscroll/releases/$VERSIE/unscroll"
+[[ -n "$HUIDIG" ]] && ln -sfn "/opt/unscroll/releases/$HUIDIG" /opt/unscroll/vorige
+ln -sfn "/opt/unscroll/releases/$VERSIE" /opt/unscroll/huidig.nieuw
+mv -Tf /opt/unscroll/huidig.nieuw /opt/unscroll/huidig
+ln -sfn /opt/unscroll/huidig/unscroll /usr/local/bin/unscroll
 
 # alleen de laatste drie versies bewaren
-ls -1dt /opt/eee/releases/*/ 2>/dev/null | tail -n +4 | xargs -r rm -rf
+ls -1dt /opt/unscroll/releases/*/ 2>/dev/null | tail -n +4 | xargs -r rm -rf
 
 echo "Bijgewerkt naar $VERSIE. Actief na de volgende herstart van de app."

@@ -57,7 +57,7 @@ func blokletters(naam string) string {
 		eerste = false
 	}
 	if eerste {
-		return blokletters("EEE")
+		return blokletters("UNSCROLL")
 	}
 	return strings.Join(rijen, "\n")
 }

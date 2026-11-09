@@ -12,7 +12,7 @@ import (
 )
 
 // Instellingen kan het kind zelf aanpassen in het tabblad Systeem.
-// Ze staan in ~/.config/eee/instellingen.json.
+// Ze staan in ~/.config/unscroll/instellingen.json.
 type Instellingen struct {
 	Computer string `json:"computer"`
 	Naam     string `json:"naam"`
@@ -22,18 +22,25 @@ type Instellingen struct {
 }
 
 func standaardInstellingen() Instellingen {
-	return Instellingen{Computer: "EEE", Maatje: "Bliep", Thema: "nacht"}
+	naam := "UNSCROLL"
+	if h, err := os.Hostname(); err == nil && h != "" && h != "localhost" {
+		naam = strings.ToUpper(h)
+		if len(naam) > 9 {
+			naam = naam[:9]
+		}
+	}
+	return Instellingen{Computer: naam, Maatje: "Bliep", Thema: "nacht"}
 }
 
 func instellingenPad() string {
-	if p := os.Getenv("EEE_INSTELLINGEN"); p != "" {
+	if p := os.Getenv("UNSCROLL_INSTELLINGEN"); p != "" {
 		return p
 	}
 	dir, err := os.UserConfigDir()
 	if err != nil {
 		dir = "."
 	}
-	return filepath.Join(dir, "eee", "instellingen.json")
+	return filepath.Join(dir, "unscroll", "instellingen.json")
 }
 
 func laadInstellingen() Instellingen {
@@ -68,7 +75,7 @@ func (i Instellingen) bewaar() error {
 }
 
 // Ouders bevat de instellingen van de ouders. Dit bestand is van root,
-// het kind kan het lezen maar niet wijzigen: /etc/eee/ouders.yaml.
+// het kind kan het lezen maar niet wijzigen: /etc/unscroll/ouders.yaml.
 type Ouders struct {
 	Avondslot struct {
 		Schooldagen    string `yaml:"schooldagen"`
@@ -98,10 +105,10 @@ func standaardOuders() Ouders {
 }
 
 func oudersPad() string {
-	if p := os.Getenv("EEE_OUDERS"); p != "" {
+	if p := os.Getenv("UNSCROLL_OUDERS"); p != "" {
 		return p
 	}
-	return "/etc/eee/ouders.yaml"
+	return "/etc/unscroll/ouders.yaml"
 }
 
 func laadOuders() (Ouders, error) {
@@ -118,7 +125,7 @@ func laadOuders() (Ouders, error) {
 }
 
 func pinHash(pin string) string {
-	h := sha256.Sum256([]byte("eee-kinderkamer:" + strings.TrimSpace(pin)))
+	h := sha256.Sum256([]byte("unscroll:" + strings.TrimSpace(pin)))
 	return hex.EncodeToString(h[:])
 }
 

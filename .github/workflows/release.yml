@@ -24,7 +24,7 @@ jobs:
       - run: go test ./...
       - name: shellcheck
         working-directory: .
-        run: shellcheck install.sh scripts/eee-sessie scripts/eee-update
+        run: shellcheck install.sh scripts/unscroll-sessie scripts/unscroll-update
 
   release:
     needs: test
@@ -41,8 +41,8 @@ jobs:
           # 386: oude netbooks · amd64: gewone laptops · arm64: Raspberry Pi 4/5/400/500 · arm: oudere Pi's
           for arch in 386 amd64 arm64 arm; do
             CGO_ENABLED=0 GOOS=linux GOARCH=$arch GOARM=7 go build -trimpath \
-              -ldflags "-s -w -X main.versie=${GITHUB_REF_NAME}" -o ../dist/eee-linux-$arch .
-            (cd ../dist && sha256sum eee-linux-$arch > eee-linux-$arch.sha256)
+              -ldflags "-s -w -X main.versie=${GITHUB_REF_NAME}" -o ../dist/unscroll-linux-$arch .
+            (cd ../dist && sha256sum unscroll-linux-$arch > unscroll-linux-$arch.sha256)
           done
       - name: release maken
         env:
