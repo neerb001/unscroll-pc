@@ -72,7 +72,7 @@ Alles wat Debian 12 draait. Getest en bedoeld voor:
 1. Installeer **Debian 12** minimaal (alleen "SSH-server" en "standaard systeemhulpmiddelen", geen bureaublad).
 2. Zet deze repository op het apparaat en draai als root:
    ```bash
-   REPO=<account>/unscroll-pc bash install.sh
+   sudo bash install.sh
    ```
 3. Stel pincode, avondslot en geheimen lokaal in met de ouderhulp, en herstart:
    ```bash

@@ -5,10 +5,11 @@
 set -euo pipefail
 
 KIND="${KIND:-kind}"                 # gebruikersnaam van het kinderaccount
-REPO="${REPO:-OWNER/REPO}"           # GitHub-repository voor updates
+REPO="${REPO:-neerb001/unscroll-pc}"           # GitHub-repository voor updates
 HIER="$(cd "$(dirname "$0")" && pwd)"
 
 [[ $EUID -eq 0 ]] || { echo "Draai dit script als root (sudo bash install.sh)."; exit 1; }
+# shellcheck source=/dev/null
 . /etc/os-release
 [[ "${VERSION_ID:-}" == "12" ]] || echo "Let op: getest op Debian 12, jij hebt ${PRETTY_NAME:-onbekend}."
 
@@ -38,7 +39,7 @@ install -m 0755 "$HIER/scripts/unscroll-sessie" /usr/local/bin/unscroll-sessie
 install -m 0755 "$HIER/scripts/unscroll-update" /usr/local/sbin/unscroll-update
 install -m 0755 "$HIER/scripts/unscroll-ouder" /usr/local/sbin/unscroll-ouder
 [[ -f /etc/unscroll/ouders.yaml ]] || install -m 0644 "$HIER/config/ouders.example.yaml" /etc/unscroll/ouders.yaml
-[[ -f /etc/unscroll/update.conf ]] || sed "s#OWNER/REPO#$REPO#" "$HIER/config/update.example.conf" > /etc/unscroll/update.conf
+[[ -f /etc/unscroll/update.conf ]] || sed "s#^REPO=.*#REPO=\"$REPO\"#" "$HIER/config/update.example.conf" > /etc/unscroll/update.conf
 [[ -f /etc/unscroll/geheimen.env ]] || { install -m 0640 -g "$KIND" "$HIER/config/geheimen.example.env" /etc/unscroll/geheimen.env; }
 chown root:root /etc/unscroll/ouders.yaml /etc/unscroll/update.conf
 chmod 0644 /etc/unscroll/ouders.yaml /etc/unscroll/update.conf
