@@ -95,6 +95,7 @@ type Ouders struct {
 		Topic string `yaml:"topic"`
 	} `yaml:"ntfy"`
 	Maatje MaatjeGrenzen `yaml:"maatje"`
+	Radio  []Zender      `yaml:"radio"`
 }
 
 // MaatjeGrenzen zijn de grenzen van het AI-maatje. De standaardwaarden zitten in de app

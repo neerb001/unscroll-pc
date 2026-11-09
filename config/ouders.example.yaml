@@ -16,6 +16,14 @@ pin_sha256: ""
 
 max_volume: 70
 
+# Radio stations on the dial. Leave this out to use the built-in list
+# (NPO Radio 1, NPO Radio 2, NPO 3FM, NPO Klassiek, BBC World Service).
+# radio:
+#   - naam: "NPO Radio 2"
+#     url: "https://icecast.omroep.nl/radio2-bb-mp3"
+#   - naam: "BBC World Service"
+#     url: "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service"
+
 # "Ask for help" sends a notification to your phones via ntfy.
 # Pick a long, hard to guess topic and subscribe to it in the ntfy app.
 ntfy:

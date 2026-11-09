@@ -8,6 +8,7 @@
 #   3. verify the checksum and that the binary starts (--version)
 #   4. put it in /opt/unscroll/releases/<version> and point /opt/unscroll/huidig at it
 #   5. the previous version stays; on any error nothing changes
+#   6. the scripts (session, updater, parent helper) come along when the release has them
 set -euo pipefail
 
 CONF=/etc/unscroll/update.conf
@@ -70,6 +71,23 @@ install -m 0755 "$TMP/unscroll" "/opt/unscroll/releases/$VERSIE/unscroll"
 ln -sfn "/opt/unscroll/releases/$VERSIE" /opt/unscroll/huidig.nieuw
 mv -Tf /opt/unscroll/huidig.nieuw /opt/unscroll/huidig
 ln -sfn /opt/unscroll/huidig/unscroll /usr/local/bin/unscroll
+
+# The scripts come in a separate, checksummed package. Optional: if anything is off,
+# the old scripts simply stay.
+TAR_URL="$(asset_url unscroll-scripts.tar.gz)"
+TSUM_URL="$(asset_url unscroll-scripts.tar.gz.sha256)"
+if [[ -n "$TAR_URL" && -n "$TSUM_URL" ]] && haal "$TAR_URL" "$TMP/scripts.tgz" && haal "$TSUM_URL" "$TMP/scripts.sha256"; then
+  if [[ "$(awk '{print $1}' "$TMP/scripts.sha256")" == "$(sha256sum "$TMP/scripts.tgz" | awk '{print $1}')" ]] \
+     && mkdir -p "$TMP/s" && tar -xzf "$TMP/scripts.tgz" --no-same-owner -C "$TMP/s" \
+     && bash -n "$TMP/s/unscroll-sessie" && bash -n "$TMP/s/unscroll-update" && bash -n "$TMP/s/unscroll-ouder"; then
+    install -m 0755 "$TMP/s/unscroll-sessie" /usr/local/bin/unscroll-sessie
+    install -m 0755 "$TMP/s/unscroll-ouder" /usr/local/sbin/unscroll-ouder
+    install -m 0755 "$TMP/s/unscroll-update" /usr/local/sbin/unscroll-update
+    echo "Scripts updated."
+  else
+    echo "Scripts package not valid, keeping the current scripts."
+  fi
+fi
 
 # keep only the three most recent versions
 find /opt/unscroll/releases -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' | sort -rn | tail -n +4 | cut -d' ' -f2- | xargs -r rm -rf

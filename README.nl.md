@@ -40,9 +40,9 @@ Het project begon op een oude Asus EeePC, vandaar de "PC" in de naam.
 | Start | Begroeting, menu, avondslot, eigen naam in blokletters | ✅ fase 0 |
 | Talen | Engels (standaard) en Nederlands, te kiezen bij Systeem. Nieuwe talen in `app/i18n.go` | ✅ fase 0 |
 | Systeem | Naam computer, eigen naam, naam en gezicht van het maatje, 5 kleurthema's, wifi, accu, volume met maximum, hulp vragen (ntfy) | ✅ fase 0 |
-| Avondslot | Aparte tijden voor school- en weekendavonden, openingstijd, wat er na het slot nog mag, pincode voor ouders | ✅ fase 0 |
+| Avondslot | Aparte tijden voor school- en weekendavonden, openingstijd, wat er na het slot nog mag, pincode voor ouders, pauzeren voor 30 min, 2 uur, tot morgenochtend of tot je hem weer aanzet | ✅ fase 0 |
 | Updates | Nieuwe versies via GitHub-releases, met checksum-controle en terugval | ✅ fase 0 |
-| Luisteren | Navidrome, radio met draaiknop, luisterboeken en podcasts uit Audiobookshelf, slaaptimer | ⏳ fase 1 |
+| Luisteren | Navidrome, radio met draaiknop, luisterboeken en podcasts uit Audiobookshelf met voortgang, slaaptimer | ✅ fase 1 |
 | Lezen + Vandaag | E-boeken (EPUB) uit Audiobookshelf, weer, wekker, maan, seizoen en jaarfeesten | ⏳ fase 2 |
 | Spotify | Alleen goedgekeurde afspeellijsten, expliciete nummers gefilterd, autoplay uit (librespot) | ⏳ fase 3 |
 | Vraag het maatje | AI via de Anthropic-API met dagbudget, filters en weekoverzicht voor ouders | ⏳ fase 4 |
@@ -82,8 +82,31 @@ Na het opstarten logt het kinderaccount automatisch in en start de app op het he
 
 - **Een nieuwe versie uitbrengen:** verhoog het nummer in `VERSION` en push naar `main`. GitHub Actions test alles, bouwt de app voor 386, amd64, arm64 en arm (met een `sha256`-bestand per binary) en maakt de release aan.
 - Een nummer met een streepje (`0.2.0-test`) wordt een pre-release. Die gaat alleen naar apparaten met `KANAAL="test"` in `/etc/unscroll/update.conf`.
-- Het apparaat kijkt elke 15 minuten of er een nieuwe release is (`unscroll-update.timer`), controleert de checksum en of de nieuwe versie start, en zet hem klaar. De vorige versie blijft bewaard.
+- Het apparaat kijkt elke 15 minuten of er een nieuwe release is (`unscroll-update.timer`), controleert de checksum en of de nieuwe versie start, en zet hem klaar. De vorige versie blijft bewaard. De nieuwe versie is actief na een herstart van de app (of van het apparaat).
+- De scripts (sessie, updater, ouderhulp) komen mee in een `unscroll-scripts.tar.gz` met checksum en worden samen met de app geïnstalleerd (vanaf v0.2.0).
 - Is de repository privé, zet dan een fine-grained token met alleen-lezen rechten in `/etc/unscroll/geheimen.env` (de ouderhulp vraagt erom).
+
+## Luisteren (fase 1)
+
+Druk op `1` voor Luisteren en op `Tab` om te wisselen tussen Muziek, Luisterboeken, Podcasts en Radio.
+Alles speelt via `mpv`, zonder beeld. Er is geen autoplay: een album speelt tot het einde en dan is het stil.
+
+| Bron | Nodig | Instellen met |
+|---|---|---|
+| Muziek | [Navidrome](https://www.navidrome.org/) met een eigen gebruiker voor het kind | `sudo unscroll-ouder` (adres, gebruiker, wachtwoord) |
+| Luisterboeken en podcasts | [Audiobookshelf](https://www.audiobookshelf.org/) met een account voor het kind, zodat de voortgang van het kind is | `sudo unscroll-ouder` (adres en API-token of API-sleutel) |
+| Radio | niets: NPO Radio 1, 2, 3FM, Klassiek en BBC World Service zitten erin | een eigen lijst onder `radio:` in `/etc/unscroll/ouders.yaml` |
+
+Toetsen: `↑ ↓` kiezen, `Enter` openen of afspelen, `Backspace` terug, `/` zoeken, `spatie` pauze, `x` stop,
+`n` `p` volgend of vorig nummer, `← →` 30 seconden terug of vooruit (bij de radio: aan de knop draaien),
+`s` slaaptimer (15, 30, 45, 60 minuten), `+ -` volume tot het maximum van de ouders.
+
+Tijdens het avondslot blijven alleen luisterboeken over (als `luisterboek_mag` aan staat), met een
+slaaptimer van 30 minuten die vanzelf start. Muziek, radio en podcasts stoppen als het avondslot begint.
+
+Ouders kunnen het avondslot pauzeren in de ouderstand (`8`, dan `o` en de pincode): `t` 30 minuten,
+`u` 2 uur, `m` tot morgenochtend, `x` tot je hem weer aanzet, `a` weer aan. De ouderstand gaat na
+10 minuten zonder toetsaanslag vanzelf uit.
 
 ## Instellingen
 

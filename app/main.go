@@ -30,7 +30,7 @@ const (
 // sleutels in de vertalingen per tabblad
 var tabSleutels = []string{"tab.start", "tab.listen", "tab.read", "", "tab.discover", "tab.puzzles", "tab.write", "tab.today", "tab.system"}
 var menuSleutels = []string{"", "menu.listen", "menu.read", "menu.buddy", "menu.discover", "menu.puzzles", "menu.write", "menu.today", "menu.system"}
-var straksSleutels = map[int]string{tabLuisteren: "soon.listen", tabLezen: "soon.read", tabMaatje: "soon.buddy", tabOntdekken: "soon.discover", tabDenksport: "soon.puzzles", tabSchrijfhoek: "soon.write", tabVandaag: "soon.today"}
+var straksSleutels = map[int]string{tabLezen: "soon.read", tabMaatje: "soon.buddy", tabOntdekken: "soon.discover", tabDenksport: "soon.puzzles", tabSchrijfhoek: "soon.write", tabVandaag: "soon.today"}
 
 type tickMsg time.Time
 type statusMsg struct {
@@ -53,24 +53,26 @@ type model struct {
 	ouders     Ouders
 	oudersFout error
 
-	tab, sel    int
-	breed, hoog int
-	nu          time.Time
-	velden      []textinput.Model // computer, naam, maatje
-	focus       int               // -1 niets, anders een veld* constante
-	pin         textinput.Model
-	pinOpen     bool
-	ouderModus  bool
-	ontgrendeld time.Time
-	melding     string
-	meldingTot  time.Time
-	wifi, accu  string
-	vol         int
+	tab, sel     int
+	breed, hoog  int
+	nu           time.Time
+	velden       []textinput.Model // computer, naam, maatje
+	focus        int               // -1 niets, anders een veld* constante
+	pin          textinput.Model
+	pinOpen      bool
+	ouderModus   bool
+	ontgrendeld  time.Time
+	laatsteToets time.Time
+	melding      string
+	meldingTot   time.Time
+	wifi, accu   string
+	vol          int
+	l            *luister
 }
 
 func nieuwModel() model {
 	o, err := laadOuders()
-	m := model{inst: laadInstellingen(), ouders: o, oudersFout: err, nu: time.Now(), focus: -1, vol: -1, wifi: "…", accu: "…"}
+	m := model{inst: laadInstellingen(), ouders: o, oudersFout: err, nu: time.Now(), focus: -1, vol: -1, wifi: "…", accu: "…", ontgrendeld: laadPauze()}
 	for _, w := range []struct {
 		waarde string
 		max    int
@@ -81,6 +83,7 @@ func nieuwModel() model {
 		ti.Prompt = ""
 		m.velden = append(m.velden, ti)
 	}
+	m.l = nieuwLuister(laadGeheimen())
 	m.pin = textinput.New()
 	m.pin.EchoMode = textinput.EchoPassword
 	m.pin.CharLimit = 8
@@ -111,7 +114,7 @@ func (m model) dicht() bool { return isDicht(m.ouders, m.nu) && m.nu.After(m.ont
 
 func (m *model) zeg(s string) { m.melding = s; m.meldingTot = time.Now().Add(4 * time.Second) }
 
-func (m *model) naarTab(t int) {
+func (m *model) naarTab(t int) tea.Cmd {
 	if m.dicht() && t != tabStart && t != tabSysteem && !magTijdensSlot(m.ouders, t) {
 		m.zeg(m.t("lock.only"))
 		t = tabStart
@@ -119,6 +122,10 @@ func (m *model) naarTab(t int) {
 	m.tab = t
 	m.focusOp(-1)
 	m.pinOpen = false
+	if t == tabLuisteren {
+		return m.luisterOpen()
+	}
+	return nil
 }
 
 func (m *model) focusOp(f int) {
@@ -154,16 +161,28 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	case tickMsg:
 		m.nu = time.Time(msg)
+		if m.ouderModus && m.nu.Sub(m.laatsteToets) > 10*time.Minute {
+			m.ouderModus = false
+			m.zeg(m.t("msg.parentauto"))
+		}
 		if m.dicht() && m.tab != tabSysteem && !magTijdensSlot(m.ouders, m.tab) {
 			m.tab = tabStart
 		}
-		return m, tea.Batch(tick(), leesStatus(m.inst.Taal))
+		var luister tea.Cmd
+		if m.dicht() && m.tab == tabLuisteren && m.l.bron != bronBoeken {
+			luister = m.luisterOpen()
+		}
+		slot := m.luisterSlot()
+		return m, tea.Batch(tick(), leesStatus(m.inst.Taal), slot, luister)
 	case statusMsg:
 		m.wifi, m.accu, m.vol = msg.wifi, msg.accu, msg.vol
 		return m, nil
 	case meldingMsg:
 		m.zeg(string(msg))
 		return m, nil
+	case lijstMsg, startMsg, spelerMsg:
+		cmd := m.luisterBericht(msg)
+		return m, cmd
 	case tea.KeyMsg:
 		return m.toets(msg)
 	}
@@ -172,6 +191,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	k := msg.String()
+	m.laatsteToets = time.Now()
 	if k == "ctrl+c" || k == "ctrl+z" || k == "ctrl+\\" {
 		return m, nil // in de kioskstand kun je de app niet zomaar afsluiten
 	}
@@ -227,13 +247,18 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return m, cmd
 	}
 
+	if m.tab == tabLuisteren {
+		if cmd, ok := m.toetsLuisteren(msg); ok {
+			return m, cmd
+		}
+	}
 	if len(k) == 1 && k[0] >= '0' && k[0] <= '8' {
-		m.naarTab(int(k[0] - '0'))
-		return m, nil
+		cmd := m.naarTab(int(k[0] - '0'))
+		return m, cmd
 	}
 	if k == "esc" {
-		m.naarTab(tabStart)
-		return m, nil
+		cmd := m.naarTab(tabStart)
+		return m, cmd
 	}
 
 	switch m.tab {
@@ -245,7 +270,8 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		case "down", "j":
 			m.sel = (m.sel + 1) % n
 		case "enter":
-			m.naarTab(m.sel + 1)
+			cmd := m.naarTab(m.sel + 1)
+			return m, cmd
 		}
 	case tabSysteem:
 		return m.toetsSysteem(k)
@@ -306,14 +332,29 @@ func (m model) toetsSysteem(k string) (tea.Model, tea.Cmd) {
 			m.pinOpen = true
 			m.pin.Focus()
 		}
-	case "t":
-		if m.ouderModus {
-			m.ontgrendeld = time.Now().Add(30 * time.Minute)
-			m.zeg(m.t("msg.unlock"))
+	case "t", "u", "m", "x", "a":
+		if !m.ouderModus {
+			break
 		}
+		nu := time.Now()
+		switch k {
+		case "t":
+			m.ontgrendeld = nu.Add(30 * time.Minute)
+		case "u":
+			m.ontgrendeld = nu.Add(2 * time.Hour)
+		case "m":
+			m.ontgrendeld = volgendeOpening(m.ouders, nu)
+		case "x":
+			m.ontgrendeld = pauzeUit
+		case "a":
+			m.ontgrendeld = time.Time{}
+		}
+		bewaarPauze(m.ontgrendeld)
+		m.nu = nu
+		m.zeg(m.pauzeTekst())
 	case "Q":
 		if m.ouderModus {
-			return m, tea.Quit
+			return m, tea.Sequence(m.stopHuidig(true), tea.Quit)
 		}
 	}
 	return m, nil
@@ -336,6 +377,8 @@ func (m model) View() string {
 		inhoud = m.viewStart(p)
 	case m.tab == tabSysteem:
 		inhoud = m.viewSysteem(p)
+	case m.tab == tabLuisteren:
+		inhoud = m.viewLuisteren(p)
 	default:
 		inhoud = m.viewStraks(p)
 	}
@@ -416,7 +459,7 @@ func (m model) viewStart(p palet) string {
 	}
 	rechts := lipgloss.JoinVertical(lipgloss.Left,
 		paneel(p, m.t("start.today"), slot, rbreed, false),
-		paneel(p, m.t("start.now"), dim.Render(m.t("start.listen")), rbreed, false),
+		paneel(p, m.t("start.now"), dim.Render(m.nuKort()), rbreed, false),
 		paneel(p, m.t("start.buddy"), lipgloss.NewStyle().Foreground(p.acc).Render(gezichten[m.inst.Gezicht])+"  "+m.inst.Maatje, rbreed, false),
 	)
 	return lipgloss.JoinHorizontal(lipgloss.Top, lipgloss.NewStyle().Width(m.breed-rbreed-10).Render(strings.Join(links, "\n")), rechts)
@@ -524,6 +567,7 @@ func (m model) viewSysteem(p palet) string {
 		apparaat += "\n\n" + lipgloss.NewStyle().Foreground(p.geel).Bold(true).Render(m.t("sys.parentmode")) + "\n" +
 			m.t("sys.p.lock", a.Schooldagen, a.Weekend, a.Open) + "\n" +
 			m.t("sys.p.after", jn(a.LezenMag), jn(a.LuisterboekMag)) + "\n" +
+			lipgloss.NewStyle().Foreground(p.acc).Render(m.pauzeTekst()) + "\n" +
 			dim.Render(m.t("sys.p.edit")) + "\n" + m.t("sys.p.keys")
 	}
 	breed := (m.breed - 10) / 2
@@ -587,11 +631,29 @@ func main() {
 	}
 	// niet de terminal naar de achtergrondkleur vragen: niet elke console antwoordt
 	lipgloss.SetHasDarkBackground(true)
-	p := tea.NewProgram(nieuwModel(), tea.WithAltScreen())
+	begin := nieuwModel()
+	p := tea.NewProgram(begin, tea.WithAltScreen())
 	_, err := p.Run()
+	begin.l.sp.Afsluiten()                            // mpv stoppen
 	fmt.Fprint(os.Stdout, "\x1b]110\x07\x1b]111\x07") // terminalkleuren terug
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "unscroll:", err)
 		os.Exit(1)
 	}
+}
+
+// pauzeTekst beschrijft de huidige stand van het avondslot.
+func (m model) pauzeTekst() string {
+	nu := time.Now()
+	switch {
+	case !m.ontgrendeld.Before(pauzeUit):
+		return m.t("sys.p.state.off")
+	case m.ontgrendeld.After(nu):
+		klok := m.ontgrendeld.Format("15:04")
+		if m.ontgrendeld.YearDay() != nu.YearDay() || m.ontgrendeld.Year() != nu.Year() {
+			klok = m.t("time.tomorrow", klok)
+		}
+		return m.t("sys.p.state.paused", klok)
+	}
+	return m.t("sys.p.state.on", bedtijd(m.ouders, nu))
 }

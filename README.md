@@ -41,9 +41,9 @@ The project started on an old Asus Eee PC, hence the "PC" in the name.
 | Start | Greeting, menu, quiet time, the computer's own name in block letters | ✅ phase 0 |
 | Languages | English (default) and Dutch, selectable under System. Add languages in `app/i18n.go` | ✅ phase 0 |
 | System | Computer name, own name, buddy name and face, 5 colour themes, wifi, battery, volume with a maximum, ask for help (ntfy) | ✅ phase 0 |
-| Quiet time | Separate times for school nights and weekends, opening time, what stays open, parent PIN | ✅ phase 0 |
+| Quiet time | Separate times for school nights and weekends, opening time, what stays open, parent PIN, pause for 30 min, 2 hours, until morning or until switched back on | ✅ phase 0 |
 | Updates | New versions from GitHub releases, with checksum verification and fallback | ✅ phase 0 |
-| Listen | Navidrome, radio dial, audiobooks and podcasts from Audiobookshelf, sleep timer | ⏳ phase 1 |
+| Listen | Navidrome, radio dial, audiobooks and podcasts from Audiobookshelf with progress, sleep timer | ✅ phase 1 |
 | Read + Today | E-books (EPUB) from Audiobookshelf, weather, alarm, moon, seasons and seasonal festivals | ⏳ phase 2 |
 | Spotify | Approved playlists only, explicit tracks filtered, autoplay off (librespot) | ⏳ phase 3 |
 | Ask the buddy | AI via the Anthropic API with budgets, filters and a weekly summary for parents | ⏳ phase 4 |
@@ -90,8 +90,31 @@ After booting, the child account logs in automatically and the app starts full s
 
 - **Releasing a new version:** bump the number in `VERSION` and push to `main`. GitHub Actions runs the tests, builds the app for 386, amd64, arm64 and arm (with a `sha256` file per binary) and creates the release.
 - A number with a dash (`0.2.0-test`) becomes a pre-release. It only goes to devices with `KANAAL="test"` in `/etc/unscroll/update.conf`.
-- Devices check for a new release every 15 minutes (`unscroll-update.timer`), verify the checksum and that the new binary starts, then install it. The previous version is kept.
+- Devices check for a new release every 15 minutes (`unscroll-update.timer`), verify the checksum and that the new binary starts, then install it. The previous version is kept. The new version is active after the next restart of the app (or a reboot).
+- The scripts (session, updater, parent helper) come along in a checksummed `unscroll-scripts.tar.gz` and are installed with the app (from v0.2.0 on).
 - If the repository is private, put a fine-grained read-only token in `/etc/unscroll/geheimen.env` (the parent helper asks for it).
+
+## Listening (phase 1)
+
+Press `1` for Listen and `Tab` to switch between Music, Audiobooks, Podcasts and Radio.
+Everything plays through `mpv` without video. There is no autoplay: an album plays to the end and then it is quiet.
+
+| Source | Needs | Set up with |
+|---|---|---|
+| Music | [Navidrome](https://www.navidrome.org/) with its own user for the child | `sudo unscroll-ouder` (address, user, password) |
+| Audiobooks and podcasts | [Audiobookshelf](https://www.audiobookshelf.org/) with an account for the child, so the progress is theirs | `sudo unscroll-ouder` (address and API token or API key) |
+| Radio | nothing: NPO Radio 1, 2, 3FM, Klassiek and BBC World Service are built in | your own list under `radio:` in `/etc/unscroll/ouders.yaml` |
+
+Keys: `↑ ↓` choose, `Enter` open or play, `Backspace` back, `/` search, `space` pause, `x` stop,
+`n` `p` next or previous track, `← →` 30 seconds back or forward (on the radio: tune the dial),
+`s` sleep timer (15, 30, 45, 60 minutes), `+ -` volume up to the parents' maximum.
+
+During quiet time only audiobooks stay available (if `luisterboek_mag` is on), with a sleep timer
+of 30 minutes that starts by itself. Music, radio and podcasts stop when quiet time begins.
+
+Parents can pause quiet time in parent mode (`8`, then `o` and the PIN): `t` 30 minutes, `u` 2 hours,
+`m` until tomorrow morning, `x` until switched back on, `a` back on. Parent mode switches itself off
+after 10 minutes without a key press.
 
 ## Settings
 

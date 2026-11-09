@@ -4,6 +4,7 @@
 #
 # Usage:  sudo unscroll-ouder
 set -euo pipefail
+umask 077   # new files (such as the secrets) are only readable by root until the end
 
 DIR=/etc/unscroll
 OUDERS=$DIR/ouders.yaml
@@ -22,13 +23,18 @@ geheim() {       # geheim "question" -> answer, not shown on screen
 zet_yaml() {     # zet_yaml key value  (single-line keys only)
   sed -i -E "s|^([[:space:]]*$1:).*|\1 \"$2\"|" "$OUDERS"
 }
-zet_env() {      # zet_env NAME value
-  local naam=$1 waarde=$2
+zet_env() {      # zet_env NAME value  (in single quotes, so both bash and the app can read it)
+  local naam=$1 waarde=$2 q="'\\''"
   [[ -z $waarde ]] && return
   touch "$GEHEIM"
   grep -v "^${naam}=" "$GEHEIM" > "$GEHEIM.tmp" || true
-  printf '%s=%q\n' "$naam" "$waarde" >> "$GEHEIM.tmp"
+  printf "%s='%s'\n" "$naam" "${waarde//\'/$q}" >> "$GEHEIM.tmp"
   mv "$GEHEIM.tmp" "$GEHEIM"
+}
+huidig() {       # huidig NAME -> current value from the secrets file (for addresses and user names)
+  [[ -f $GEHEIM ]] || return 0
+  # shellcheck source=/dev/null
+  ( set +u; . "$GEHEIM"; printf '%s' "${!1:-}" )
 }
 
 echo "== Unscroll parent helper =="
@@ -62,11 +68,16 @@ echo
 
 echo "-- Secrets (stored in $GEHEIM) --"
 zet_env GITHUB_TOKEN "$(geheim 'GitHub token, only needed if the repository is private')"
-zet_env NAVIDROME_URL "$(vraag 'Navidrome address (needed later, may be empty)' '')"
-zet_env NAVIDROME_GEBRUIKER "$(vraag 'Navidrome user for the child' '')"
+echo
+echo "Music: Navidrome. Give the child its own Navidrome user. Leave empty to skip."
+zet_env NAVIDROME_URL "$(vraag 'Navidrome address, for example http://192.168.1.10:4533' "$(huidig NAVIDROME_URL)")"
+zet_env NAVIDROME_GEBRUIKER "$(vraag 'Navidrome user for the child' "$(huidig NAVIDROME_GEBRUIKER)")"
 zet_env NAVIDROME_WACHTWOORD "$(geheim 'Navidrome password')"
-zet_env ABS_URL "$(vraag 'Audiobookshelf address (needed later, may be empty)' '')"
-zet_env ABS_TOKEN "$(geheim 'Audiobookshelf API token of the child account')"
+echo
+echo "Audiobooks and podcasts: Audiobookshelf. Use the child's own account, so the progress is theirs."
+echo "Find the key in Audiobookshelf: Settings > Users > (child) > API token, or Settings > API Keys."
+zet_env ABS_URL "$(vraag 'Audiobookshelf address, for example http://192.168.1.10:13378' "$(huidig ABS_URL)")"
+zet_env ABS_TOKEN "$(geheim 'Audiobookshelf API token or API key of the child account')"
 zet_env ANTHROPIC_API_KEY "$(geheim 'Anthropic API key for the AI buddy')"
 
 chown root:root "$OUDERS"; chmod 0644 "$OUDERS"
