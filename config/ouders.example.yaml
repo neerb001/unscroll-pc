@@ -1,35 +1,36 @@
-# Instellingen voor de ouders. Dit bestand is van root:
-# het kind kan het lezen, maar niet wijzigen.
-# Plek op het apparaat: /etc/unscroll/ouders.yaml
+# Settings for parents. This file belongs to root:
+# the child can read it but not change it.
+# Location on the device: /etc/unscroll/ouders.yaml
+# Easiest way to change it: sudo unscroll-ouder
 
 avondslot:
-  schooldagen: "20:00"     # zondag t/m donderdag
-  weekend: "20:30"         # vrijdag- en zaterdagavond
-  open: "07:00"            # vanaf dan is alles weer open
-  lezen_mag: true          # e-boeken blijven open tijdens het slot
-  luisterboek_mag: true    # luisterboek met slaaptimer blijft open
+  schooldagen: "20:00"     # Sunday to Thursday
+  weekend: "20:30"         # Friday and Saturday evening
+  open: "07:00"            # everything opens again from this time
+  lezen_mag: true          # e-books stay available during quiet time
+  luisterboek_mag: true    # audiobook with sleep timer stays available
 
-# Pincode voor de ouderstand. Maak de hash met:
+# PIN for parent mode (set it with sudo unscroll-ouder), or create the hash with:
 #   unscroll --pin-hash 1234
 pin_sha256: ""
 
 max_volume: 70
 
-# "Hulp vragen" stuurt een melding naar jullie telefoons via ntfy.
-# Kies een lang, moeilijk te raden topic en abonneer je erop in de ntfy-app.
+# "Ask for help" sends a notification to your phones via ntfy.
+# Pick a long, hard to guess topic and subscribe to it in the ntfy app.
 ntfy:
   url: "https://ntfy.sh"
   topic: ""
 
-# Grenzen van het AI-maatje (komt in fase 4).
-# Laat een regel weg om de standaardwaarde uit de app te gebruiken;
-# die wordt met updates bijgesteld op basis van ervaringen.
+# Limits of the AI buddy (arrives in phase 4).
+# Leave out a line to use the default from the app;
+# defaults are tuned through updates as we learn from real use.
 maatje:
   aan: true
-  huiswerk_sessies_per_dag: 2      # een sessie gaat over één opdracht
+  huiswerk_sessies_per_dag: 2      # one session is about one assignment
   beurten_per_huiswerksessie: 40
   verhaal_sessies_per_dag: 1
   beurten_per_verhaalsessie: 30
-  vrije_vragen_per_dag: 15         # losse "hoe werkt het?"-vragen
+  vrije_vragen_per_dag: 15         # separate "how does it work?" questions
   max_minuten_per_dag: 45
   pauze_na_minuten: 20

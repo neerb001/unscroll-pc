@@ -1,5 +1,5 @@
 [Unit]
-Description=Unscroll bijwerken vanaf GitHub
+Description=Update Unscroll from GitHub
 Wants=network-online.target
 After=network-online.target
 

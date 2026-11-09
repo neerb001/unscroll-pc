@@ -1,12 +1,21 @@
 #!/usr/bin/env bash
-# Start de app als enige programma op het scherm: cage (kiosk) met daarin foot (terminal).
-# Sluit de app af, dan start hij gewoon opnieuw. Er is geen vrije shell om in terecht te komen.
+# Runs the app as the only program on screen: cage (kiosk) with the foot terminal inside.
+# If the app exits it simply starts again; there is no free shell to land in.
+# Ctrl+Alt+F2 still switches to a normal login prompt for parents (password required).
+# If the graphical kiosk keeps failing (for example on an unsupported video chip),
+# the app falls back to running directly on the text console.
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
-export WLR_RENDERER="${WLR_RENDERER:-pixman}"   # oude videochips: software-rendering is het betrouwbaarst
-export TERM=foot
+export WLR_RENDERER="${WLR_RENDERER:-pixman}"   # old video chips: software rendering is the most reliable
 
+mislukt=0
 while true; do
-  # zonder -s: wisselen naar een andere console (Ctrl+Alt+F2) is uitgeschakeld
-  cage -- foot --config "$HOME/.config/foot/foot.ini" /usr/local/bin/unscroll
+  if [[ $mislukt -lt 3 ]]; then
+    start=$(date +%s)
+    TERM=foot cage -s -- foot --config "$HOME/.config/foot/foot.ini" /usr/local/bin/unscroll
+    if (( $(date +%s) - start < 10 )); then mislukt=$((mislukt + 1)); else mislukt=0; fi
+  else
+    # fallback: straight on the Linux console
+    TERM=linux /usr/local/bin/unscroll
+  fi
   sleep 1
 done
