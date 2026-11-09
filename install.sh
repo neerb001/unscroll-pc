@@ -18,6 +18,7 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
   cage foot fonts-jetbrains-mono \
   network-manager alsa-utils mpv \
   curl jq ca-certificates zram-tools \
+  avahi-daemon libnss-mdns \
   sudo
 
 echo "==> Geheugen sparen met zram"
