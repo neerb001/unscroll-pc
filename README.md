@@ -84,10 +84,10 @@ Na het opstarten logt het kinderaccount automatisch in en start de app op het he
 
 ## Updates
 
-- Een push van een tag (`v0.2.0`) laat GitHub Actions de app bouwen voor 386, amd64, arm64 en arm, met een `sha256`-bestand per binary.
+- **Een nieuwe versie uitbrengen:** verhoog het nummer in `VERSION` en push naar `main`. GitHub Actions test alles, bouwt de app voor 386, amd64, arm64 en arm (met een `sha256`-bestand per binary) en maakt de release aan.
+- Een nummer met een streepje (`0.2.0-test`) wordt een pre-release. Die gaat alleen naar apparaten met `KANAAL="test"` in `/etc/unscroll/update.conf`.
 - Het apparaat kijkt elke 15 minuten of er een nieuwe release is (`unscroll-update.timer`), controleert de checksum en of de nieuwe versie start, en zet hem klaar. De vorige versie blijft bewaard.
-- Pre-releases (`v0.2.0-test`) gaan alleen naar apparaten met `KANAAL="test"` in `/etc/unscroll/update.conf`.
-- Is de repository privé, zet dan een fine-grained token met alleen-lezen rechten in `/etc/unscroll/geheimen.env`.
+- Is de repository privé, zet dan een fine-grained token met alleen-lezen rechten in `/etc/unscroll/geheimen.env` (de ouderhulp vraagt erom).
 
 ## Instellingen
 

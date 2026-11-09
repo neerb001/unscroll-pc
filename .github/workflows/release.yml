@@ -1,9 +1,13 @@
 name: bouwen en uitbrengen
 
+# Een nieuwe versie uitbrengen: verhoog het nummer in VERSION en push naar main.
+# Bestaat de release voor dat nummer nog niet, dan bouwt deze workflow de app
+# en maakt hij de tag en de release aan. Een nummer met een streepje
+# (bijvoorbeeld 0.2.0-test) wordt een pre-release.
+
 on:
   push:
     branches: [main]
-    tags: ["v*"]
   pull_request:
 
 permissions:
@@ -12,21 +16,19 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: app
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
           go-version-file: app/go.mod
-      - run: go vet ./...
-      - run: go test ./...
+      - name: go vet en tests
+        working-directory: app
+        run: |
+          go vet ./...
+          go test ./...
       - name: shellcheck
-        working-directory: .
         run: shellcheck install.sh scripts/unscroll-sessie scripts/unscroll-update scripts/unscroll-ouder
       - name: geen geheimen in de repository
-        working-directory: .
         run: |
           if git ls-files | grep -E '(^|/)(geheimen\.env|ouders\.yaml|update\.conf)$'; then
             echo "Echte instellingen of geheimen gevonden. Die horen alleen op het apparaat."; exit 1
@@ -37,26 +39,45 @@ jobs:
 
   release:
     needs: test
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: versie bepalen
+        id: versie
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          V="v$(tr -d ' \n' < VERSION)"
+          echo "tag=$V" >> "$GITHUB_OUTPUT"
+          if gh release view "$V" >/dev/null 2>&1; then
+            echo "Release $V bestaat al, niets te doen."
+            echo "nieuw=nee" >> "$GITHUB_OUTPUT"
+          else
+            echo "nieuw=ja" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/setup-go@v5
+        if: steps.versie.outputs.nieuw == 'ja'
         with:
           go-version-file: app/go.mod
       - name: bouwen voor 32-bit, 64-bit en ARM
+        if: steps.versie.outputs.nieuw == 'ja'
         working-directory: app
+        env:
+          TAG: ${{ steps.versie.outputs.tag }}
         run: |
           # 386: oude netbooks · amd64: gewone laptops · arm64: Raspberry Pi 4/5/400/500 · arm: oudere Pi's
           for arch in 386 amd64 arm64 arm; do
             CGO_ENABLED=0 GOOS=linux GOARCH=$arch GOARM=7 go build -trimpath \
-              -ldflags "-s -w -X main.versie=${GITHUB_REF_NAME}" -o ../dist/unscroll-linux-$arch .
+              -ldflags "-s -w -X main.versie=${TAG}" -o ../dist/unscroll-linux-$arch .
             (cd ../dist && sha256sum unscroll-linux-$arch > unscroll-linux-$arch.sha256)
           done
-      - name: release maken
+      - name: tag en release maken
+        if: steps.versie.outputs.nieuw == 'ja'
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.versie.outputs.tag }}
         run: |
           PRE=""
-          [[ "$GITHUB_REF_NAME" == *-* ]] && PRE="--prerelease"
-          gh release create "$GITHUB_REF_NAME" dist/* --generate-notes $PRE
+          [[ "$TAG" == *-* ]] && PRE="--prerelease"
+          gh release create "$TAG" dist/* --target "$GITHUB_SHA" --title "Unscroll PC $TAG" --generate-notes $PRE
