@@ -31,6 +31,40 @@ zet_env() {      # zet_env NAME value  (in single quotes, so both bash and the a
   printf "%s='%s'\n" "$naam" "${waarde//\'/$q}" >> "$GEHEIM.tmp"
   mv "$GEHEIM.tmp" "$GEHEIM"
 }
+yaml_waarde() {  # yaml_waarde key -> current value in ouders.yaml (first match, without quotes)
+  sed -nE "s/^[[:space:]]*$1:[[:space:]]*\"?([^\"#]*)\"?.*/\1/p" "$OUDERS" | head -n 1 | sed 's/[[:space:]]*$//'
+}
+zet_yaml_in() {  # zet_yaml_in section key value  (adds the line under the section when it is missing)
+  if grep -qE "^[[:space:]]+$2:" "$OUDERS"; then
+    zet_yaml "$2" "$3"
+  elif grep -q "^$1:" "$OUDERS"; then
+    sed -i "/^$1:/a\\  $2: \"$3\"" "$OUDERS"
+  else
+    printf '\n%s:\n  %s: "%s"\n' "$1" "$2" "$3" >> "$OUDERS"
+  fi
+}
+koppel_librespot() {  # links the Spotify speaker on this computer to an account, once
+  local cache="/home/$KIND/.cache/unscroll/librespot"
+  if ! command -v librespot >/dev/null; then
+    echo "The Spotify speaker (librespot) is not installed yet. It comes with the next update;"
+    echo "run sudo unscroll-update --nu and then this helper again."
+    return 0
+  fi
+  install -d -o "$KIND" -g "$KIND" "/home/$KIND/.cache" "/home/$KIND/.cache/unscroll" "$cache"
+  chown "$KIND:$KIND" "/home/$KIND/.cache" "/home/$KIND/.cache/unscroll" "$cache"
+  rm -f "$cache/credentials.json"
+  echo "Open the link below on a phone or computer and log in with the SAME Spotify account."
+  echo "You end up on a page that does not load (127.0.0.1). Copy that whole address and paste it here."
+  # librespot keeps running after the login; stop it as soon as the login is saved
+  ( for _ in $(seq 1 900); do
+      if [[ -s "$cache/credentials.json" ]]; then sleep 2; pkill -u "$KIND" -f "librespot.*enable-oauth"; exit 0; fi
+      sleep 1
+    done ) &
+  sudo -u "$KIND" librespot --enable-oauth --cache "$cache" --disable-audio-cache --disable-discovery \
+    --backend alsa --name "Unscroll-setup" --quiet || true
+  wait
+  if [[ -s "$cache/credentials.json" ]]; then echo "Spotify speaker linked."; else echo "Linking did not work, try again later."; fi
+}
 huidig() {       # huidig NAME -> current value from the secrets file (for addresses and user names)
   [[ -f $GEHEIM ]] || return 0
   # shellcheck source=/dev/null
@@ -55,14 +89,16 @@ done
 echo
 
 echo "-- Quiet time --"
-zet_yaml schooldagen "$(vraag 'Closes on school nights (Sun to Thu)' 20:00)"
-zet_yaml weekend "$(vraag 'Closes on Friday and Saturday evening' 20:30)"
-zet_yaml open "$(vraag 'Opens again at' 07:00)"
+zet_yaml schooldagen "$(vraag 'Closes on school nights (Sun to Thu)' "$(yaml_waarde schooldagen)")"
+zet_yaml weekend "$(vraag 'Closes on Friday and Saturday evening' "$(yaml_waarde weekend)")"
+zet_yaml open "$(vraag 'Opens again at' "$(yaml_waarde open)")"
 echo
 
 echo "-- Ask for help via ntfy (notification on your phones) --"
 echo "Pick a long, hard to guess topic and subscribe to it in the ntfy app."
-topic=$(vraag "ntfy topic" "unscroll-$(tr -dc a-z0-9 </dev/urandom | head -c 12)")
+topic="$(yaml_waarde topic)"
+[[ -n $topic ]] || topic="unscroll-$(tr -dc a-z0-9 </dev/urandom | head -c 12)"
+topic=$(vraag "ntfy topic" "$topic")
 zet_yaml topic "$topic"
 echo
 
@@ -80,8 +116,43 @@ zet_env ABS_URL "$(vraag 'Audiobookshelf address, for example http://192.168.1.1
 zet_env ABS_TOKEN "$(geheim 'Audiobookshelf API token or API key of the child account')"
 echo
 echo "AI buddy: create an API key at https://console.anthropic.com and set a monthly spend limit there."
-echo "Limits per day and the model are in $OUDERS (section maatje)."
+echo "Limits per day are in $OUDERS (section maatje)."
 zet_env ANTHROPIC_API_KEY "$(geheim 'Anthropic API key for the AI buddy')"
+echo
+echo "Which model should the buddy use?"
+echo "  1) claude-haiku-5-5   cheapest (a few cents a day), fine for questions, quizzing and stories"
+echo "  2) claude-sonnet-5-5  in between, a better homework coach"
+echo "  3) claude-opus-5-5    best and most expensive"
+case "$(yaml_waarde model)" in
+  claude-haiku*) nu=1 ;; claude-sonnet*) nu=2 ;; *) nu=3 ;;
+esac
+case "$(vraag 'Choose 1, 2 or 3' "$nu")" in
+  1) zet_yaml_in maatje model claude-haiku-5-5 ;;
+  2) zet_yaml_in maatje model claude-sonnet-5-5 ;;
+  3) zet_yaml_in maatje model claude-opus-5-5 ;;
+  *) echo "Unknown choice, model unchanged." ;;
+esac
+echo
+
+echo "-- Spotify (needs Premium; press Enter to skip) --"
+echo "Spotify plays only the albums and playlists you approve, without autoplay or recommendations."
+echo "Once: create an app at https://developer.spotify.com/dashboard (Web API), with redirect URI"
+echo "  http://127.0.0.1:8898/callback"
+echo "and copy its Client ID."
+spid=$(vraag "Spotify Client ID" "$(huidig SPOTIFY_CLIENT_ID)")
+if [[ -n $spid ]]; then
+  zet_env SPOTIFY_CLIENT_ID "$spid"
+  if [[ "$(vraag 'Log in to Spotify now (needed once)? y/n' n)" == y ]]; then
+    if tok=$(/usr/local/bin/unscroll --spotify-login "$spid"); then
+      zet_env SPOTIFY_REFRESH_TOKEN "$tok"
+      echo "Logged in."
+    fi
+  fi
+  if [[ "$(vraag 'Link the Spotify speaker on this computer now (needed once)? y/n' n)" == y ]]; then
+    koppel_librespot
+  fi
+  echo "Approve albums and playlists by adding their Spotify links under spotify: goedgekeurd: in $OUDERS"
+fi
 
 chown root:root "$OUDERS"; chmod 0644 "$OUDERS"
 [[ -f $GEHEIM ]] && { chown root:"$KIND" "$GEHEIM"; chmod 0640 "$GEHEIM"; }

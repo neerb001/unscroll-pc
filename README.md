@@ -45,7 +45,7 @@ The project started on an old Asus Eee PC, hence the "PC" in the name.
 | Updates | New versions from GitHub releases, with checksum verification and fallback | ✅ phase 0 |
 | Listen | Navidrome, radio dial, audiobooks and podcasts from Audiobookshelf with progress, sleep timer | ✅ phase 1 |
 | Read + Today | E-books (EPUB) from Audiobookshelf, weather, alarm, moon, seasons and seasonal festivals | ⏳ phase 2 |
-| Spotify | Approved playlists only, explicit tracks filtered, autoplay off (librespot) | ⏳ phase 3 |
+| Spotify | Approved albums and playlists only, explicit tracks filtered, autoplay off (librespot) | ✅ phase 3 |
 | Ask the buddy | AI via the Anthropic API with budgets, filters and a weekly summary for parents | ✅ phase 4 |
 | Discover | Computer lab (learn Linux through missions), Python, animal of the day, nature journal | ⏳ phase 5 |
 | Puzzles | Sudoku, chess problems, riddles. No timer, no score | ⏳ phase 5 |
@@ -125,9 +125,28 @@ after 10 minutes without a key press.
 | `/etc/unscroll/update.conf` | parents (root) | repository and update channel |
 | `/etc/unscroll/geheimen.env` | parents (root) | tokens and API keys, never in git |
 
+## Spotify without the algorithm (phase 3)
+
+Needs Spotify Premium (Duo works; with Family the child gets its own account and its listening
+does not mix with yours). Sound comes from [librespot](https://github.com/librespot-org/librespot),
+a Spotify Connect speaker that the updater installs (`/usr/local/bin/librespot`, not for 32-bit ARM).
+The app controls it through the Spotify Web API and only plays what you approved.
+
+Once, on a phone or computer:
+1. Create an app at [developer.spotify.com/dashboard](https://developer.spotify.com/dashboard), tick Web API,
+   and add the redirect URI `http://127.0.0.1:8898/callback`. Copy its Client ID.
+2. On the device run `sudo unscroll-ouder`, enter the Client ID, log in (the helper shows a link;
+   you end up on a page that does not load, copy that address back), and link the speaker the same way.
+   Use the same Spotify account for both.
+3. Approve albums and playlists: add their links under `spotify: goedgekeurd:` in `/etc/unscroll/ouders.yaml`.
+
+In the app: `1` Listen, `Tab` to Spotify. An approved album or playlist plays in order and then stops.
+If anything else starts playing on the speaker (autoplay, or someone taking it over from another device),
+the app pauses it.
+
 ## The AI buddy (phase 4)
 
-Press `3` (the tab carries the buddy's name). Set the API key with `sudo unscroll-ouder`; create it at
+Press `3` (the tab carries the buddy's name). Set the API key and choose the model with `sudo unscroll-ouder`; create it at
 [console.anthropic.com](https://console.anthropic.com) and set a monthly spend limit there.
 The buddy answers with `claude-opus-5-5` by default and every question and answer is checked by
 `claude-haiku-5-5`; both can be changed under `maatje:` in `/etc/unscroll/ouders.yaml`

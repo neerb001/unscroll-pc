@@ -81,6 +81,8 @@ else
   /usr/local/sbin/unscroll-update --nu || echo "No release found yet; the updater will try again later."
 fi
 ln -sfn /opt/unscroll/huidig/unscroll /usr/local/bin/unscroll
+# Spotify speaker from the offline bundle (otherwise the updater brings it)
+[[ -x "$HIER/librespot" ]] && install -m 0755 "$HIER/librespot" /usr/local/bin/librespot
 
 echo "==> Automatic login on tty1, starting the app right away"
 install -d /etc/systemd/system/getty@tty1.service.d

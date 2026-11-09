@@ -1,0 +1,82 @@
+name: librespot bouwen
+
+# Bouwt librespot (de Spotify Connect-speler) in Debian 12 voor de apparaten en zet hem in
+# een eigen release "librespot-<versie>". De app-release neemt die bestanden over, en de
+# updater op het apparaat installeert ze. Nieuwe versie: verander librespot/VERSIE.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [librespot/VERSIE, .github/workflows/librespot.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  bouw:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: "386"          # oude netbooks zoals de Eee PC
+            runner: ubuntu-latest
+            platform: linux/386
+            wrap: linux32
+          - arch: amd64          # gewone laptops
+            runner: ubuntu-latest
+            platform: linux/amd64
+            wrap: ""
+          - arch: arm64          # Raspberry Pi 4 / 5 / 400 / 500
+            runner: ubuntu-24.04-arm
+            platform: linux/arm64
+            wrap: ""
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: bouwen in Debian 12
+        run: |
+          V="$(tr -d ' \n' < librespot/VERSIE)"
+          mkdir -p uit
+          docker run --rm --platform ${{ matrix.platform }} -v "$PWD/uit:/uit" -e V="$V" debian:bookworm \
+            ${{ matrix.wrap }} bash -euxc '
+              apt-get update
+              apt-get install -y --no-install-recommends ca-certificates curl build-essential pkg-config libasound2-dev
+              curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
+              . "$HOME/.cargo/env"
+              rustc -vV
+              cargo install librespot --version "$V" --locked --no-default-features \
+                --features alsa-backend,with-libmdns,rustls-tls-webpki-roots --root /tmp/lr
+              /tmp/lr/bin/librespot --version
+              cp /tmp/lr/bin/librespot /uit/librespot'
+          cp uit/librespot "librespot-linux-${{ matrix.arch }}"
+          sha256sum "librespot-linux-${{ matrix.arch }}" > "librespot-linux-${{ matrix.arch }}.sha256"
+          file "librespot-linux-${{ matrix.arch }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: librespot-${{ matrix.arch }}
+          path: librespot-linux-*
+
+  uitbrengen:
+    needs: bouw
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: release librespot
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          V="$(tr -d ' \n' < librespot/VERSIE)"
+          TAG="librespot-$V"
+          ls -la dist
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/* --clobber
+          else
+            gh release create "$TAG" dist/* --target "$GITHUB_SHA" --prerelease --latest=false \
+              --title "librespot $V for Unscroll" \
+              --notes "librespot $V (https://github.com/librespot-org/librespot, MIT) built in Debian 12 with ALSA. Shipped with Unscroll releases and installed by the updater."
+          fi

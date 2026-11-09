@@ -70,5 +70,14 @@ curl -fsSL -o "$WERK/sum" "$BASIS.sha256"
 [[ "$(awk '{print $1}' "$WERK/sum")" == "$(sha256sum "$UIT/unscroll" | awk '{print $1}')" ]] || { echo "Checksum mismatch"; exit 1; }
 chmod +x "$UIT/unscroll"
 
+# Spotify speaker (librespot), when this release has it for this processor
+if curl -fsSL -o "$UIT/librespot" "https://github.com/$REPO/releases/download/$TAG/librespot-linux-$GOARCH" \
+   && curl -fsSL -o "$WERK/lrsum" "https://github.com/$REPO/releases/download/$TAG/librespot-linux-$GOARCH.sha256" \
+   && [[ "$(awk '{print $1}' "$WERK/lrsum")" == "$(sha256sum "$UIT/librespot" | awk '{print $1}')" ]]; then
+  chmod +x "$UIT/librespot"
+else
+  rm -f "$UIT/librespot"; echo "(no librespot in this release, Spotify will come with an update)"
+fi
+
 echo
 echo "Done: $UIT ($(du -sh "$UIT" | cut -f1), app $TAG)"
