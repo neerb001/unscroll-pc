@@ -98,6 +98,25 @@ Na het opstarten logt het kinderaccount automatisch in en start de app op het he
 | `/etc/unscroll/update.conf` | ouders (root) | repository en updatekanaal |
 | `/etc/unscroll/geheimen.env` | ouders (root) | tokens en API-sleutels, nooit in git |
 
+## Het AI-maatje (fase 4)
+
+Het maatje is een hulpje, geen vriend: het praat alleen als het iets gevraagd wordt en helpt
+nadenken in plaats van voor het kind te denken. De grenzen gaan per soort gebruik:
+
+| Modus | Hoe | Standaardgrens |
+|---|---|---|
+| Huiswerkcoach en overhoren | Sessie rond één opdracht: eerst zelf proberen, hints in stappen, voorbeeld met andere getallen, afsluiten met "wat heb je geleerd?" | 2 sessies per dag, 40 beurten per sessie |
+| Samen een verhaal | Om de beurt schrijven, wordt bewaard in de schrijfhoek | 1 sessie per dag |
+| Vrije vragen | Nieuwsgierigheid: "hoe werkt het?" | 15 per dag |
+| Alles samen | | 45 minuten per dag, pauze na 20 minuten, dicht tijdens het avondslot |
+
+Veiligheid: persoonsgegevens worden weggefilterd voordat er iets wordt verstuurd, elke vraag
+en elk antwoord krijgt een tweede controle op geschiktheid, zware onderwerpen worden
+doorverwezen naar de ouders, en een "klopt dit?"-knop leert dat AI fouten kan maken.
+
+Ouders stellen de grenzen in met `sudo unscroll-ouder`. De standaardwaarden en de instructies
+voor het maatje zitten in de app en worden via updates bijgesteld op basis van ervaringen.
+
 ## Wachtwoorden en sleutels
 
 **Geheimen komen nooit in deze repository.** Pincode, wachtwoorden, gebruikersnamen, tokens en

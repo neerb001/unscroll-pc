@@ -94,6 +94,25 @@ type Ouders struct {
 		URL   string `yaml:"url"`
 		Topic string `yaml:"topic"`
 	} `yaml:"ntfy"`
+	Maatje MaatjeGrenzen `yaml:"maatje"`
+}
+
+// MaatjeGrenzen zijn de grenzen van het AI-maatje. De standaardwaarden zitten in de app
+// en worden met updates bijgesteld; wat in ouders.yaml staat, gaat altijd voor.
+type MaatjeGrenzen struct {
+	Aan                   bool `yaml:"aan"`
+	HuiswerkSessiesPerDag int  `yaml:"huiswerk_sessies_per_dag"`
+	BeurtenPerHuiswerk    int  `yaml:"beurten_per_huiswerksessie"`
+	VerhaalSessiesPerDag  int  `yaml:"verhaal_sessies_per_dag"`
+	BeurtenPerVerhaal     int  `yaml:"beurten_per_verhaalsessie"`
+	VrijeVragenPerDag     int  `yaml:"vrije_vragen_per_dag"`
+	MaxMinutenPerDag      int  `yaml:"max_minuten_per_dag"`
+	PauzeNaMinuten        int  `yaml:"pauze_na_minuten"`
+}
+
+func standaardMaatje() MaatjeGrenzen {
+	return MaatjeGrenzen{Aan: true, HuiswerkSessiesPerDag: 2, BeurtenPerHuiswerk: 40, VerhaalSessiesPerDag: 1,
+		BeurtenPerVerhaal: 30, VrijeVragenPerDag: 15, MaxMinutenPerDag: 45, PauzeNaMinuten: 20}
 }
 
 func standaardOuders() Ouders {
@@ -105,6 +124,7 @@ func standaardOuders() Ouders {
 	o.Avondslot.LuisterboekMag = true
 	o.MaxVolume = 70
 	o.Ntfy.URL = "https://ntfy.sh"
+	o.Maatje = standaardMaatje()
 	return o
 }
 

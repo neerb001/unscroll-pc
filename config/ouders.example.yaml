@@ -20,3 +20,16 @@ max_volume: 70
 ntfy:
   url: "https://ntfy.sh"
   topic: ""
+
+# Grenzen van het AI-maatje (komt in fase 4).
+# Laat een regel weg om de standaardwaarde uit de app te gebruiken;
+# die wordt met updates bijgesteld op basis van ervaringen.
+maatje:
+  aan: true
+  huiswerk_sessies_per_dag: 2      # een sessie gaat over één opdracht
+  beurten_per_huiswerksessie: 40
+  verhaal_sessies_per_dag: 1
+  beurten_per_verhaalsessie: 30
+  vrije_vragen_per_dag: 15         # losse "hoe werkt het?"-vragen
+  max_minuten_per_dag: 45
+  pauze_na_minuten: 20
