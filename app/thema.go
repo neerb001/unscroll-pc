@@ -7,7 +7,6 @@ import (
 )
 
 type palet struct {
-	naam                                   string
 	bg, bg2, sel, lijn, fg, dim, acc, acc2 lipgloss.Color
 	groen, geel, rood                      lipgloss.Color
 }
@@ -15,11 +14,11 @@ type palet struct {
 var themaVolgorde = []string{"nacht", "ruimte", "tovenaar", "bos", "oceaan"}
 
 var themas = map[string]palet{
-	"nacht":    {"Nachtlucht", "#1a1b26", "#16161e", "#283457", "#3b4261", "#c0caf5", "#6b7399", "#7aa2f7", "#bb9af7", "#9ece6a", "#e0af68", "#f7768e"},
-	"ruimte":   {"Ruimtestation", "#12161d", "#0d1015", "#1f2a3a", "#2e3846", "#d8dee8", "#7a8697", "#ff8a3d", "#6cb6ff", "#7ee787", "#f2cc60", "#ff6b6b"},
-	"tovenaar": {"Tovenaarsschool", "#1c1315", "#150e10", "#3a2125", "#4a2f33", "#f1e6d0", "#9b8676", "#e3b341", "#d9776a", "#a9c47a", "#e3b341", "#e0605e"},
-	"bos":      {"Bos", "#151b15", "#101510", "#243324", "#2f3d2e", "#e3ead9", "#829178", "#8fc27a", "#d4b06a", "#8fc27a", "#e6c56b", "#d9776a"},
-	"oceaan":   {"Oceaan", "#0f1a24", "#0b141c", "#17324a", "#22384c", "#dbe8f0", "#7b93a6", "#4fd1c5", "#7aa8ff", "#7fd99a", "#f0cf72", "#f07a7a"},
+	"nacht":    {"#1a1b26", "#16161e", "#283457", "#3b4261", "#c0caf5", "#6b7399", "#7aa2f7", "#bb9af7", "#9ece6a", "#e0af68", "#f7768e"},
+	"ruimte":   {"#12161d", "#0d1015", "#1f2a3a", "#2e3846", "#d8dee8", "#7a8697", "#ff8a3d", "#6cb6ff", "#7ee787", "#f2cc60", "#ff6b6b"},
+	"tovenaar": {"#1c1315", "#150e10", "#3a2125", "#4a2f33", "#f1e6d0", "#9b8676", "#e3b341", "#d9776a", "#a9c47a", "#e3b341", "#e0605e"},
+	"bos":      {"#151b15", "#101510", "#243324", "#2f3d2e", "#e3ead9", "#829178", "#8fc27a", "#d4b06a", "#8fc27a", "#e6c56b", "#d9776a"},
+	"oceaan":   {"#0f1a24", "#0b141c", "#17324a", "#22384c", "#dbe8f0", "#7b93a6", "#4fd1c5", "#7aa8ff", "#7fd99a", "#f0cf72", "#f07a7a"},
 }
 
 var gezichten = []string{"[◉_◉]", "(^‿^)", "<•_•>", "{o_o}", "[■_■]"}

@@ -1,5 +1,5 @@
 // Unscroll: een rustige luister- en ontdekcomputer voor kinderen.
-// Draait als volledig-scherm terminal-app op een oude 32-bit netbook.
+// Draait als volledig-scherm terminal-app op oude laptops, netbooks en Raspberry Pi's.
 package main
 
 import (
@@ -27,36 +27,10 @@ const (
 	tabSysteem
 )
 
-var tabNamen = []string{"start", "luister", "lees", "maatje", "ontdek", "denk", "schrijf", "vandaag", "systeem"}
-
-type menuItem struct {
-	tab        int
-	naam, info string
-}
-
-func menu(maatje string) []menuItem {
-	return []menuItem{
-		{tabLuisteren, "Luisteren", "muziek, Spotify, luisterboeken, podcasts, radio"},
-		{tabLezen, "Lezen", "e-boeken uit je eigen bibliotheek"},
-		{tabMaatje, "Vraag " + maatje, "je slimme maatje"},
-		{tabOntdekken, "Ontdekken", "computerlab, programmeren, dieren, natuur"},
-		{tabDenksport, "Denksport", "sudoku, schaakpuzzel, raadsel"},
-		{tabSchrijfhoek, "Schrijfhoek", "privé dagboek en verhalen"},
-		{tabVandaag, "Vandaag", "weer, wekker, maan, seizoen"},
-		{tabSysteem, "Systeem", "naam, kleuren, wifi, volume, hulp"},
-	}
-}
-
-// wat er per tabblad nog komt (fase-overzicht uit de README)
-var komtNog = map[int][]string{
-	tabLuisteren:   {"fase 1", "Navidrome: door artiesten scrollen, typen om te zoeken", "Radio met draaiknop langs goedgekeurde zenders", "Luisterboeken uit Audiobookshelf, voortgang gaat mee", "Podcasts die jullie als ouders kiezen", "Slaaptimer en maximaal volume", "Spotify (fase 3): alleen goedgekeurde lijsten, geen autoplay"},
-	tabLezen:       {"fase 2", "E-boeken uit Audiobookshelf, ook offline", "Rustige leesweergave met bladwijzers", "Letters groter en kleiner"},
-	tabMaatje:      {"fase 4", "Vragen in gewone taal via de Anthropic-API", "Modi: hoe werkt het, huiswerkcoach, overhoren, samen een verhaal, dieren, mythen", "Grenzen: dagbudget, niet na het avondslot, persoonsgegevens worden weggefilterd", "Weekoverzicht voor de ouders"},
-	tabOntdekken:   {"fase 5", "Computerlab: Linux leren met missies in een oefenomgeving", "Python, met alleen je eigen kamerlamp als echte uitvoer", "Dier van de dag (Wikipedia) en natuurdagboek"},
-	tabDenksport:   {"fase 5", "Sudoku, schaakpuzzels en raadsels", "Geen timer, geen score, een paar per dag"},
-	tabSchrijfhoek: {"fase 5", "Privé dagboek en verhalen", "Alleen jij kunt het lezen"},
-	tabVandaag:     {"fase 2", "Weer met regen per uur en een praktische tip", "Wekker, planning, maanfase en ISS", "Seizoen en het volgende jaarfeest"},
-}
+// sleutels in de vertalingen per tabblad
+var tabSleutels = []string{"tab.start", "tab.listen", "tab.read", "", "tab.discover", "tab.puzzles", "tab.write", "tab.today", "tab.system"}
+var menuSleutels = []string{"", "menu.listen", "menu.read", "menu.buddy", "menu.discover", "menu.puzzles", "menu.write", "menu.today", "menu.system"}
+var straksSleutels = map[int]string{tabLuisteren: "soon.listen", tabLezen: "soon.read", tabMaatje: "soon.buddy", tabOntdekken: "soon.discover", tabDenksport: "soon.puzzles", tabSchrijfhoek: "soon.write", tabVandaag: "soon.today"}
 
 type tickMsg time.Time
 type statusMsg struct {
@@ -64,56 +38,74 @@ type statusMsg struct {
 	vol        int
 }
 
+const (
+	veldComputer = iota
+	veldNaam
+	veldMaatje
+	veldGezicht
+	veldThema
+	veldTaal
+	aantalVelden
+)
+
 type model struct {
 	inst       Instellingen
 	ouders     Ouders
 	oudersFout error
 
-	tab, sel     int
-	breed, hoog  int
-	nu           time.Time
-	velden       []textinput.Model // computer, naam, maatje
-	focus        int               // -1 niets, 0..2 tekstveld, 3 gezicht, 4 thema
-	pin          textinput.Model
-	pinOpen      bool
-	ouderModus   bool
-	ontgrendeld  time.Time
-	melding      string
-	meldingTot   time.Time
-	wifi, accu   string
-	vol          int
-	laatsteKleur string
+	tab, sel    int
+	breed, hoog int
+	nu          time.Time
+	velden      []textinput.Model // computer, naam, maatje
+	focus       int               // -1 niets, anders een veld* constante
+	pin         textinput.Model
+	pinOpen     bool
+	ouderModus  bool
+	ontgrendeld time.Time
+	melding     string
+	meldingTot  time.Time
+	wifi, accu  string
+	vol         int
 }
 
 func nieuwModel() model {
 	o, err := laadOuders()
 	m := model{inst: laadInstellingen(), ouders: o, oudersFout: err, nu: time.Now(), focus: -1, vol: -1, wifi: "…", accu: "…"}
-	plekken := []struct {
-		waarde, hint string
-		max          int
-	}{{m.inst.Computer, "naam van je computer", 9}, {m.inst.Naam, "zodat ik je kan begroeten", 14}, {m.inst.Maatje, "naam van je maatje", 12}}
-	for _, p := range plekken {
+	for _, w := range []struct {
+		waarde string
+		max    int
+	}{{m.inst.Computer, 9}, {m.inst.Naam, 14}, {m.inst.Maatje, 12}} {
 		ti := textinput.New()
-		ti.SetValue(p.waarde)
-		ti.Placeholder = p.hint
-		ti.CharLimit = p.max
+		ti.SetValue(w.waarde)
+		ti.CharLimit = w.max
 		ti.Prompt = ""
 		m.velden = append(m.velden, ti)
 	}
 	m.pin = textinput.New()
-	m.pin.Prompt = "pincode: "
 	m.pin.EchoMode = textinput.EchoPassword
 	m.pin.CharLimit = 8
+	m.zetTaalteksten()
 	return m
+}
+
+func (m *model) t(sleutel string, args ...any) string { return tr(m.inst.Taal, sleutel, args...) }
+
+func (m *model) zetTaalteksten() {
+	m.velden[veldComputer].Placeholder = m.t("sys.ph.computer")
+	m.velden[veldNaam].Placeholder = m.t("sys.ph.name")
+	m.velden[veldMaatje].Placeholder = m.t("sys.ph.buddy")
+	m.pin.Prompt = m.t("sys.pin")
 }
 
 func tick() tea.Cmd {
 	return tea.Tick(20*time.Second, func(t time.Time) tea.Msg { return tickMsg(t) })
 }
 
-func leesStatus() tea.Msg { return statusMsg{wifiStatus(), accu(), volume()} }
+func leesStatus(taal string) tea.Cmd {
+	return func() tea.Msg { return statusMsg{wifiStatus(taal), accu(taal), volume()} }
+}
 
-func (m model) Init() tea.Cmd { return tea.Batch(tick(), leesStatus) }
+func (m model) Init() tea.Cmd { return tea.Batch(tick(), leesStatus(m.inst.Taal)) }
 
 func (m model) dicht() bool { return isDicht(m.ouders, m.nu) && m.nu.After(m.ontgrendeld) }
 
@@ -121,7 +113,7 @@ func (m *model) zeg(s string) { m.melding = s; m.meldingTot = time.Now().Add(4 *
 
 func (m *model) naarTab(t int) {
 	if m.dicht() && t != tabStart && t != tabSysteem && !magTijdensSlot(m.ouders, t) {
-		m.zeg("Avondstand: alleen lezen en je luisterboek.")
+		m.zeg(m.t("lock.only"))
 		t = tabStart
 	}
 	m.tab = t
@@ -140,18 +132,18 @@ func (m *model) focusOp(f int) {
 	}
 }
 
-func (m *model) bewaarVelden() {
-	m.inst.Computer = strings.TrimSpace(m.velden[0].Value())
+func (m *model) bewaar() {
+	m.inst.Computer = strings.TrimSpace(m.velden[veldComputer].Value())
 	if m.inst.Computer == "" {
 		m.inst.Computer = standaardInstellingen().Computer
 	}
-	m.inst.Naam = strings.TrimSpace(m.velden[1].Value())
-	m.inst.Maatje = strings.TrimSpace(m.velden[2].Value())
+	m.inst.Naam = strings.TrimSpace(m.velden[veldNaam].Value())
+	m.inst.Maatje = strings.TrimSpace(m.velden[veldMaatje].Value())
 	if m.inst.Maatje == "" {
 		m.inst.Maatje = "Bliep"
 	}
 	if err := m.inst.bewaar(); err != nil {
-		m.zeg("Bewaren lukte niet: " + err.Error())
+		m.zeg(m.t("msg.saveerr", err.Error()))
 	}
 }
 
@@ -165,7 +157,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.dicht() && m.tab != tabSysteem && !magTijdensSlot(m.ouders, m.tab) {
 			m.tab = tabStart
 		}
-		return m, tea.Batch(tick(), leesStatus)
+		return m, tea.Batch(tick(), leesStatus(m.inst.Taal))
 	case statusMsg:
 		m.wifi, m.accu, m.vol = msg.wifi, msg.accu, msg.vol
 		return m, nil
@@ -191,13 +183,14 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			m.pinOpen = false
 			m.pin.Blur()
 		case "enter":
-			if m.ouders.pinKlopt(m.pin.Value()) {
+			switch {
+			case m.ouders.pinKlopt(m.pin.Value()):
 				m.ouderModus = true
-				m.zeg("Ouderstand aan.")
-			} else if m.ouders.PinSHA256 == "" {
-				m.zeg("Er is nog geen pincode ingesteld in ouders.yaml.")
-			} else {
-				m.zeg("Pincode klopt niet.")
+				m.zeg(m.t("msg.parenton"))
+			case m.ouders.PinSHA256 == "":
+				m.zeg(m.t("msg.nopin"))
+			default:
+				m.zeg(m.t("msg.badpin"))
 			}
 			m.pin.SetValue("")
 			m.pinOpen = false
@@ -211,18 +204,18 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	}
 
 	// typen in een tekstveld bij Systeem
-	if m.tab == tabSysteem && m.focus >= 0 && m.focus <= 2 {
+	if m.tab == tabSysteem && m.focus >= 0 && m.focus < len(m.velden) {
 		switch k {
 		case "esc", "enter":
-			m.bewaarVelden()
+			m.bewaar()
 			m.focusOp(-1)
 			return m, nil
 		case "tab", "down":
-			m.bewaarVelden()
+			m.bewaar()
 			m.focusOp(m.focus + 1)
 			return m, nil
 		case "shift+tab", "up":
-			m.bewaarVelden()
+			m.bewaar()
 			if m.focus > 0 {
 				m.focusOp(m.focus - 1)
 			}
@@ -230,7 +223,7 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		}
 		var cmd tea.Cmd
 		m.velden[m.focus], cmd = m.velden[m.focus].Update(msg)
-		m.bewaarVelden()
+		m.bewaar()
 		return m, cmd
 	}
 
@@ -245,14 +238,14 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 	switch m.tab {
 	case tabStart:
-		items := menu(m.inst.Maatje)
+		n := len(menuSleutels) - 1
 		switch k {
 		case "up", "k":
-			m.sel = (m.sel - 1 + len(items)) % len(items)
+			m.sel = (m.sel - 1 + n) % n
 		case "down", "j":
-			m.sel = (m.sel + 1) % len(items)
+			m.sel = (m.sel + 1) % n
 		case "enter":
-			m.naarTab(items[m.sel].tab)
+			m.naarTab(m.sel + 1)
 		}
 	case tabSysteem:
 		return m.toetsSysteem(k)
@@ -260,13 +253,23 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+func draaiKeuze(lijst []string, huidig string, d int) string {
+	i := 0
+	for j, n := range lijst {
+		if n == huidig {
+			i = j
+		}
+	}
+	return lijst[(i+d+len(lijst))%len(lijst)]
+}
+
 func (m model) toetsSysteem(k string) (tea.Model, tea.Cmd) {
 	switch k {
 	case "tab", "down":
-		m.focusOp((m.focus + 1) % 5)
+		m.focusOp((m.focus + 1) % aantalVelden)
 	case "shift+tab", "up":
 		if m.focus <= 0 {
-			m.focusOp(4)
+			m.focusOp(aantalVelden - 1)
 		} else {
 			m.focusOp(m.focus - 1)
 		}
@@ -275,34 +278,30 @@ func (m model) toetsSysteem(k string) (tea.Model, tea.Cmd) {
 		if k == "left" {
 			d = -1
 		}
-		if m.focus == 3 {
+		switch m.focus {
+		case veldGezicht:
 			m.inst.Gezicht = (m.inst.Gezicht + d + len(gezichten)) % len(gezichten)
-			m.bewaarVelden()
+		case veldThema:
+			m.inst.Thema = draaiKeuze(themaVolgorde, m.inst.Thema, d)
+		case veldTaal:
+			m.inst.Taal = draaiKeuze(talen, m.inst.Taal, d)
+			m.zetTaalteksten()
 		}
-		if m.focus == 4 {
-			i := 0
-			for j, n := range themaVolgorde {
-				if n == m.inst.Thema {
-					i = j
-				}
-			}
-			m.inst.Thema = themaVolgorde[(i+d+len(themaVolgorde))%len(themaVolgorde)]
-			m.bewaarVelden()
-		}
+		m.bewaar()
 	case "+", "=":
 		m.vol = zetVolume(5, m.ouders.MaxVolume)
 		if m.vol >= m.ouders.MaxVolume {
-			m.zeg(fmt.Sprintf("Maximaal volume is %d%%.", m.ouders.MaxVolume))
+			m.zeg(m.t("msg.maxvol", m.ouders.MaxVolume))
 		}
 	case "-":
 		m.vol = zetVolume(-5, m.ouders.MaxVolume)
 	case "h":
-		m.zeg("Berichtje versturen…")
-		return m, hulpVragen(m.ouders, m.inst.Naam)
+		m.zeg(m.t("msg.sending"))
+		return m, hulpVragen(m.ouders, m.inst.Naam, m.inst.Taal)
 	case "o":
 		if m.ouderModus {
 			m.ouderModus = false
-			m.zeg("Ouderstand uit.")
+			m.zeg(m.t("msg.parentoff"))
 		} else {
 			m.pinOpen = true
 			m.pin.Focus()
@@ -310,7 +309,7 @@ func (m model) toetsSysteem(k string) (tea.Model, tea.Cmd) {
 	case "t":
 		if m.ouderModus {
 			m.ontgrendeld = time.Now().Add(30 * time.Minute)
-			m.zeg("Avondslot 30 minuten uit.")
+			m.zeg(m.t("msg.unlock"))
 		}
 	case "Q":
 		if m.ouderModus {
@@ -338,7 +337,7 @@ func (m model) View() string {
 	case m.tab == tabSysteem:
 		inhoud = m.viewSysteem(p)
 	default:
-		inhoud = m.viewKomtNog(p)
+		inhoud = m.viewStraks(p)
 	}
 	h := m.hoog - 1
 	body := lipgloss.NewStyle().Padding(1, 2).Width(m.breed).Height(h).MaxHeight(h).Render(inhoud)
@@ -368,14 +367,14 @@ func paneel(p palet, titel, inhoud string, breed int, actief bool) string {
 
 func (m model) groet() string {
 	u := m.nu.Hour()
-	g := "Goedenavond"
+	g := m.t("greet.evening")
 	switch {
 	case u < 6:
-		g = "Goedenacht"
+		g = m.t("greet.night")
 	case u < 12:
-		g = "Goedemorgen"
+		g = m.t("greet.morning")
 	case u < 18:
-		g = "Goedemiddag"
+		g = m.t("greet.afternoon")
 	}
 	if m.inst.Naam != "" {
 		g += ", " + m.inst.Naam
@@ -383,34 +382,42 @@ func (m model) groet() string {
 	return g + "!"
 }
 
+func (m model) menuNaam(tab int) string {
+	if tab == tabMaatje {
+		return m.t(menuSleutels[tab], m.inst.Maatje)
+	}
+	return m.t(menuSleutels[tab])
+}
+
 func (m model) viewStart(p palet) string {
 	dim := lipgloss.NewStyle().Foreground(p.dim)
 	links := []string{
 		lipgloss.NewStyle().Foreground(p.acc).Bold(true).Render(blokletters(m.inst.Computer)),
 		"",
-		dim.Render("luister- en ontdekcomputer · " + versie),
-		lipgloss.NewStyle().Foreground(p.groen).Render(m.groet() + " Kies met ↑ ↓ en Enter, of druk op een cijfer."),
+		dim.Render(m.t("start.subtitle", versie)),
+		lipgloss.NewStyle().Foreground(p.groen).Render(m.groet() + " " + m.t("start.hint")),
 		"",
 	}
-	for i, it := range menu(m.inst.Maatje) {
-		regel := fmt.Sprintf(" %d  %-14s %s ", it.tab, it.naam, dim.Render(it.info))
-		if i == m.sel {
-			regel = lipgloss.NewStyle().Background(p.sel).Foreground(p.acc).Bold(true).Render(fmt.Sprintf(" %d  %-14s ", it.tab, it.naam)) + lipgloss.NewStyle().Background(p.sel).Foreground(p.dim).Render(it.info+" ")
+	for tab := 1; tab < len(menuSleutels); tab++ {
+		naam, info := m.menuNaam(tab), m.t(menuSleutels[tab]+".d")
+		if tab-1 == m.sel {
+			links = append(links, lipgloss.NewStyle().Background(p.sel).Foreground(p.acc).Bold(true).Render(fmt.Sprintf(" %d  %-16s ", tab, naam))+lipgloss.NewStyle().Background(p.sel).Foreground(p.dim).Render(info+" "))
+		} else {
+			links = append(links, fmt.Sprintf(" %d  %-16s %s ", tab, naam, dim.Render(info)))
 		}
-		links = append(links, regel)
 	}
 	rbreed := 38
 	if m.breed < 110 {
 		rbreed = 30
 	}
-	slot := fmt.Sprintf("avondstand om %s\nweer open om %s", bedtijd(m.ouders, m.nu), m.ouders.Avondslot.Open)
+	slot := m.t("start.lock", bedtijd(m.ouders, m.nu), m.ouders.Avondslot.Open)
 	if m.oudersFout != nil {
-		slot += "\n" + lipgloss.NewStyle().Foreground(p.geel).Render("ouders.yaml niet gevonden, standaardtijden")
+		slot += "\n" + lipgloss.NewStyle().Foreground(p.geel).Render(m.t("start.noparent"))
 	}
 	rechts := lipgloss.JoinVertical(lipgloss.Left,
-		paneel(p, "vandaag", slot, rbreed, false),
-		paneel(p, "nu", dim.Render("luisteren komt in fase 1"), rbreed, false),
-		paneel(p, "maatje", lipgloss.NewStyle().Foreground(p.acc).Render(gezichten[m.inst.Gezicht])+"  "+m.inst.Maatje, rbreed, false),
+		paneel(p, m.t("start.today"), slot, rbreed, false),
+		paneel(p, m.t("start.now"), dim.Render(m.t("start.listen")), rbreed, false),
+		paneel(p, m.t("start.buddy"), lipgloss.NewStyle().Foreground(p.acc).Render(gezichten[m.inst.Gezicht])+"  "+m.inst.Maatje, rbreed, false),
 	)
 	return lipgloss.JoinHorizontal(lipgloss.Top, lipgloss.NewStyle().Width(m.breed-rbreed-10).Render(strings.Join(links, "\n")), rechts)
 }
@@ -420,36 +427,32 @@ func (m model) viewSlot(p palet) string {
 	regels := []string{
 		lipgloss.NewStyle().Foreground(p.acc).Bold(true).Render(gezichten[m.inst.Gezicht]),
 		"",
-		lipgloss.NewStyle().Bold(true).Render(fmt.Sprintf("Het is %s. Tijd om tot rust te komen.", bedtijd(m.ouders, m.nu))),
-		dim.Render("Ga slapen of lees nog even. De rest is weer open om " + m.ouders.Avondslot.Open + "."),
+		lipgloss.NewStyle().Bold(true).Render(m.t("lock.title", bedtijd(m.ouders, m.nu))),
+		dim.Render(m.t("lock.sub", m.ouders.Avondslot.Open)),
 		"",
 	}
 	if m.ouders.Avondslot.LezenMag {
-		regels = append(regels, "[2] verder lezen")
+		regels = append(regels, m.t("lock.read"))
 	}
 	if m.ouders.Avondslot.LuisterboekMag {
-		regels = append(regels, "[1] luisterboek met slaaptimer")
+		regels = append(regels, m.t("lock.listen"))
 	}
-	regels = append(regels, dim.Render("[8] hulp vragen"), "", dim.Render("Welterusten!"))
+	regels = append(regels, dim.Render(m.t("lock.help")), "", dim.Render(m.t("lock.night")))
 	if m.melding != "" && time.Now().Before(m.meldingTot) {
 		regels = append(regels, "", lipgloss.NewStyle().Foreground(p.geel).Render(m.melding))
 	}
 	return lipgloss.Place(m.breed-4, m.hoog-3, lipgloss.Center, lipgloss.Center, lipgloss.JoinVertical(lipgloss.Center, regels...))
 }
 
-func (m model) viewKomtNog(p palet) string {
-	lijst := komtNog[m.tab]
-	titel := tabNamen[m.tab]
-	if m.tab == tabMaatje {
-		titel = "Vraag " + m.inst.Maatje
-	}
+func (m model) viewStraks(p palet) string {
+	regels := strings.Split(m.t(straksSleutels[m.tab]), "\n")
 	var b strings.Builder
-	for _, r := range lijst[1:] {
+	for _, r := range regels[1:] {
 		b.WriteString("• " + r + "\n")
 	}
-	kop := lipgloss.NewStyle().Bold(true).Render(strings.ToUpper(titel[:1]) + titel[1:])
-	return kop + "\n\n" + paneel(p, "komt in "+lijst[0], strings.TrimRight(b.String(), "\n"), min(m.breed-8, 90), true) +
-		"\n\n" + lipgloss.NewStyle().Foreground(p.dim).Render("Dit onderdeel wordt nog gebouwd. Het komt vanzelf binnen met een update.")
+	kop := lipgloss.NewStyle().Bold(true).Render(m.menuNaam(m.tab))
+	return kop + "\n\n" + paneel(p, m.t("soon.in", regels[0]), strings.TrimRight(b.String(), "\n"), min(m.breed-8, 90), true) +
+		"\n\n" + lipgloss.NewStyle().Foreground(p.dim).Render(m.t("soon.building"))
 }
 
 func (m model) viewSysteem(p palet) string {
@@ -470,62 +473,65 @@ func (m model) viewSysteem(p palet) string {
 		}
 		return st.Render(s)
 	}
-	var gz, th []string
+	var gz, th, tl []string
 	for i, g := range gezichten {
 		gz = append(gz, keuze(i == m.inst.Gezicht, g))
 	}
 	for _, n := range themaVolgorde {
-		th = append(th, keuze(n == m.inst.Thema, themas[n].naam))
+		th = append(th, keuze(n == m.inst.Thema, m.t("theme."+n)))
+	}
+	for _, c := range talen {
+		tl = append(tl, keuze(c == m.inst.Taal, taalNamen[c]))
 	}
 	eigen := strings.Join([]string{
-		label(0, "naam computer") + m.velden[0].View(),
-		label(1, "jouw naam") + m.velden[1].View(),
-		label(2, "naam maatje") + m.velden[2].View(),
-		label(3, "gezicht") + strings.Join(gz, ""),
-		label(4, "kleuren") + strings.Join(th, ""),
+		label(veldComputer, m.t("sys.computer")) + m.velden[veldComputer].View(),
+		label(veldNaam, m.t("sys.name")) + m.velden[veldNaam].View(),
+		label(veldMaatje, m.t("sys.buddy")) + m.velden[veldMaatje].View(),
+		label(veldGezicht, m.t("sys.face")) + strings.Join(gz, ""),
+		label(veldThema, m.t("sys.colors")) + strings.Join(th, ""),
+		label(veldTaal, m.t("sys.lang")) + strings.Join(tl, ""),
 		"",
-		dim.Render("↑ ↓ kiezen · typen om te wijzigen · ← → bij gezicht en kleuren · esc klaar"),
-		dim.Render("wijzigingen worden meteen bewaard"),
+		dim.Render(m.t("sys.keys")),
+		dim.Render(m.t("sys.saved")),
 	}, "\n")
 
-	vol := "onbekend"
+	vol := m.t("sys.unknown")
 	if m.vol >= 0 {
 		balk := m.vol / 5
-		vol = lipgloss.NewStyle().Foreground(p.acc).Render(strings.Repeat("█", balk)) + dim.Render(strings.Repeat("░", 20-balk)) + fmt.Sprintf(" %d%% · max %d%%", m.vol, m.ouders.MaxVolume)
+		vol = lipgloss.NewStyle().Foreground(p.acc).Render(strings.Repeat("█", balk)) + dim.Render(strings.Repeat("░", 20-balk)) + fmt.Sprintf(" %d%%", m.vol) + m.t("sys.maxvol", m.ouders.MaxVolume)
 	}
+	kol := func(s string) string { return lipgloss.NewStyle().Width(9).Render(s) }
 	apparaat := strings.Join([]string{
-		"wifi    " + m.wifi,
-		"accu    " + m.accu,
-		"volume  " + vol,
-		"versie  " + versie + dim.Render(" · bijwerken gaat vanzelf"),
+		kol(m.t("sys.wifi")) + m.wifi,
+		kol(m.t("sys.battery")) + m.accu,
+		kol(m.t("sys.volume")) + vol,
+		kol(m.t("sys.version")) + versie + dim.Render(m.t("sys.autoupdate")),
 		"",
-		"[+] [-] volume · [h] hulp vragen aan je ouders",
-		"[o] ouderinstellingen",
+		m.t("sys.actions"),
+		m.t("sys.parent"),
 	}, "\n")
 	if m.pinOpen {
 		apparaat += "\n\n" + m.pin.View()
 	}
 	if m.ouderModus {
 		a := m.ouders.Avondslot
-		apparaat += "\n\n" + lipgloss.NewStyle().Foreground(p.geel).Bold(true).Render("ouderstand") + "\n" +
-			fmt.Sprintf("avondslot  school %s · weekend %s · open %s\n", a.Schooldagen, a.Weekend, a.Open) +
-			fmt.Sprintf("na het slot  lezen %s · luisterboek %s\n", jaNee(a.LezenMag), jaNee(a.LuisterboekMag)) +
-			dim.Render("wijzigen in /etc/unscroll/ouders.yaml") + "\n" +
-			"[t] avondslot 30 min uit · [Q] app afsluiten · [o] ouderstand uit"
+		jn := func(b bool) string {
+			if b {
+				return m.t("yes")
+			}
+			return m.t("no")
+		}
+		apparaat += "\n\n" + lipgloss.NewStyle().Foreground(p.geel).Bold(true).Render(m.t("sys.parentmode")) + "\n" +
+			m.t("sys.p.lock", a.Schooldagen, a.Weekend, a.Open) + "\n" +
+			m.t("sys.p.after", jn(a.LezenMag), jn(a.LuisterboekMag)) + "\n" +
+			dim.Render(m.t("sys.p.edit")) + "\n" + m.t("sys.p.keys")
 	}
 	breed := (m.breed - 10) / 2
 	return lipgloss.JoinHorizontal(lipgloss.Top,
-		paneel(p, "maak hem van jou", eigen, breed+6, true),
+		paneel(p, m.t("sys.own"), eigen, breed+6, true),
 		" ",
-		paneel(p, "apparaat", apparaat, breed-6, false),
+		paneel(p, m.t("sys.device"), apparaat, breed-6, false),
 	)
-}
-
-func jaNee(b bool) string {
-	if b {
-		return "ja"
-	}
-	return "nee"
 }
 
 func (m model) viewStatus(p palet) string {
@@ -534,12 +540,13 @@ func (m model) viewStatus(p palet) string {
 		sessie = "unscroll"
 	}
 	delen := []string{lipgloss.NewStyle().Background(p.groen).Foreground(p.bg).Bold(true).Render(" " + sessie + " ")}
-	for i, n := range tabNamen {
-		if i == tabMaatje {
-			n = strings.ToLower(m.inst.Maatje)
-			if len(n) > 8 {
-				n = n[:8]
-			}
+	for i, s := range tabSleutels {
+		n := strings.ToLower(m.inst.Maatje)
+		if s != "" {
+			n = m.t(s)
+		}
+		if len([]rune(n)) > 8 {
+			n = string([]rune(n)[:8])
 		}
 		t := fmt.Sprintf(" %d:%s ", i, n)
 		if i == m.tab {
@@ -551,7 +558,7 @@ func (m model) viewStatus(p palet) string {
 	links := strings.Join(delen, "")
 	rechts := m.nu.Format("15:04")
 	if m.dicht() {
-		rechts = lipgloss.NewStyle().Foreground(p.geel).Render("avondstand") + " · " + rechts
+		rechts = lipgloss.NewStyle().Foreground(p.geel).Render(m.t("lock.status")) + " · " + rechts
 	}
 	if m.melding != "" && time.Now().Before(m.meldingTot) {
 		rechts = lipgloss.NewStyle().Foreground(p.geel).Render(m.melding) + "  " + rechts
@@ -571,13 +578,15 @@ func main() {
 			return
 		case "--pin-hash":
 			if len(os.Args) < 3 {
-				fmt.Fprintln(os.Stderr, "gebruik: unscroll --pin-hash 1234")
+				fmt.Fprintln(os.Stderr, "usage: unscroll --pin-hash 1234")
 				os.Exit(2)
 			}
 			fmt.Println(pinHash(os.Args[2]))
 			return
 		}
 	}
+	// niet de terminal naar de achtergrondkleur vragen: niet elke console antwoordt
+	lipgloss.SetHasDarkBackground(true)
 	p := tea.NewProgram(nieuwModel(), tea.WithAltScreen())
 	_, err := p.Run()
 	fmt.Fprint(os.Stdout, "\x1b]110\x07\x1b]111\x07") // terminalkleuren terug

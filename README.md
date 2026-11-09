@@ -42,6 +42,7 @@ Klikbare mockup: open [`docs/mockup.html`](docs/mockup.html) in een browser.
 | Onderdeel | Inhoud | Status |
 |---|---|---|
 | Start | Begroeting, menu, avondslot, eigen naam in blokletters | ✅ fase 0 |
+| Talen | Engels (standaard) en Nederlands, te kiezen bij Systeem. Nieuwe talen in `app/i18n.go` | ✅ fase 0 |
 | Systeem | Naam computer, eigen naam, naam en gezicht van het maatje, 5 kleurthema's, wifi, accu, volume met maximum, hulp vragen (ntfy) | ✅ fase 0 |
 | Avondslot | Aparte tijden voor school- en weekendavonden, openingstijd, wat er na het slot nog mag, pincode voor ouders | ✅ fase 0 |
 | Updates | Nieuwe versies via GitHub-releases, met checksum-controle en terugval | ✅ fase 0 |
@@ -73,11 +74,10 @@ Alles wat Debian 12 draait. Getest en bedoeld voor:
    ```bash
    REPO=<account>/unscroll-pc bash install.sh
    ```
-3. Maak een pincode voor de ouderstand en zet de uitkomst in `/etc/unscroll/ouders.yaml`:
+3. Stel pincode, avondslot en geheimen lokaal in met de ouderhulp, en herstart:
    ```bash
-   unscroll --pin-hash 1234
+   sudo unscroll-ouder
    ```
-4. Pas de tijden van het avondslot aan in `/etc/unscroll/ouders.yaml` en herstart.
 
 Na het opstarten logt het kinderaccount automatisch in en start de app op het hele scherm
 (`cage` met de terminal `foot`). Er is geen bureaublad, geen browser en geen vrije shell.
@@ -98,6 +98,19 @@ Na het opstarten logt het kinderaccount automatisch in en start de app op het he
 | `/etc/unscroll/update.conf` | ouders (root) | repository en updatekanaal |
 | `/etc/unscroll/geheimen.env` | ouders (root) | tokens en API-sleutels, nooit in git |
 
+## Wachtwoorden en sleutels
+
+**Geheimen komen nooit in deze repository.** Pincode, wachtwoorden, gebruikersnamen, tokens en
+API-sleutels stel je lokaal in op het apparaat met de ouderhulp:
+
+```bash
+sudo unscroll-ouder
+```
+
+Die schrijft naar `/etc/unscroll/ouders.yaml` en `/etc/unscroll/geheimen.env` (alleen leesbaar
+voor root en de app). In git staan alleen voorbeeldbestanden met lege waarden. GitHub Actions
+controleert bij elke push dat er geen echte instellingen of sleutels in de repository staan.
+
 ## Ontwikkelen
 
 ```bash
@@ -116,7 +129,7 @@ op oude 32-bit hardware vlot draait.
 
 ```
 app/        de terminal-app (Go)
-scripts/    unscroll-sessie (kioskstart) en unscroll-update (updater)
+scripts/    unscroll-sessie (kioskstart), unscroll-update (updater), unscroll-ouder (ouderhulp)
 systemd/    timer en service voor de updater
 config/     voorbeelden van de instellingen en de terminal-configuratie
 docs/       klikbare mockup

@@ -22,10 +22,10 @@ func draai(timeout time.Duration, naam string, args ...string) (string, error) {
 	return strings.TrimSpace(string(out)), err
 }
 
-func wifiStatus() string {
+func wifiStatus(taal string) string {
 	out, err := draai(2*time.Second, "nmcli", "-t", "-f", "ACTIVE,SSID,SIGNAL", "dev", "wifi")
 	if err != nil {
-		return "onbekend"
+		return tr(taal, "wifi.unknown")
 	}
 	for _, regel := range strings.Split(out, "\n") {
 		delen := strings.Split(regel, ":")
@@ -33,7 +33,7 @@ func wifiStatus() string {
 			return fmt.Sprintf("%s · %s%%", delen[1], delen[2])
 		}
 	}
-	return "niet verbonden"
+	return tr(taal, "wifi.off")
 }
 
 var procent = regexp.MustCompile(`\[(\d+)%\]`)
@@ -67,14 +67,14 @@ func zetVolume(stap, max int) int {
 	return volume()
 }
 
-func accu() string {
+func accu(taal string) string {
 	out, err := draai(2*time.Second, "cat", "/sys/class/power_supply/BAT0/capacity")
 	if err != nil || out == "" {
-		return "geen accu gevonden"
+		return tr(taal, "battery.none")
 	}
 	status, _ := draai(2*time.Second, "cat", "/sys/class/power_supply/BAT0/status")
 	if status == "Charging" || status == "Full" {
-		return out + "% · aan de lader"
+		return tr(taal, "battery.charging", out)
 	}
 	return out + "%"
 }
@@ -82,28 +82,28 @@ func accu() string {
 type meldingMsg string
 
 // hulpVragen stuurt een berichtje naar de telefoons van de ouders via ntfy.
-func hulpVragen(o Ouders, naam string) tea.Cmd {
+func hulpVragen(o Ouders, naam, taal string) tea.Cmd {
 	return func() tea.Msg {
 		if o.Ntfy.Topic == "" {
-			return meldingMsg("Hulp vragen is nog niet ingesteld (ntfy in ouders.yaml).")
+			return meldingMsg(tr(taal, "help.notset"))
 		}
 		wie := naam
 		if wie == "" {
-			wie = "Je kind"
+			wie = tr(taal, "help.someone")
 		}
 		url := strings.TrimRight(o.Ntfy.URL, "/") + "/" + o.Ntfy.Topic
-		req, _ := http.NewRequest("POST", url, strings.NewReader(wie+" vraagt om hulp bij de Eee."))
-		req.Header.Set("Title", "Hulp gevraagd")
+		req, _ := http.NewRequest("POST", url, strings.NewReader(tr(taal, "help.body", wie)))
+		req.Header.Set("Title", tr(taal, "help.title"))
 		req.Header.Set("Tags", "wave")
 		c := http.Client{Timeout: 6 * time.Second}
 		resp, err := c.Do(req)
 		if err != nil {
-			return meldingMsg("Versturen lukte niet. Is de wifi aan?")
+			return meldingMsg(tr(taal, "help.offline"))
 		}
 		resp.Body.Close()
 		if resp.StatusCode >= 300 {
-			return meldingMsg("Versturen lukte niet (" + resp.Status + ").")
+			return meldingMsg(tr(taal, "help.failed", resp.Status))
 		}
-		return meldingMsg("Berichtje verstuurd. Er komt zo iemand helpen.")
+		return meldingMsg(tr(taal, "help.sent"))
 	}
 }

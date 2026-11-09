@@ -2,3 +2,7 @@
 /unscroll
 *.tmp
 geheimen.env
+ouders.yaml
+update.conf
+*.env
+!config/*.example.env

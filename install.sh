@@ -36,6 +36,7 @@ echo "==> Bestanden plaatsen"
 install -d -m 0755 /etc/unscroll /opt/unscroll/releases
 install -m 0755 "$HIER/scripts/unscroll-sessie" /usr/local/bin/unscroll-sessie
 install -m 0755 "$HIER/scripts/unscroll-update" /usr/local/sbin/unscroll-update
+install -m 0755 "$HIER/scripts/unscroll-ouder" /usr/local/sbin/unscroll-ouder
 [[ -f /etc/unscroll/ouders.yaml ]] || install -m 0644 "$HIER/config/ouders.example.yaml" /etc/unscroll/ouders.yaml
 [[ -f /etc/unscroll/update.conf ]] || sed "s#OWNER/REPO#$REPO#" "$HIER/config/update.example.conf" > /etc/unscroll/update.conf
 [[ -f /etc/unscroll/geheimen.env ]] || { install -m 0640 -g "$KIND" "$HIER/config/geheimen.example.env" /etc/unscroll/geheimen.env; }
@@ -83,12 +84,11 @@ alsactl store 2>/dev/null || true
 
 cat <<EOF
 
-Klaar. Nog drie dingen:
-  1. Stel een pincode in voor de ouders:
-       /usr/local/bin/unscroll --pin-hash 1234
-     en zet de uitkomst bij pin_sha256 in /etc/unscroll/ouders.yaml
-  2. Pas de avondslot-tijden aan in /etc/unscroll/ouders.yaml
-  3. Herstart: sudo reboot  (daarna start de app vanzelf)
+Klaar. Stel nu lokaal de pincode, het avondslot en de geheimen in met de ouderhulp:
 
+  sudo unscroll-ouder
+
+Wachtwoorden en sleutels komen alleen in /etc/unscroll op dit apparaat, nooit in git.
 Wifi instellen kan met: sudo nmtui
+Daarna herstarten: sudo reboot
 EOF

@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# Ouderhulp: stelt pincode, avondslot en alle geheimen LOKAAL in.
+# Niets hiervan komt ooit in git: alles staat alleen in /etc/unscroll op dit apparaat.
+#
+# Gebruik:  sudo unscroll-ouder
+set -euo pipefail
+
+DIR=/etc/unscroll
+OUDERS=$DIR/ouders.yaml
+GEHEIM=$DIR/geheimen.env
+KIND="${KIND:-kind}"
+
+[[ $EUID -eq 0 ]] || { echo "Draai dit als root: sudo unscroll-ouder"; exit 1; }
+[[ -f $OUDERS ]] || { echo "$OUDERS bestaat niet. Draai eerst install.sh."; exit 1; }
+
+vraag() {        # vraag "tekst" "standaard" -> antwoord
+  local a; read -r -p "$1 [$2]: " a; echo "${a:-$2}"
+}
+geheim() {       # geheim "tekst" -> antwoord zonder dat het op het scherm komt
+  local a; read -r -s -p "$1 (leeg = niet wijzigen): " a; echo >&2; echo "$a"
+}
+zet_yaml() {     # zet_yaml sleutel waarde  (alleen voor platte sleutels op één regel)
+  sed -i -E "s|^([[:space:]]*$1:).*|\1 \"$2\"|" "$OUDERS"
+}
+zet_env() {      # zet_env NAAM waarde
+  local naam=$1 waarde=$2
+  [[ -z $waarde ]] && return
+  touch "$GEHEIM"
+  grep -v "^${naam}=" "$GEHEIM" > "$GEHEIM.tmp" || true
+  printf '%s=%q\n' "$naam" "$waarde" >> "$GEHEIM.tmp"
+  mv "$GEHEIM.tmp" "$GEHEIM"
+}
+
+echo "== Unscroll ouderhulp =="
+echo "Alles wat je hier invult blijft op dit apparaat."
+echo
+
+echo "-- Pincode voor de ouderstand --"
+while true; do
+  read -r -s -p "Nieuwe pincode (4 tot 8 cijfers, leeg = niet wijzigen): " p1; echo
+  [[ -z $p1 ]] && break
+  [[ $p1 =~ ^[0-9]{4,8}$ ]] || { echo "Alleen 4 tot 8 cijfers."; continue; }
+  read -r -s -p "Nog een keer: " p2; echo
+  [[ $p1 == "$p2" ]] || { echo "Niet gelijk, probeer opnieuw."; continue; }
+  zet_yaml pin_sha256 "$(/usr/local/bin/unscroll --pin-hash "$p1")"
+  echo "Pincode opgeslagen."
+  break
+done
+echo
+
+echo "-- Avondslot --"
+zet_yaml schooldagen "$(vraag 'Dicht op schooldagen (zo t/m do)' 20:00)"
+zet_yaml weekend "$(vraag 'Dicht op vrijdag- en zaterdagavond' 20:30)"
+zet_yaml open "$(vraag 'Weer open vanaf' 07:00)"
+echo
+
+echo "-- Hulp vragen via ntfy (melding op jullie telefoons) --"
+echo "Kies een lang, moeilijk te raden topic en abonneer je erop in de ntfy-app."
+topic=$(vraag "ntfy-topic" "unscroll-$(tr -dc a-z0-9 </dev/urandom | head -c 12)")
+zet_yaml topic "$topic"
+echo
+
+echo "-- Geheimen (komen in $GEHEIM) --"
+zet_env GITHUB_TOKEN "$(geheim 'GitHub-token, alleen nodig als de repository privé is')"
+zet_env NAVIDROME_URL "$(vraag 'Navidrome-adres (later nodig, mag leeg)' '')"
+zet_env NAVIDROME_GEBRUIKER "$(vraag 'Navidrome-gebruiker voor het kind' '')"
+zet_env NAVIDROME_WACHTWOORD "$(geheim 'Navidrome-wachtwoord')"
+zet_env ABS_URL "$(vraag 'Audiobookshelf-adres (later nodig, mag leeg)' '')"
+zet_env ABS_TOKEN "$(geheim 'Audiobookshelf API-token van het kinderaccount')"
+zet_env ANTHROPIC_API_KEY "$(geheim 'Anthropic API-sleutel voor het AI-maatje')"
+
+chown root:root "$OUDERS"; chmod 0644 "$OUDERS"
+[[ -f $GEHEIM ]] && { chown root:"$KIND" "$GEHEIM"; chmod 0640 "$GEHEIM"; }
+
+echo
+echo "Klaar. Herstart de app of het apparaat om alles te laden: sudo reboot"

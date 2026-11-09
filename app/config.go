@@ -19,6 +19,7 @@ type Instellingen struct {
 	Maatje   string `json:"maatje"`
 	Gezicht  int    `json:"gezicht"`
 	Thema    string `json:"thema"`
+	Taal     string `json:"taal"`
 }
 
 func standaardInstellingen() Instellingen {
@@ -29,7 +30,7 @@ func standaardInstellingen() Instellingen {
 			naam = naam[:9]
 		}
 	}
-	return Instellingen{Computer: naam, Maatje: "Bliep", Thema: "nacht"}
+	return Instellingen{Computer: naam, Maatje: "Bliep", Thema: "nacht", Taal: standaardTaal()}
 }
 
 func instellingenPad() string {
@@ -54,6 +55,9 @@ func laadInstellingen() Instellingen {
 	}
 	if _, ok := themas[i.Thema]; !ok {
 		i.Thema = "nacht"
+	}
+	if _, ok := teksten[i.Taal]; !ok {
+		i.Taal = standaardTaal()
 	}
 	if i.Gezicht < 0 || i.Gezicht >= len(gezichten) {
 		i.Gezicht = 0
