@@ -19,18 +19,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - arch: "386"          # oude netbooks zoals de Eee PC
+          - arch: "386"          # oude netbooks zoals de Eee PC: gekruiscompileerd vanuit 64-bit
             runner: ubuntu-latest
-            platform: linux/386
-            wrap: linux32
+            platform: linux/amd64
+            doel: i686-unknown-linux-gnu
           - arch: amd64          # gewone laptops
             runner: ubuntu-latest
             platform: linux/amd64
-            wrap: ""
+            doel: ""
           - arch: arm64          # Raspberry Pi 4 / 5 / 400 / 500
             runner: ubuntu-24.04-arm
             platform: linux/arm64
-            wrap: ""
+            doel: ""
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
@@ -38,16 +38,32 @@ jobs:
         run: |
           V="$(tr -d ' \n' < librespot/VERSIE)"
           mkdir -p uit
-          docker run --rm --network host --platform ${{ matrix.platform }} -v "$PWD/uit:/uit" -e V="$V" debian:bookworm \
-            ${{ matrix.wrap }} bash -euxc '
-              apt-get update
-              apt-get install -y --no-install-recommends ca-certificates curl build-essential pkg-config libasound2-dev
+          docker run --rm --platform ${{ matrix.platform }} -v "$PWD/uit:/uit" -e V="$V" -e DOEL="${{ matrix.doel }}" \
+            debian:bookworm bash -euxc '
+              FEATURES=alsa-backend,with-libmdns,rustls-tls-webpki-roots
+              if [ -n "$DOEL" ]; then
+                # 32-bit: Debian-crosscompiler en de i386-versie van ALSA
+                dpkg --add-architecture i386
+                apt-get update
+                apt-get install -y --no-install-recommends ca-certificates curl build-essential pkg-config \
+                  crossbuild-essential-i386 libasound2-dev:i386
+                export CARGO_TARGET_I686_UNKNOWN_LINUX_GNU_LINKER=i686-linux-gnu-gcc
+                export CC_i686_unknown_linux_gnu=i686-linux-gnu-gcc AR_i686_unknown_linux_gnu=i686-linux-gnu-ar
+                export PKG_CONFIG_ALLOW_CROSS=1 PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig
+              else
+                apt-get update
+                apt-get install -y --no-install-recommends ca-certificates curl build-essential pkg-config libasound2-dev
+              fi
               curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
               . "$HOME/.cargo/env"
-              rustc -vV
-              cargo install librespot --version "$V" --locked --no-default-features \
-                --features alsa-backend,with-libmdns,rustls-tls-webpki-roots --root /tmp/lr
-              /tmp/lr/bin/librespot --version
+              if [ -n "$DOEL" ]; then
+                rustup target add "$DOEL"
+                cargo install librespot --version "$V" --locked --no-default-features --features "$FEATURES" \
+                  --target "$DOEL" --root /tmp/lr
+              else
+                cargo install librespot --version "$V" --locked --no-default-features --features "$FEATURES" --root /tmp/lr
+                /tmp/lr/bin/librespot --version
+              fi
               cp /tmp/lr/bin/librespot /uit/librespot'
           cp uit/librespot "librespot-linux-${{ matrix.arch }}"
           sha256sum "librespot-linux-${{ matrix.arch }}" > "librespot-linux-${{ matrix.arch }}.sha256"
