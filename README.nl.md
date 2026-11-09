@@ -1,7 +1,6 @@
 # Unscroll PC
 
 **A calm computer for curious kids. No feeds, no algorithms.**
-*Nothing pulls at you. You pull.*
 
 Unscroll verandert een oude laptop, netbook of Raspberry Pi in een rustige luister- en
 ontdekcomputer voor kinderen: muziek, luisterboeken, podcasts, radio en e-boeken, een
