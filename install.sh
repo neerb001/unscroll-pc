@@ -31,7 +31,17 @@ DEBIAN_FRONTEND=noninteractive "${APT[@]}" install -y --no-install-recommends \
   curl jq ca-certificates zram-tools \
   avahi-daemon libnss-mdns \
   sudo
+# Wifi firmware for common netbook chips (Atheros, Ralink, Realtek). Optional: skipped if unavailable.
+DEBIAN_FRONTEND=noninteractive "${APT[@]}" install -y --no-install-recommends \
+  firmware-misc-nonfree firmware-atheros firmware-realtek || echo "    (wifi firmware not available, skipped)"
 [[ -n "$OFFLINE_LIST" ]] && rm -f "$OFFLINE_LIST"
+
+# Asus Eee PC: load the driver that switches the wifi chip on, now and at every boot.
+if grep -qi "asus" /sys/class/dmi/id/sys_vendor 2>/dev/null && grep -qi "eee" /sys/class/dmi/id/product_name 2>/dev/null; then
+  modprobe eeepc_laptop 2>/dev/null || true
+  grep -qx eeepc_laptop /etc/modules || echo eeepc_laptop >> /etc/modules
+fi
+nmcli radio wifi on 2>/dev/null || true
 
 echo "==> Saving memory with zram"
 sed -i 's/^#\?PERCENT=.*/PERCENT=50/' /etc/default/zramswap || true
