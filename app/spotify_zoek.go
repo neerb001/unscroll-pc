@@ -165,9 +165,11 @@ func (s *Spotify) Zoek(vraag string, b blokkeer) ([]item, error) {
 
 // AlbumsVan geeft de albums en singles van een artiest, nieuwste eerst (zoals Spotify ze geeft).
 func (s *Spotify) AlbumsVan(artiest string, b blokkeer) ([]item, error) {
-	pad := "/artists/" + artiest + "/albums?include_groups=album,single"
+	// alleen albums en hooguit twee pagina's: grote artiesten hebben honderden releases,
+	// en al die pagina's ophalen loopt tegen de grens van Spotify aan
+	pad := "/artists/" + artiest + "/albums?include_groups=album"
 	var uit []item
-	for pad != "" && len(uit) < 200 {
+	for pagina := 0; pad != "" && pagina < 2; pagina++ {
 		var r struct {
 			Items []spAlbum `json:"items"`
 			Next  string    `json:"next"`

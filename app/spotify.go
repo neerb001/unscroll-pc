@@ -429,7 +429,11 @@ func (s *Spotify) Stand(lijst []item) (SpelerStand, error) {
 		ProgressMS int  `json:"progress_ms"`
 		Item       *struct {
 			URI        string `json:"uri"`
+			Name       string `json:"name"`
 			DurationMS int    `json:"duration_ms"`
+			LinkedFrom struct {
+				URI string `json:"uri"`
+			} `json:"linked_from"`
 		} `json:"item"`
 	}
 	code, err := s.doe("GET", "/me/player", nil, &r)
@@ -440,9 +444,20 @@ func (s *Spotify) Stand(lijst []item) (SpelerStand, error) {
 		return SpelerStand{Leeg: true}, nil
 	}
 	st := SpelerStand{Pauze: !r.IsPlaying, Pos: float64(r.ProgressMS) / 1000, Duur: float64(r.Item.DurationMS) / 1000, Index: -1}
+	// Spotify speelt soms een andere uitgave van hetzelfde nummer (relinking): dan staat het
+	// gevraagde nummer in linked_from, of heeft het in elk geval dezelfde naam
 	for i, it := range lijst {
-		if it.url == r.Item.URI {
+		if it.url == r.Item.URI || (r.Item.LinkedFrom.URI != "" && it.url == r.Item.LinkedFrom.URI) {
 			st.Index = i
+			break
+		}
+	}
+	if st.Index < 0 {
+		for i, it := range lijst {
+			if strings.EqualFold(it.titel, r.Item.Name) {
+				st.Index = i
+				break
+			}
 		}
 	}
 	if st.Index < 0 {
