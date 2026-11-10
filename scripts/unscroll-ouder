@@ -20,8 +20,11 @@ vraag() {        # vraag "question" "default" -> answer
 geheim() {       # geheim "question" -> answer, not shown on screen
   local a; read -r -s -p "$1 (empty = keep current): " a; echo >&2; echo "$a"
 }
+yaml_tekst() {   # yes/no and numbers stay bare, everything else gets quotes
+  if [[ $1 =~ ^(true|false|[0-9]+)$ ]]; then printf '%s' "$1"; else printf '"%s"' "$1"; fi
+}
 zet_yaml() {     # zet_yaml key value  (single-line keys only)
-  sed -i -E "s|^([[:space:]]*$1:).*|\1 \"$2\"|" "$OUDERS"
+  sed -i -E "s|^([[:space:]]*$1:).*|\1 $(yaml_tekst "$2")|" "$OUDERS"
 }
 zet_env() {      # zet_env NAME value  (in single quotes, so both bash and the app can read it)
   local naam=$1 waarde=$2 q="'\\''"
@@ -38,9 +41,9 @@ zet_yaml_in() {  # zet_yaml_in section key value  (adds the line under the secti
   if grep -qE "^[[:space:]]+$2:" "$OUDERS"; then
     zet_yaml "$2" "$3"
   elif grep -q "^$1:" "$OUDERS"; then
-    sed -i "/^$1:/a\\  $2: \"$3\"" "$OUDERS"
+    sed -i "/^$1:/a\\  $2: $(yaml_tekst "$3")" "$OUDERS"
   else
-    printf '\n%s:\n  %s: "%s"\n' "$1" "$2" "$3" >> "$OUDERS"
+    printf '\n%s:\n  %s: %s\n' "$1" "$2" "$(yaml_tekst "$3")" >> "$OUDERS"
   fi
 }
 koppel_librespot() {  # links the Spotify speaker on this computer to an account, once
@@ -70,6 +73,9 @@ huidig() {       # huidig NAME -> current value from the secrets file (for addre
   # shellcheck source=/dev/null
   ( set +u; . "$GEHEIM"; printf '%s' "${!1:-}" )
 }
+
+# repair: older versions of this helper wrote yes/no values in quotes
+sed -i -E 's/^([[:space:]]+[a-z_]+:) "(true|false)"/\1 \2/' "$OUDERS"
 
 echo "== Unscroll parent helper =="
 echo "Everything you enter here stays on this device."

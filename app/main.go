@@ -473,7 +473,10 @@ func (m model) viewStart(p palet) string {
 	}
 	slot := m.t("start.lock", bedtijd(m.ouders, m.nu), m.ouders.Avondslot.Open)
 	if m.oudersFout != nil {
-		slot += "\n" + lipgloss.NewStyle().Foreground(p.geel).Render(m.t("start.noparent"))
+		slot += "\n" + lipgloss.NewStyle().Foreground(p.geel).Width(rbreed-4).Render(m.t("start.noparent"))
+		if !os.IsNotExist(m.oudersFout) {
+			slot += "\n" + lipgloss.NewStyle().Foreground(p.rood).Width(rbreed-4).Render(m.oudersFout.Error())
+		}
 	}
 	rechts := lipgloss.JoinVertical(lipgloss.Left,
 		paneel(p, m.t("start.today"), slot, rbreed, false),

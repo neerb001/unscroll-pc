@@ -49,7 +49,7 @@ var teksten = map[string]map[string]string{
 		"start.hint":     "Kies met ↑ ↓ en Enter, of druk op een cijfer.",
 		"start.today":    "vandaag", "start.now": "nu", "start.buddy": "maatje",
 		"start.lock":     "avondstand om %s\nweer open om %s",
-		"start.noparent": "ouders.yaml niet gevonden, standaardtijden",
+		"start.noparent": "ouders.yaml niet gevonden of niet leesbaar, standaardinstellingen",
 
 		"lock.title": "Het is %s. Tijd om tot rust te komen.",
 		"lock.sub":   "Ga slapen of lees nog even. De rest is weer open om %s.",
@@ -169,7 +169,7 @@ var teksten = map[string]map[string]string{
 		"start.hint":     "Choose with ↑ ↓ and Enter, or press a number.",
 		"start.today":    "today", "start.now": "now", "start.buddy": "buddy",
 		"start.lock":     "quiet time at %s\nopen again at %s",
-		"start.noparent": "ouders.yaml not found, using default times",
+		"start.noparent": "ouders.yaml not found or not readable, using defaults",
 
 		"lock.title": "It's %s. Time to wind down.",
 		"lock.sub":   "Go to sleep or read for a bit. Everything else opens again at %s.",
