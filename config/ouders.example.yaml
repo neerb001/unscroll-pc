@@ -38,6 +38,9 @@ spotify:
   #  - "https://open.spotify.com/album/..."
   #  - "https://open.spotify.com/playlist/..."
   expliciet_mag: false   # songs marked explicit are left out
+  zoeken: false          # true: the child can search artists and albums and keep favourites
+                         # (no recommendations or radio; parents see searches in parent mode, w)
+  geblokkeerd: []        # artist or album links, or artist names, that never show up
 
 # Limits of the AI buddy.
 # Leave out a line to use the default from the app;

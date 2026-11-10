@@ -151,7 +151,14 @@ if [[ -n $spid ]]; then
   if [[ "$(vraag 'Link the Spotify speaker on this computer now (needed once)? y/n' n)" == y ]]; then
     koppel_librespot
   fi
+  case "$(yaml_waarde zoeken)" in true) nu=y ;; *) nu=n ;; esac
+  if [[ "$(vraag 'May the child search artists and albums and keep favourites? y/n' "$nu")" == y ]]; then
+    zet_yaml_in spotify zoeken true
+  else
+    zet_yaml_in spotify zoeken false
+  fi
   echo "Approve albums and playlists by adding their Spotify links under spotify: goedgekeurd: in $OUDERS"
+  echo "Block artists or albums under spotify: geblokkeerd: (links or artist names)."
 fi
 
 chown root:root "$OUDERS"; chmod 0644 "$OUDERS"

@@ -25,6 +25,8 @@ const (
 	soortZender
 	soortSpLijst  // goedgekeurd Spotify-album of -playlist
 	soortSpNummer // nummer op Spotify
+	soortSpArtiest
+	soortSpZoek // "zoeken op Spotify"
 )
 
 const (
@@ -123,6 +125,7 @@ type luister struct {
 	stapels  [aantalBronnen][]lijst
 	zoek     textinput.Model
 	zoeken   bool
+	spZoeken bool // typt een zoekvraag voor Spotify
 	nav      *Navidrome
 	abs      *ABS
 	sp       *Speler
@@ -245,12 +248,29 @@ func (m *model) laadWortel() tea.Cmd {
 		if l.spotify == nil {
 			return nietIngesteld()
 		}
-		if len(m.ouders.Spotify.Goedgekeurd) == 0 {
+		zoeken := m.ouders.Spotify.Zoeken
+		if len(m.ouders.Spotify.Goedgekeurd) == 0 && !zoeken {
 			l.stapels[l.bron] = []lijst{{titel: titel, fout: m.t("listen.spempty")}}
 			return nil
 		}
+		var vast []item
+		if zoeken {
+			vast = append(vast, item{titel: m.t("listen.spsearch"), soort: soortSpZoek})
+			for _, f := range laadSpFavorieten() {
+				vast = append(vast, favorietItem(f))
+			}
+		}
 		links := m.ouders.Spotify.Goedgekeurd
-		return nieuw("spotify", func() ([]item, error) { return l.spotify.Goedgekeurd(links) })
+		return nieuw("spotify", func() ([]item, error) {
+			if len(links) == 0 {
+				return vast, nil
+			}
+			goed, err := l.spotify.Goedgekeurd(links)
+			if err != nil && len(vast) > 0 {
+				return vast, nil
+			}
+			return append(vast, goed...), err
+		})
 	default:
 		var items []item
 		for _, z := range m.ouders.zenders() {
@@ -298,7 +318,18 @@ func (m *model) open() tea.Cmd {
 			items, _, err := l.spotify.Nummers(it.id, expliciet)
 			return items, err
 		})
+	case soortSpZoek:
+		l.spZoeken = true
+		l.zoek.SetValue("")
+		l.zoek.Prompt = m.t("listen.spprompt")
+		return l.zoek.Focus()
+	case soortSpArtiest:
+		b := nieuweBlokkeer(m.ouders.Spotify.Geblokkeerd)
+		return dieper("spa:"+it.id, func() ([]item, error) {
+			return l.spotify.AlbumsVan(strings.TrimPrefix(it.id, "artist:"), b)
+		})
 	case soortSpNummer:
+		spLog("luister", lj.titel+" · "+it.titel)
 		z := lj.zichtbaar()
 		var nummers []item
 		for _, i := range z[lj.sel:] {
@@ -579,6 +610,34 @@ func (m *model) toetsLuisteren(msg tea.KeyMsg) (tea.Cmd, bool) {
 	k := msg.String()
 	lj := m.huidigeLijst()
 
+	if l.spZoeken {
+		switch k {
+		case "esc":
+			l.spZoeken = false
+			l.zoek.Blur()
+			l.zoek.Prompt = "/ "
+		case "enter":
+			vraag := strings.TrimSpace(l.zoek.Value())
+			l.spZoeken = false
+			l.zoek.Blur()
+			l.zoek.SetValue("")
+			l.zoek.Prompt = "/ "
+			if vraag == "" {
+				return nil, true
+			}
+			spLog("zoek", vraag)
+			b := nieuweBlokkeer(m.ouders.Spotify.Geblokkeerd)
+			sleutel := "spz:" + vraag
+			*m.stapel() = append(*m.stapel(), lijst{titel: "“" + vraag + "”", sleutel: sleutel, laden: true})
+			return laadCmd(l.bron, sleutel, func() ([]item, error) { return l.spotify.Zoek(vraag, b) }), true
+		default:
+			var cmd tea.Cmd
+			l.zoek, cmd = l.zoek.Update(msg)
+			return cmd, true
+		}
+		return nil, true
+	}
+
 	if l.zoeken && lj != nil {
 		switch k {
 		case "esc":
@@ -670,6 +729,30 @@ func (m *model) toetsLuisteren(msg tea.KeyMsg) (tea.Cmd, bool) {
 			l.zoeken = true
 			l.zoek.SetValue(lj.filter)
 			return l.zoek.Focus(), true
+		}
+	case "f":
+		if l.bron == bronSpotify && m.ouders.Spotify.Zoeken && lj != nil {
+			if it, ok := lj.gekozen(); ok && (it.soort == soortSpArtiest || it.soort == soortSpLijst) {
+				if wisselFavoriet(it) {
+					m.zeg(m.t("listen.spfavon", strings.TrimPrefix(it.titel, "★ ")))
+				} else {
+					m.zeg(m.t("listen.spfavoff", strings.TrimPrefix(it.titel, "★ ")))
+				}
+				if len(*m.stapel()) == 1 {
+					*m.stapel() = nil
+					return m.laadWortel(), true
+				}
+			}
+			return nil, true
+		}
+	case "w":
+		if l.bron == bronSpotify && m.ouderModus {
+			*m.stapel() = append(*m.stapel(), lijst{titel: m.t("buddy.week"), sleutel: "spweek",
+				items: spWeek(m.t("listen.splogsearch"), m.t("listen.sploglisten"))})
+			if len(m.huidigeLijst().items) == 0 {
+				m.huidigeLijst().fout = m.t("buddy.weekempty")
+			}
+			return nil, true
 		}
 	case "r":
 		if len(*m.stapel()) <= 1 {
@@ -768,7 +851,7 @@ func (m model) viewLuisteren(p palet) string {
 			links += m.viewDraaiknop(p, lj, lbreed-4) + "\n"
 			hoogte -= 3
 		}
-		if l.zoeken || lj.filter != "" {
+		if l.zoeken || l.spZoeken || lj.filter != "" {
 			links += l.zoek.View() + "\n"
 			hoogte--
 		}
@@ -777,7 +860,11 @@ func (m model) viewLuisteren(p palet) string {
 	links = strings.TrimSuffix(links, "\n")
 	lPaneel := paneel(p, strings.Join(pad, " › "), links, lbreed, true)
 	rPaneel := paneel(p, m.t("start.now"), m.viewNu(p, rbreed-4), rbreed, false)
-	return kop + "\n\n" + lipgloss.JoinHorizontal(lipgloss.Top, lPaneel, " ", rPaneel) + "\n" + dim.Render(m.t("listen.keys"))
+	spKeys := ""
+	if l.bron == bronSpotify && m.ouders.Spotify.Zoeken {
+		spKeys = "\n" + dim.Render(m.t("listen.spkeys"))
+	}
+	return kop + "\n\n" + lipgloss.JoinHorizontal(lipgloss.Top, lPaneel, " ", rPaneel) + "\n" + dim.Render(m.t("listen.keys")) + spKeys
 }
 
 func (m model) stapelVan(bron int) *[]lijst { return &m.l.stapels[bron] }

@@ -101,6 +101,8 @@ type Ouders struct {
 	Spotify struct {
 		Goedgekeurd  []string `yaml:"goedgekeurd"`
 		ExplicietMag bool     `yaml:"expliciet_mag"`
+		Zoeken       bool     `yaml:"zoeken"`      // zelf artiesten en albums zoeken en favorieten bewaren
+		Geblokkeerd  []string `yaml:"geblokkeerd"` // links of namen van artiesten en albums die er nooit in komen
 	} `yaml:"spotify"`
 }
 

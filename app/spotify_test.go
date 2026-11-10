@@ -89,6 +89,15 @@ func (n *nepSpotify) server(t *testing.T) *httptest.Server {
 			_, _ = w.Write([]byte(`{"error":{"status":404,"message":"Not found"}}`))
 		case r.URL.Path == "/playlists/pl1/tracks":
 			schrijf(map[string]any{"items": []any{map[string]any{"track": nr("spotify:track:9", "Lijstnummer", false)}}})
+		case r.URL.Path == "/search":
+			schrijf(map[string]any{
+				"artists": map[string]any{"items": []map[string]string{{"id": "art1", "name": "Band"}, {"id": "art2", "name": "Foute Band"}}},
+				"albums": map[string]any{"items": []any{
+					map[string]any{"id": "alb1", "name": "Goed Album", "release_date": "2020-01-01", "artists": []map[string]string{{"id": "art1", "name": "Band"}}},
+					map[string]any{"id": "alb9", "name": "Fout Album", "artists": []map[string]string{{"id": "art2", "name": "Foute Band"}}}}},
+			})
+		case r.URL.Path == "/artists/art1/albums":
+			schrijf(map[string]any{"items": []any{map[string]any{"id": "alb1", "name": "Goed Album", "release_date": "2020", "artists": []map[string]string{{"id": "art1", "name": "Band"}}}}})
 		case r.URL.Path == "/me/player/devices":
 			schrijf(map[string]any{"devices": []map[string]string{{"id": "telefoon", "name": "iPhone"}, {"id": "dev1", "name": spotifyApparaatNaam()}}})
 		case r.URL.Path == "/me/player/play" && r.Method == "PUT":
@@ -261,5 +270,42 @@ func TestSpotifyInLuisteren(t *testing.T) {
 	m = toets(m, "enter")
 	if !strings.Contains(m.View(), "librespot") {
 		t.Errorf("zonder librespot moet dat uitgelegd worden:\n%s", m.View())
+	}
+}
+
+func TestSpotifyZoekenEnFavorieten(t *testing.T) {
+	m, _ := testModel(t, Geheimen{})
+	m.l.spotify = testSpotify(t, &nepSpotify{})
+	m.ouders.Spotify.Zoeken = true
+	m.ouders.Spotify.Geblokkeerd = []string{"foute band"}
+	m = toets(m, "1")
+	for i := 0; i < 4; i++ {
+		m = toets(m, "tab")
+	}
+	if !strings.Contains(m.View(), "Search for an artist") {
+		t.Fatalf("zoeken niet te zien:\n%s", m.View())
+	}
+	m = toets(m, "enter")
+	m = toets(m, "band")
+	m = toets(m, "enter")
+	v := m.View()
+	if !strings.Contains(v, "Goed Album") || strings.Contains(v, "Foute") || strings.Contains(v, "Fout Album") {
+		t.Fatalf("zoekresultaten (geblokkeerd hoort weg):\n%s", v)
+	}
+	m = toets(m, "f") // eerste resultaat: artiest Band
+	m = toets(m, "enter")
+	if !strings.Contains(m.View(), "Goed Album") || len(m.l.stapels[bronSpotify]) != 3 {
+		t.Fatalf("albums van de artiest:\n%s", m.View())
+	}
+	m = toets(m, "esc")
+	m = toets(m, "esc")
+	m = toets(m, "r")
+	if !strings.Contains(m.View(), "★ Band") {
+		t.Errorf("favoriet niet in de lijst:\n%s", m.View())
+	}
+	m.ouderModus = true
+	m = toets(m, "w")
+	if !strings.Contains(m.View(), "searched: band") {
+		t.Errorf("ouders zien de zoekvraag niet:\n%s", m.View())
 	}
 }

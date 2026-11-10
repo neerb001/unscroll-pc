@@ -140,6 +140,11 @@ Once, on a phone or computer:
    Use the same Spotify account for both.
 3. Approve albums and playlists: add their links under `spotify: goedgekeurd:` in `/etc/unscroll/ouders.yaml`.
 
+With `zoeken: true` (asked by `sudo unscroll-ouder`) the child can also search artists and albums,
+browse all albums of an artist and keep favourites (`f`), without recommendations, radio or autoplay.
+Explicit songs and artists under `geblokkeerd:` stay out; parents see searches and listens of the past
+week in parent mode (`w` on the Spotify list).
+
 In the app: `1` Listen, `Tab` to Spotify. An approved album or playlist plays in order and then stops.
 If anything else starts playing on the speaker (autoplay, or someone taking it over from another device),
 the app pauses it.

@@ -132,6 +132,11 @@ Eenmalig, op een telefoon of computer:
    Gebruik voor allebei hetzelfde Spotify-account.
 3. Keur albums en playlists goed: zet hun links onder `spotify: goedgekeurd:` in `/etc/unscroll/ouders.yaml`.
 
+Met `zoeken: true` (vraagt `sudo unscroll-ouder`) kan het kind ook zelf artiesten en albums zoeken,
+alle albums van een artiest bekijken en favorieten bewaren (`f`), zonder aanbevelingen, radio of autoplay.
+Expliciete nummers en artiesten onder `geblokkeerd:` blijven weg; ouders zien in de ouderstand wat er de
+afgelopen week is gezocht en geluisterd (`w` in de Spotify-lijst).
+
 In de app: `1` Luisteren, `Tab` naar Spotify. Een goedgekeurd album of playlist speelt op volgorde en stopt dan.
 Begint er iets anders te spelen op de speaker (autoplay, of iemand die hem vanaf een ander apparaat overneemt),
 dan pauzeert de app het.
