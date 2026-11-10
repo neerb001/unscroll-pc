@@ -15,6 +15,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -36,6 +37,7 @@ var (
 	errNietGekoppeld   = errors.New("spotify speaker not linked")
 	errGeenApparaat    = errors.New("spotify device not found")
 	errSpotifyIngelogd = errors.New("spotify login expired")
+	errSpotifyDruk     = errors.New("spotify: too many requests")
 )
 
 type Spotify struct {
@@ -49,6 +51,7 @@ type Spotify struct {
 	toegang    string
 	verloopt   time.Time
 	apparaatID string
+	wachtTijd  time.Duration
 }
 
 func nieuweSpotify(g Geheimen) *Spotify {
@@ -118,6 +121,27 @@ func (s *Spotify) token() (string, error) {
 
 // doe stuurt een verzoek naar de Web API. uit mag nil zijn.
 func (s *Spotify) doe(methode, pad string, in, uit any) (int, error) {
+	code, err := s.doeEens(methode, pad, in, uit)
+	if code == http.StatusTooManyRequests {
+		// Spotify vraagt even te wachten; kort wachten we zelf, anders melden we het
+		if w := s.wacht(); w > 0 && w <= 5*time.Second {
+			time.Sleep(w)
+			code, err = s.doeEens(methode, pad, in, uit)
+		}
+		if code == http.StatusTooManyRequests {
+			return code, fmt.Errorf("%w, retry after %s", errSpotifyDruk, klok(s.wacht().Seconds()))
+		}
+	}
+	return code, err
+}
+
+func (s *Spotify) wacht() time.Duration {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.wachtTijd
+}
+
+func (s *Spotify) doeEens(methode, pad string, in, uit any) (int, error) {
 	tok, err := s.token()
 	if err != nil {
 		return 0, err
@@ -140,6 +164,12 @@ func (s *Spotify) doe(methode, pad string, in, uit any) (int, error) {
 		return 0, err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusTooManyRequests {
+		sec, _ := strconv.Atoi(resp.Header.Get("Retry-After"))
+		s.mu.Lock()
+		s.wachtTijd = time.Duration(max(sec, 1)) * time.Second
+		s.mu.Unlock()
+	}
 	if resp.StatusCode >= 300 {
 		var e struct {
 			Error struct {

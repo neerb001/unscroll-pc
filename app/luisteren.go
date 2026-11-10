@@ -179,7 +179,7 @@ func (m *model) poll(a *afspelen) tea.Cmd {
 	l := m.l
 	if a.soort == soortSpNummer {
 		sp, id, lijst := l.spotify, l.pollID, a.items
-		return tea.Tick(2*time.Second, func(time.Time) tea.Msg {
+		return tea.Tick(3*time.Second, func(time.Time) tea.Msg {
 			st, err := sp.Stand(lijst)
 			return spelerMsg{id, st, err}
 		})
@@ -479,6 +479,9 @@ func (m *model) luisterBericht(msg tea.Msg) tea.Cmd {
 			lj.fout = ""
 			if msg.err != nil {
 				lj.fout = m.t("listen.err", msg.err.Error())
+				if errors.Is(msg.err, errSpotifyDruk) {
+					lj.fout = m.t("listen.spbusy", wachtUit(msg.err))
+				}
 			} else if len(msg.items) == 0 {
 				lj.fout = m.t("listen.empty")
 			}
@@ -501,6 +504,8 @@ func (m *model) luisterBericht(msg tea.Msg) tea.Cmd {
 				m.zeg(m.t("listen.splink"))
 			case errors.Is(msg.err, errGeenApparaat):
 				m.zeg(m.t("listen.spnodevice"))
+			case errors.Is(msg.err, errSpotifyDruk):
+				m.zeg(m.t("listen.spbusy", wachtUit(msg.err)))
 			case errors.Is(msg.err, errSpotifyIngelogd):
 				m.zeg(m.t("listen.splogin"))
 			default:
@@ -1007,4 +1012,10 @@ func (m model) nuKort() string {
 		return "⏸ " + t
 	}
 	return "♪ " + t
+}
+
+// wachtUit haalt de wachttijd uit een foutmelding van Spotify ("..., retry after 1:30").
+func wachtUit(err error) string {
+	_, w, _ := strings.Cut(err.Error(), "retry after ")
+	return w
 }
