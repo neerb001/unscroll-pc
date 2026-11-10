@@ -58,14 +58,23 @@ koppel_librespot() {  # links the Spotify speaker on this computer to an account
   rm -f "$cache/credentials.json"
   echo "Open the link below on a phone or computer and log in with the SAME Spotify account."
   echo "You end up on a page that does not load (127.0.0.1). Copy that whole address and paste it here."
-  # librespot keeps running after the login; stop it as soon as the login is saved
-  ( for _ in $(seq 1 900); do
-      if [[ -s "$cache/credentials.json" ]]; then sleep 2; pkill -u "$KIND" -f "librespot.*enable-oauth"; exit 0; fi
-      sleep 1
-    done ) &
-  sudo -u "$KIND" librespot --enable-oauth --cache "$cache" --disable-audio-cache --disable-discovery \
-    --backend alsa --name "Unscroll-setup" --quiet || true
-  wait
+  # librespot waits for the browser on this computer (port 5588); the browser is elsewhere,
+  # so this helper delivers the pasted address to librespot itself.
+  sudo -u "$KIND" librespot --enable-oauth --oauth-port 5588 --cache "$cache" --disable-audio-cache \
+    --disable-discovery --backend alsa --name "Unscroll-setup" --quiet &
+  local lr=$! adres=""
+  sleep 3
+  read -r -p "> " adres
+  adres="${adres//localhost/127.0.0.1}"
+  if [[ $adres == http://127.0.0.1:5588/* ]]; then
+    curl -fsS --max-time 20 "$adres" >/dev/null || echo "Could not pass the address to librespot."
+  else
+    echo "That does not look like the address from Spotify (it starts with http://127.0.0.1:5588/)."
+  fi
+  for _ in $(seq 1 30); do [[ -s "$cache/credentials.json" ]] && break; sleep 1; done
+  sleep 2
+  pkill -u "$KIND" -f "librespot.*enable-oauth" 2>/dev/null || true
+  wait "$lr" 2>/dev/null || true
   if [[ -s "$cache/credentials.json" ]]; then echo "Spotify speaker linked."; else echo "Linking did not work, try again later."; fi
 }
 huidig() {       # huidig NAME -> current value from the secrets file (for addresses and user names)
