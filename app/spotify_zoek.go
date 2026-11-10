@@ -145,7 +145,7 @@ func (s *Spotify) Zoek(vraag string, b blokkeer) ([]item, error) {
 			Items []spAlbum `json:"items"`
 		} `json:"albums"`
 	}
-	q := url.Values{"q": {vraag}, "type": {"artist,album"}, "limit": {"10"}}
+	q := url.Values{"q": {vraag}, "type": {"artist,album"}}
 	if _, err := s.doe("GET", "/search?"+q.Encode(), nil, &r); err != nil {
 		return nil, err
 	}
@@ -165,7 +165,7 @@ func (s *Spotify) Zoek(vraag string, b blokkeer) ([]item, error) {
 
 // AlbumsVan geeft de albums en singles van een artiest, nieuwste eerst (zoals Spotify ze geeft).
 func (s *Spotify) AlbumsVan(artiest string, b blokkeer) ([]item, error) {
-	pad := "/artists/" + artiest + "/albums?include_groups=album,single&limit=50"
+	pad := "/artists/" + artiest + "/albums?include_groups=album,single"
 	var uit []item
 	for pad != "" && len(uit) < 200 {
 		var r struct {

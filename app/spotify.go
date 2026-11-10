@@ -248,7 +248,7 @@ func (s *Spotify) Nummers(lijst string, expliciet bool) ([]item, int, error) {
 	soort, id, _ := strings.Cut(lijst, ":")
 	var sporen []spTrack
 	if soort == "album" {
-		pad := "/albums/" + id + "/tracks?limit=50"
+		pad := "/albums/" + id + "/tracks"
 		for pad != "" {
 			var r struct {
 				Items []spTrack `json:"items"`
@@ -262,7 +262,7 @@ func (s *Spotify) Nummers(lijst string, expliciet bool) ([]item, int, error) {
 		}
 	} else {
 		// nieuwe naam van het eindpunt eerst, de oude als terugval
-		pad := "/playlists/" + id + "/items?limit=50"
+		pad := "/playlists/" + id + "/items"
 		eerste := true
 		for pad != "" {
 			var r struct {
@@ -274,7 +274,7 @@ func (s *Spotify) Nummers(lijst string, expliciet bool) ([]item, int, error) {
 			}
 			code, err := s.doe("GET", pad, nil, &r)
 			if err != nil && eerste && code == http.StatusNotFound {
-				pad = "/playlists/" + id + "/tracks?limit=50"
+				pad = "/playlists/" + id + "/tracks"
 				eerste = false
 				continue
 			}
