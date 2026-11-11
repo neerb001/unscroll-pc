@@ -43,6 +43,7 @@ type nepSpotify struct {
 	nu         string // uri die nu speelt
 	speelt     bool
 	nieuwToken string
+	al401      bool
 }
 
 func (n *nepSpotify) server(t *testing.T) *httptest.Server {
@@ -66,6 +67,11 @@ func (n *nepSpotify) server(t *testing.T) *httptest.Server {
 				return
 			}
 			schrijf(map[string]any{"access_token": "toegang", "refresh_token": n.nieuwToken, "expires_in": 3600})
+			return
+		}
+		if r.URL.Path == "/albums/eenmaal401" && !n.al401 {
+			n.al401 = true
+			w.WriteHeader(401)
 			return
 		}
 		if r.Header.Get("Authorization") != "Bearer toegang" {
@@ -307,5 +313,15 @@ func TestSpotifyZoekenEnFavorieten(t *testing.T) {
 	m = toets(m, "w")
 	if !strings.Contains(m.View(), "searched: band") {
 		t.Errorf("ouders zien de zoekvraag niet:\n%s", m.View())
+	}
+}
+
+func TestSpotifyIngetrokkenSleutel(t *testing.T) {
+	t.Setenv("UNSCROLL_INSTELLINGEN", t.TempDir()+"/instellingen.json")
+	nep := &nepSpotify{}
+	s := testSpotify(t, nep)
+	var r map[string]any
+	if _, err := s.doe("GET", "/albums/eenmaal401", nil, &r); err != nil {
+		t.Errorf("na een 401 hoort de app een nieuwe sleutel te halen en het opnieuw te proberen: %v", err)
 	}
 }

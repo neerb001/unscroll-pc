@@ -109,6 +109,9 @@ func (s *Spotify) token() (string, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&t); err != nil {
 		return "", err
 	}
+	if t.AccessToken == "" {
+		return "", errSpotifyIngelogd
+	}
 	s.toegang, s.verloopt = t.AccessToken, time.Now().Add(time.Duration(t.ExpiresIn-60)*time.Second)
 	if t.RefreshToken != "" && t.RefreshToken != s.vernieuw {
 		s.vernieuw = t.RefreshToken
@@ -122,6 +125,16 @@ func (s *Spotify) token() (string, error) {
 // doe stuurt een verzoek naar de Web API. uit mag nil zijn.
 func (s *Spotify) doe(methode, pad string, in, uit any) (int, error) {
 	code, err := s.doeEens(methode, pad, in, uit)
+	if code == http.StatusUnauthorized {
+		// toegangssleutel ingetrokken of verlopen: één keer een nieuwe halen en opnieuw proberen
+		s.mu.Lock()
+		s.toegang = ""
+		s.mu.Unlock()
+		code, err = s.doeEens(methode, pad, in, uit)
+		if code == http.StatusUnauthorized {
+			return code, errSpotifyIngelogd
+		}
+	}
 	if code == http.StatusTooManyRequests {
 		// Spotify vraagt even te wachten; kort wachten we zelf, anders melden we het
 		if w := s.wacht(); w > 0 && w <= 5*time.Second {
