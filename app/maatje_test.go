@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"sync"
 	"testing"
@@ -216,5 +217,51 @@ func TestMaatjeHaikuZonderFallback(t *testing.T) {
 	o.Maatje.Model = "claude-haiku-5-5"
 	if a := nieuwMaatjeAI(Geheimen{"ANTHROPIC_API_KEY": "x"}, o); a.metFallbacks {
 		t.Error("Haiku heeft geen server-side fallback")
+	}
+}
+
+func TestVerhaalHervatten(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+	m, nep, _ := maatjeModel(t)
+	m = toets(m, "3")
+	for i := 0; i < modusVerhaal; i++ {
+		m = toets(m, "down")
+	}
+	m = toets(m, "enter") // geen eerdere verhalen: meteen een nieuw verhaal
+	m = typ(m, "Er was eens een robot die kon vliegen")
+	m = toets(m, "esc")
+	if m.mj.gebruik.Verhalen != 1 {
+		t.Fatalf("verhaalsessies: %d", m.mj.gebruik.Verhalen)
+	}
+	m = toets(m, "enter") // nu is er een keuze
+	if !m.mj.kiesVerhaal || !strings.Contains(m.View(), "robot die kon vliegen") {
+		t.Fatalf("eerder verhaal niet te kiezen:\n%s", m.View())
+	}
+	m = toets(m, "down")
+	m = toets(m, "enter")
+	if !strings.Contains(m.View(), "Zo ver waren jullie") {
+		t.Fatalf("het verhaal tot nu toe is niet te zien:\n%s", m.View())
+	}
+	m = typ(m, "En toen landde hij op de maan")
+	hoofd := nep.hoofdVerzoeken()
+	laatste, _ := json.Marshal(hoofd[len(hoofd)-1]["messages"])
+	if !strings.Contains(string(laatste), "story so far") || !strings.Contains(string(laatste), "robot die kon vliegen") || !strings.Contains(string(laatste), "landde hij op de maan") {
+		t.Errorf("het maatje krijgt het verhaal tot nu toe niet mee: %s", laatste)
+	}
+	if m.mj.gebruik.Verhalen != 1 {
+		t.Errorf("verder schrijven mag niet als nieuwe sessie tellen: %d", m.mj.gebruik.Verhalen)
+	}
+	data, _ := os.ReadFile(m.mj.sessie.verhaal)
+	if !strings.Contains(string(data), "robot") || !strings.Contains(string(data), "maan") {
+		t.Errorf("het vervolg komt niet in hetzelfde bestand: %s", data)
+	}
+}
+
+func TestNulIsOnbeperkt(t *testing.T) {
+	m, _, _ := maatjeModel(t)
+	m.ouders.Maatje.VrijeVragenPerDag, m.ouders.Maatje.MaxMinutenPerDag, m.ouders.Maatje.VerhaalSessiesPerDag = 0, 0, 0
+	m.mj.gebruik.Seconden, m.mj.gebruik.Vragen = 99999, 500
+	if m.maatjeDicht() != "" || m.overVandaag(modusVraag) <= 0 || m.overVandaag(modusVerhaal) <= 0 {
+		t.Error("0 moet onbeperkt betekenen")
 	}
 }

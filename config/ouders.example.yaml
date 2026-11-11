@@ -42,7 +42,7 @@ spotify:
                          # (no recommendations or radio; parents see searches in parent mode, w)
   geblokkeerd: []        # artist or album links, or artist names, that never show up
 
-# Limits of the AI buddy.
+# Limits of the AI buddy. 0 means no limit (pauze_na_minuten: 0 means no break).
 # Leave out a line to use the default from the app;
 # defaults are tuned through updates as we learn from real use.
 maatje:

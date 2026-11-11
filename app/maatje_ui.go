@@ -102,6 +102,7 @@ type sessie struct {
 	regels             []regel
 	wacht, geteld      bool
 	verhaal            string
+	eerder             string // het verhaal tot nu toe, bij het hervatten
 }
 
 type maatjeStaat struct {
@@ -112,6 +113,10 @@ type maatjeStaat struct {
 	keuze   int
 	week    bool
 	volgID  int
+
+	kiesVerhaal bool // kiest tussen een nieuw verhaal en een eerder verhaal
+	verhalen    []verhaalBestand
+	verhaalSel  int
 }
 
 func nieuwMaatjeStaat(g Geheimen, o Ouders) *maatjeStaat {
@@ -142,7 +147,7 @@ func (m *model) maatjeDicht() string {
 		return m.t("buddy.notset")
 	case mj.gebruik.PauzeTot.After(time.Now()):
 		return m.t("buddy.break", mj.gebruik.PauzeTot.Format("15:04"))
-	case mj.gebruik.Seconden >= g.MaxMinutenPerDag*60:
+	case g.MaxMinutenPerDag > 0 && mj.gebruik.Seconden >= g.MaxMinutenPerDag*60:
 		return m.t("buddy.daydone")
 	}
 	return ""
@@ -151,13 +156,20 @@ func (m *model) maatjeDicht() string {
 // overVandaag: hoeveel er vandaag nog van een modus over is.
 func (m *model) overVandaag(modus int) int {
 	g, u := m.ouders.Maatje, m.mj.gebruik
+	// 0 betekent: geen grens
+	over := func(grens, gebruikt int) int {
+		if grens <= 0 {
+			return 999
+		}
+		return grens - gebruikt
+	}
 	switch modus {
 	case modusVraag:
-		return g.VrijeVragenPerDag - u.Vragen
+		return over(g.VrijeVragenPerDag, u.Vragen)
 	case modusVerhaal:
-		return g.VerhaalSessiesPerDag - u.Verhalen
+		return over(g.VerhaalSessiesPerDag, u.Verhalen)
 	}
-	return g.HuiswerkSessiesPerDag - u.Huiswerk
+	return over(g.HuiswerkSessiesPerDag, u.Huiswerk)
 }
 
 func (m *model) maxBeurten(modus int) int {
@@ -199,6 +211,25 @@ func (m *model) toetsMaatje(msg tea.KeyMsg) (tea.Cmd, bool) {
 	mj := m.mj
 	k := msg.String()
 	s := mj.sessie
+	if s == nil && mj.kiesVerhaal {
+		switch k {
+		case "up", "k":
+			mj.verhaalSel = max(mj.verhaalSel-1, 0)
+		case "down", "j":
+			mj.verhaalSel = min(mj.verhaalSel+1, len(mj.verhalen))
+		case "enter":
+			mj.kiesVerhaal = false
+			if mj.verhaalSel == 0 {
+				return m.startSessie(modusVerhaal), true
+			}
+			return m.verderMetVerhaal(mj.verhalen[mj.verhaalSel-1]), true
+		case "esc":
+			mj.kiesVerhaal = false
+		default:
+			return nil, false
+		}
+		return nil, true
+	}
 	if s == nil {
 		switch k {
 		case "up", "k":
@@ -206,6 +237,12 @@ func (m *model) toetsMaatje(msg tea.KeyMsg) (tea.Cmd, bool) {
 		case "down", "j":
 			mj.keuze = (mj.keuze + 1) % aantalModi
 		case "enter":
+			if mj.keuze == modusVerhaal {
+				if v := eerdereVerhalen(6); len(v) > 0 {
+					mj.verhalen, mj.verhaalSel, mj.kiesVerhaal = v, 0, true
+					return nil, true
+				}
+			}
 			return m.startSessie(mj.keuze), true
 		case "w":
 			if m.ouderModus {
@@ -301,7 +338,7 @@ func (m *model) stuur(tekst string, controleer bool) tea.Cmd {
 	mj.gebruik.bewaar()
 	s.wacht = true
 
-	ai, id := mj.ai, s.id
+	ai, id, sess := mj.ai, s.id, *s
 	systeem := ai.systeem(m.inst.Maatje, s.modus, m.inst.Taal)
 	gesprek := append([]anthropic.BetaMessageParam(nil), s.gesprek...)
 	return func() tea.Msg {
@@ -319,7 +356,7 @@ func (m *model) stuur(tekst string, controleer bool) tea.Cmd {
 				return uit
 			}
 		}
-		gesprek = append(gesprek, anthropic.NewBetaUserMessage(anthropic.NewBetaTextBlock(schoon)))
+		gesprek = append(gesprek, anthropic.NewBetaUserMessage(anthropic.NewBetaTextBlock(metEerder(&sess, schoon))))
 		resp, antwoord, err := ai.Antwoord(ctx, systeem, gesprek)
 		if errors.Is(err, errGeweigerd) {
 			uit.oordeelAnt = oordeelOngepast
@@ -444,6 +481,23 @@ func (m model) viewMaatje(p palet) string {
 
 	g := m.ouders.Maatje
 	tijd := dim.Render(m.t("buddy.time", mj.gebruik.Seconden/60, g.MaxMinutenPerDag))
+	if mj.sessie == nil && mj.kiesVerhaal {
+		regels := []string{dim.Render(m.t("buddy.pickstory")), ""}
+		for i := 0; i <= len(mj.verhalen); i++ {
+			naam := m.t("buddy.newstory")
+			if i > 0 {
+				v := mj.verhalen[i-1]
+				naam = v.tijd.Format("2 Jan 15:04") + "  " + v.titel
+			}
+			if i == mj.verhaalSel {
+				regels = append(regels, lipgloss.NewStyle().Background(p.sel).Foreground(p.acc).Bold(true).Render("▸ "+naam+" "))
+			} else {
+				regels = append(regels, "  "+naam)
+			}
+		}
+		regels = append(regels, "", dim.Render(m.t("buddy.pickkeys")))
+		return kop + "\n\n" + paneel(p, m.t("buddy.m.story"), strings.Join(regels, "\n"), breed, true)
+	}
 	if mj.sessie == nil {
 		var regels []string
 		if reden := m.maatjeDicht(); reden != "" {

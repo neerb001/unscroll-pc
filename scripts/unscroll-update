@@ -26,6 +26,20 @@ if [[ -d "/home/$KIND/.config" ]] && [[ "$(stat -c %U "/home/$KIND/.config")" !=
   chown "$KIND:$KIND" "/home/$KIND/.config" && echo "Fixed the owner of /home/$KIND/.config"
 fi
 
+# Keep playing with the lid closed and keep wifi awake: the default lid action is suspend,
+# and wifi power saving drops streams (an audiobook then stops). Written only when different.
+zet_conf() {     # zet_conf file content reload-command...
+  local f=$1 inhoud=$2; shift 2
+  if [[ "$(cat "$f" 2>/dev/null)" != "$inhoud" ]]; then
+    mkdir -p "$(dirname "$f")" && printf '%s\n' "$inhoud" > "$f" && "$@" >/dev/null 2>&1 || true
+    echo "Updated $f"
+  fi
+}
+zet_conf /etc/systemd/logind.conf.d/unscroll.conf "$(printf '[Login]\nHandleLidSwitch=ignore\nHandleLidSwitchExternalPower=ignore\nHandleLidSwitchDocked=ignore\nIdleAction=ignore')" \
+  systemctl kill -s HUP systemd-logind
+zet_conf /etc/NetworkManager/conf.d/unscroll-wifi.conf "$(printf '[connection]\nwifi.powersave = 2')" \
+  systemctl reload NetworkManager
+
 [[ "${1:-}" == "--nu" ]] || sleep $((RANDOM % 60))
 
 case "$(uname -m)" in

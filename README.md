@@ -176,7 +176,9 @@ Parents see the questions of the past week in parent mode: open the buddy tab an
 Stories written together are saved in the writing nook (`~/.local/share/unscroll/verhalen`);
 parents only see that a story was written, not the story itself.
 
-Parents set the limits with `sudo unscroll-ouder`. The defaults and the buddy's instructions
+Parents set the limits in `/etc/unscroll/ouders.yaml` (section `maatje`; 0 means no limit).
+Stories can be continued later: choosing "Story together" again offers the earlier stories.
+Parents set the key and model with `sudo unscroll-ouder`. The defaults and the buddy's instructions
 are part of the app and are tuned through updates as we learn from real use.
 
 ## Passwords and keys
