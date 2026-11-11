@@ -48,6 +48,7 @@ Het project begon op een oude Asus EeePC, vandaar de "PC" in de naam.
 | Vraag het maatje | AI via de Anthropic-API met dagbudget, filters en weekoverzicht voor ouders | ✅ fase 4 |
 | Ontdekken | Computerlab (Linux leren met missies), Python, dier van de dag, natuurdagboek | ⏳ fase 5 |
 | Denksport | Sudoku, schaakpuzzels, raadsels. Geen timer, geen score | ⏳ fase 5 |
+| Typcursus | Rustige typlessen: eerst de thuisrij, korte lessen per dag, oefenen met eigen zinnen en verhalen, vooruitgang zonder scores of reeksen | ⏳ later |
 | Schrijfhoek | Privé dagboek en verhalen | ⏳ fase 5 |
 
 ## Geschikte apparaten
