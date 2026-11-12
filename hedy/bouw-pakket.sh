@@ -40,8 +40,8 @@ toets 1 nl "Sam" "vraag hoe heet jij?
 echo hallo" "Sam"
 toets 2 en "pizza" "food is pizza
 print I like food"
-toets 4 nl "dobbelsteen" "keuzes is 1, 2, 3
-print 'dobbelsteen'"
+toets 4 en "dice" "choices is 1, 2, 3
+print 'dice ' choices at random"
 toets 5 nl "goed" "naam is Sam
 als naam is Sam print 'goed' anders print 'fout'"
 toets 7 en "hoi" "repeat 2 times print 'hoi'"
