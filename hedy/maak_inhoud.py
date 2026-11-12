@@ -21,8 +21,8 @@ for node in ast.walk(ast.parse(bron)):
         volgorde = ast.literal_eval(node.value)
 volgorde = {int(k): [a for a in v if a not in ("parsons", "quiz")] for k, v in volgorde.items()}
 
-# tekenen kan wel (met tekens), toetsen en muziek nog niet
-OVERSLAAN = {"music", "piano", "pressed", "debugging"}
+# alles kan: tekenen (met tekens), toetsen, muziek en fouten zoeken
+OVERSLAAN = set()
 
 
 def woorden(taal):

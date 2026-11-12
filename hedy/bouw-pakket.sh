@@ -58,6 +58,12 @@ if grep -q HEDYFOUT <<<"$uitvoer"; then exit 1; fi
 toets 1 nl "37m" "vooruit 50
 draai rechts
 vooruit 50"
+# toetsen: het programma wacht op een toets en krijgt "x"
+toets 5 en "yes" "if x is pressed print 'yes' else print 'no'" "x"
+# muziek: geen geluidskaart in de bouwomgeving, maar het programma moet zonder fout draaien
+toets 6 en "klaar" "play C4
+play 5
+print 'klaar'"
 toets 1 nl "HEDYFOUT" "prnt hallo"
 toets 12 en "HEDYFOUT" "import os"
 

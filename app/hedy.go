@@ -42,6 +42,7 @@ type hedyStaat struct {
 	uitvoer          []string
 	proc             *hedyProces
 	invoer           string
+	wachtToets       bool // het programma wacht op één toets (if ... is pressed)
 	volgID           int
 }
 
@@ -144,7 +145,11 @@ type hedyKlaarMsg struct {
 	err error
 }
 
-const hedyFout = "\x1eHEDYFOUT "
+const (
+	hedyFout  = "\x1eHEDYFOUT "
+	hedyToets = "\x1eHEDYTOETS\n"
+	hedyWis   = "\x1eHEDYWIS\n"
+)
 
 func (p *hedyProces) volgende() tea.Cmd {
 	return func() tea.Msg { return <-p.uit }
@@ -193,7 +198,7 @@ func (m *model) hedyStart() tea.Cmd {
 		h.uitvoer = []string{"! " + m.t("hedy.nopython")}
 		return nil
 	}
-	h.proc, h.uitvoer, h.invoer, h.scroll = p, nil, "", 0
+	h.proc, h.uitvoer, h.invoer, h.scroll, h.wachtToets = p, nil, "", 0, false
 	go func() {
 		r := bufio.NewReader(stdout)
 		buf := make([]byte, 4096)
@@ -228,6 +233,15 @@ func (m *model) hedyBericht(msg tea.Msg) tea.Cmd {
 			return nil
 		}
 		tekst := msg.tekst
+		// signalen van het programma: scherm wissen en wachten op een toets
+		if i := strings.LastIndex(tekst, hedyWis); i >= 0 {
+			h.uitvoer = nil
+			tekst = tekst[i+len(hedyWis):]
+		}
+		if strings.Contains(tekst, hedyToets) {
+			h.wachtToets = true
+			tekst = strings.ReplaceAll(tekst, hedyToets, "")
+		}
 		if len(h.uitvoer) == 0 {
 			h.uitvoer = []string{""}
 		}
@@ -246,7 +260,7 @@ func (m *model) hedyBericht(msg tea.Msg) tea.Cmd {
 		if p == nil || msg.id != p.id {
 			return nil
 		}
-		h.proc = nil
+		h.proc, h.wachtToets = nil, false
 		// een fout van Hedy staat op één regel met een markering
 		var schoon []string
 		for _, r := range h.uitvoer {
@@ -285,6 +299,27 @@ func (m *model) toetsHedy(msg tea.KeyMsg) (tea.Cmd, bool) {
 		case "esc", "ctrl+c":
 			p.stop()
 			return nil, true
+		}
+		if h.wachtToets {
+			// meteen doorgeven, zonder Enter: zo kan hij spelletjes besturen
+			toets := ""
+			switch msg.Type {
+			case tea.KeyRunes:
+				toets = string(msg.Runes)
+			case tea.KeySpace:
+				toets = " "
+			case tea.KeyEnter:
+				toets = "enter"
+			case tea.KeyUp, tea.KeyDown, tea.KeyLeft, tea.KeyRight:
+				toets = k
+			}
+			if toets != "" {
+				h.wachtToets = false
+				_, _ = io.WriteString(p.stdin, toets+"\n")
+			}
+			return nil, true
+		}
+		switch k {
 		case "enter":
 			_, _ = io.WriteString(p.stdin, h.invoer+"\n")
 			h.uitvoer[len(h.uitvoer)-1] += h.invoer
@@ -454,6 +489,9 @@ func (m model) viewHedy(p palet) string {
 	}
 	if h.proc != nil {
 		toetsen = m.t("hedy.runkeys")
+		if h.wachtToets {
+			toetsen = m.t("hedy.presskey")
+		}
 	}
 	return paneel(p, titel, strings.Join(tekst, "\n"), breed, !h.inEditor && h.proc == nil) + "\n" + onder + "\n" + dim.Render(toetsen)
 }

@@ -9,14 +9,21 @@ Een fout komt als één regel met FOUT ervoor en JSON erachter, zodat de app hem
 """
 import builtins
 import json
+import math
 import os
+import re
 import resource
+import struct
+import subprocess
 import sys
+import types
 
 HIER = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HIER, "lib"))
 sys.path.insert(0, os.path.join(HIER, "schildpad"))  # onze turtle.py gaat voor
 FOUT = "\x1eHEDYFOUT "
+TOETS = "\x1eHEDYTOETS"  # de app stuurt dan meteen de volgende toets, zonder Enter
+WIS = "\x1eHEDYWIS"      # de app maakt het uitvoerscherm leeg
 TOEGESTAAN = {"random", "time", "math", "turtle", "extensions"}
 
 
@@ -45,6 +52,56 @@ def fouttekst(ex, taal):
         return sjabloon, args.get("line_number")
 
 
+def maak_extensions(omgeving):
+    """Wat op hedy.org de browser doet: toetsen (if ... is pressed) en het scherm wissen (clear)."""
+    ext = types.ModuleType("extensions")
+
+    def if_pressed(mapping):
+        print(TOETS, flush=True)
+        toets = sys.stdin.readline().rstrip("\n")
+        naam = mapping.get(toets) or mapping.get(toets.lower()) or mapping.get(toets.upper()) or mapping.get("else")
+        functie = omgeving.get(naam)
+        if callable(functie):
+            functie()
+
+    def clear():
+        print(WIS, flush=True)
+
+    ext.if_pressed = if_pressed
+    ext.clear = clear
+    return ext
+
+
+HALVE_TONEN = {"C": -9, "D": -7, "E": -5, "F": -4, "G": -2, "A": 0, "B": 2}
+
+
+def toonhoogte(noot):
+    m = re.fullmatch(r"([A-G])(#|B)?(\d)", str(noot).upper())
+    if not m:
+        return None
+    halve = HALVE_TONEN[m.group(1)] + {"#": 1, "B": -1}.get(m.group(2) or "", 0) + (int(m.group(3)) - 4) * 12
+    return 440.0 * 2 ** (halve / 12)
+
+
+def speel(noot):
+    """Speelt een noot van 0,4 seconde via aplay (ALSA). Zonder geluid gebeurt er gewoon niets."""
+    f = toonhoogte(noot)
+    if not f:
+        return
+    rate, duur = 22050, 0.4
+    n = int(rate * duur)
+    golf = b"".join(struct.pack("<h", int(12000 * math.sin(2 * math.pi * f * i / rate) * min(1, (n - i) / 800)))
+                    for i in range(n))
+    kop = b"RIFF" + struct.pack("<I", 36 + len(golf)) + b"WAVEfmt " + struct.pack("<IHHIIHH", 16, 1, 1, rate, rate * 2, 2, 16) \
+        + b"data" + struct.pack("<I", len(golf))
+    try:
+        p = subprocess.Popen(["aplay", "-q", "-"], stdin=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        p.stdin.write(kop + golf)
+        p.stdin.close()
+    except OSError:
+        pass
+
+
 def veilig_importeren(naam, *args, **kwargs):
     if naam.split(".")[0] not in TOEGESTAAN:
         raise ImportError(naam)
@@ -68,12 +125,10 @@ def main():
     except Exception as ex:  # noqa: BLE001 - elke fout van Hedy naar het kind
         tekst, regel = fouttekst(ex, taal)
         meld_fout(tekst, regel)
-    if res.has_pressed or res.has_music:
-        meld_fout({"nl": "Toetsen indrukken en muziek werken nog niet op deze computer."}.get(
-            taal, "Key presses and music do not work on this computer yet."))
-
     prefix = ""
-    for naam in ["normal"] + (["turtle"] if res.has_turtle else []):
+    delen = ["normal"] + (["turtle"] if res.has_turtle else []) + (["pressed"] if res.has_pressed else []) \
+        + (["music"] if res.has_music else [])
+    for naam in delen:
         with open(os.path.join(HIER, "lib", "hedy", "prefixes", naam + ".py"), encoding="utf-8") as f:
             prefix += f.read() + "\n"
 
@@ -84,7 +139,8 @@ def main():
     veilig = {k: v for k, v in vars(builtins).items()
               if k not in ("open", "exec", "eval", "compile", "breakpoint", "exit", "quit", "help")}
     veilig["__import__"] = veilig_importeren
-    omgeving = {"__name__": "__main__", "__builtins__": veilig}
+    omgeving = {"__name__": "__main__", "__builtins__": veilig, "play": speel}
+    sys.modules["extensions"] = maak_extensions(omgeving)
     try:
         exec(compile(prefix + res.code, "<hedy>", "exec"), omgeving)
     except KeyboardInterrupt:

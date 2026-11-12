@@ -14,6 +14,12 @@ import (
 // nepHedy: een klein script dat doet alsof het Hedy is.
 const nepHedyScript = `import sys, json
 code = open(sys.argv[3]).read()
+if "toets" in code:
+    print("\x1eHEDYWIS", flush=True)
+    print("\x1eHEDYTOETS", flush=True)
+    k = input()
+    print("je drukte " + k)
+    sys.exit(0)
 if "fout" in code:
     print("\x1eHEDYFOUT " + json.dumps({"tekst": "Het lijkt erop dat je een fout maakte op regel 1.", "regel": 1}))
     sys.exit(2)
@@ -97,6 +103,18 @@ func TestHedyProgrammeren(t *testing.T) {
 	m = draaiHedy(t, nm.(model), cmd)
 	if !strings.Contains(m.View(), "fout maakte op regel") || strings.Contains(m.View(), "HEDYFOUT") {
 		t.Errorf("foutmelding niet netjes:\n%s", m.View())
+	}
+	// toetsen: het programma wacht op één toets en krijgt hem zonder Enter
+	m.od.hedy.editor.SetValue("toets")
+	nm, cmd = m.Update(tea.KeyMsg{Type: tea.KeyCtrlR})
+	m = draaiHedy(t, nm.(model), cmd)
+	if !m.od.hedy.wachtToets || !strings.Contains(m.View(), "druk op een toets") {
+		t.Fatalf("programma wacht niet op een toets:\n%s", m.View())
+	}
+	nm, cmd = m.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("x")})
+	m = draaiHedy(t, nm.(model), cmd)
+	if !strings.Contains(m.View(), "je drukte x") {
+		t.Fatalf("toets kwam niet aan:\n%s", m.View())
 	}
 	// volgende niveau
 	m = toets(m, "esc")
