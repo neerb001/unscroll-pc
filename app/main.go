@@ -30,7 +30,7 @@ const (
 // sleutels in de vertalingen per tabblad
 var tabSleutels = []string{"tab.start", "tab.listen", "tab.read", "", "tab.discover", "tab.puzzles", "tab.write", "tab.today", "tab.system"}
 var menuSleutels = []string{"", "menu.listen", "menu.read", "menu.buddy", "menu.discover", "menu.puzzles", "menu.write", "menu.today", "menu.system"}
-var straksSleutels = map[int]string{tabDenksport: "soon.puzzles", tabSchrijfhoek: "soon.write", tabVandaag: "soon.today"}
+var straksSleutels = map[int]string{tabDenksport: "soon.puzzles", tabSchrijfhoek: "soon.write"}
 
 type tickMsg time.Time
 type statusMsg struct {
@@ -72,6 +72,7 @@ type model struct {
 	mj           *maatjeStaat
 	ls           *leesStaat
 	od           *ontdekStaat
+	vd           *vandaagStaat
 }
 
 func nieuwModel() model {
@@ -92,6 +93,7 @@ func nieuwModel() model {
 	m.mj = nieuwMaatjeStaat(geheim, o)
 	m.ls = &leesStaat{}
 	m.od = nieuweOntdek()
+	m.vd = &vandaagStaat{}
 	m.pin = textinput.New()
 	m.pin.EchoMode = textinput.EchoPassword
 	m.pin.CharLimit = 8
@@ -135,6 +137,9 @@ func (m *model) naarTab(t int) tea.Cmd {
 	}
 	if t == tabLezen {
 		return m.lezenOpen()
+	}
+	if t == tabVandaag {
+		return m.vandaagOpen()
 	}
 	return nil
 }
@@ -187,8 +192,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.dicht() && m.tab == tabLuisteren && m.l.bron != bronBoeken {
 			luister = m.luisterOpen()
 		}
+		var weer tea.Cmd
+		if m.tab == tabVandaag {
+			weer = m.vandaagOpen() // elk half uur vers weer zolang het scherm open is
+		}
 		slot := m.luisterSlot()
-		return m, tea.Batch(tick(), leesStatus(m.inst.Taal), slot, luister)
+		return m, tea.Batch(tick(), leesStatus(m.inst.Taal), slot, luister, weer)
 	case statusMsg:
 		m.wifi, m.accu, m.vol = msg.wifi, msg.accu, msg.vol
 		return m, nil
@@ -198,6 +207,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case hedyUitMsg, hedyKlaarMsg:
 		cmd := m.hedyBericht(msg)
 		return m, cmd
+	case weerMsg:
+		m.vandaagBericht(msg)
+		return m, nil
 	case dierMsg:
 		m.ontdekBericht(msg)
 		return m, nil
@@ -278,6 +290,10 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		if cmd, ok := m.toetsLuisteren(msg); ok {
 			return m, cmd
 		}
+	}
+	if m.tab == tabVandaag && k == "r" && !m.vd.laden {
+		m.vd.laden = true
+		return m, haalWeer(m.ouders)
 	}
 	if m.tab == tabOntdekken {
 		if cmd, ok := m.toetsOntdek(msg); ok {
@@ -427,6 +443,8 @@ func (m model) View() string {
 		inhoud = m.viewLezen(p)
 	case m.tab == tabOntdekken:
 		inhoud = m.viewOntdek(p)
+	case m.tab == tabVandaag:
+		inhoud = m.viewVandaag(p)
 	default:
 		inhoud = m.viewStraks(p)
 	}

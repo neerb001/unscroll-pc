@@ -16,6 +16,13 @@ pin_sha256: ""
 
 max_volume: 70
 
+# Weather on the Today page. sudo unscroll-ouder looks up the coordinates for a place name.
+# Without a place, the weather of De Bilt (centre of the Netherlands) is shown.
+vandaag:
+  plaats: ""
+  # breedtegraad: 52.09
+  # lengtegraad: 5.12
+
 # Radio stations on the dial. Leave this out to use the built-in list
 # (NPO Radio 1, NPO Radio 2, NPO 3FM, NPO Klassiek, BBC World Service).
 # radio:

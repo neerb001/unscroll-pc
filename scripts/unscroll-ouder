@@ -22,7 +22,7 @@ geheim() {       # geheim "question" -> answer, not shown on screen
   local a; read -r -s -p "$1 (empty = keep current): " a; echo >&2; echo "$a"
 }
 yaml_tekst() {   # yes/no and numbers stay bare, everything else gets quotes
-  if [[ $1 =~ ^(true|false|[0-9]+)$ ]]; then printf '%s' "$1"; else printf '"%s"' "$1"; fi
+  if [[ $1 =~ ^(true|false|-?[0-9]+(\.[0-9]+)?)$ ]]; then printf '%s' "$1"; else printf '"%s"' "$1"; fi
 }
 zet_yaml() {     # zet_yaml key value  (single-line keys only)
   sed -i -E "s|^([[:space:]]*$1:).*|\1 $(yaml_tekst "$2")|" "$OUDERS"
@@ -121,6 +121,23 @@ echo "-- Quiet time --"
 zet_yaml schooldagen "$(vraag 'Closes on school nights (Sun to Thu)' "$(yaml_waarde schooldagen)")"
 zet_yaml weekend "$(vraag 'Closes on Friday and Saturday evening' "$(yaml_waarde weekend)")"
 zet_yaml open "$(vraag 'Opens again at' "$(yaml_waarde open)")"
+echo
+
+echo "-- Weather on the Today page --"
+plaats=$(vraag "Town or village for the weather" "$(yaml_waarde plaats)")
+if [[ -n $plaats ]]; then
+  zoek=$(jq -rn --arg q "$plaats" '$q|@uri')
+  if gevonden=$(curl -fsS --max-time 10 "https://geocoding-api.open-meteo.com/v1/search?name=$zoek&count=1&language=nl&format=json" \
+       | jq -r '.results[0] | "\(.latitude) \(.longitude) \(.name), \(.country)"') && [[ $gevonden != "null null"* ]]; then
+    read -r lat lon naam <<<"$gevonden"
+    zet_yaml_in vandaag plaats "$plaats"
+    zet_yaml_in vandaag breedtegraad "$lat"
+    zet_yaml_in vandaag lengtegraad "$lon"
+    echo "Found: $naam ($lat, $lon)"
+  else
+    echo "Could not find that place (or no internet); the weather stays as it was."
+  fi
+fi
 echo
 
 echo "-- Ask for help via ntfy (notification on your phones) --"

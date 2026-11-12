@@ -97,6 +97,13 @@ type Ouders struct {
 	Maatje MaatjeGrenzen `yaml:"maatje"`
 	Radio  []Zender      `yaml:"radio"`
 
+	// Vandaag: de plek voor het weer (sudo unscroll-ouder zoekt de coördinaten op bij een plaatsnaam)
+	Vandaag struct {
+		Plaats       string  `yaml:"plaats"`
+		Breedtegraad float64 `yaml:"breedtegraad"`
+		Lengtegraad  float64 `yaml:"lengtegraad"`
+	} `yaml:"vandaag"`
+
 	// Spotify: alleen deze albums en playlists (links uit de Spotify-app), zonder expliciete nummers.
 	Spotify struct {
 		Goedgekeurd  []string `yaml:"goedgekeurd"`
