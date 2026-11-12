@@ -76,6 +76,7 @@ type absVoortgang struct {
 	LibraryItemID string  `json:"libraryItemId"`
 	EpisodeID     string  `json:"episodeId"`
 	Progress      float64 `json:"progress"`
+	EbookProgress float64 `json:"ebookProgress"`
 	IsFinished    bool    `json:"isFinished"`
 }
 
@@ -115,6 +116,7 @@ func (a *ABS) Items(mediaType string) ([]item, error) {
 					} `json:"metadata"`
 					Duration    float64 `json:"duration"`
 					NumEpisodes int     `json:"numEpisodes"`
+					EbookFormat string  `json:"ebookFormat"`
 				} `json:"media"`
 			} `json:"results"`
 		}
@@ -124,7 +126,7 @@ func (a *ABS) Items(mediaType string) ([]item, error) {
 		}
 		for _, x := range r.Results {
 			md := x.Media.Metadata
-			it := item{id: x.ID, titel: md.Title, sub: md.AuthorName, duur: x.Media.Duration, aantal: x.Media.NumEpisodes}
+			it := item{id: x.ID, titel: md.Title, sub: md.AuthorName, duur: x.Media.Duration, aantal: x.Media.NumEpisodes, url: x.Media.EbookFormat}
 			if it.sub == "" {
 				it.sub = md.Author
 			}

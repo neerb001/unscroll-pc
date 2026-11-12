@@ -123,6 +123,7 @@ type maatjeStaat struct {
 }
 
 func nieuwMaatjeStaat(g Geheimen, o Ouders) *maatjeStaat {
+	opruimen(time.Now())
 	s := &maatjeStaat{ai: nieuwMaatjeAI(g, o), gebruik: laadGebruik(time.Now())}
 	s.invoer = textinput.New()
 	s.invoer.CharLimit = 400
@@ -253,7 +254,7 @@ func (m *model) toetsMaatje(msg tea.KeyMsg) (tea.Cmd, bool) {
 			return m.startSessie(mj.keuze), true
 		case "h":
 			if m.ouderModus {
-				if v := eerdereSessies(-1, 20); len(v) > 0 {
+				if v := eerdereSessies(-1, 60); len(v) > 0 {
 					mj.verhalen, mj.verhaalSel, mj.kiesVerhaal, mj.kiesModus = v, 0, true, -1
 				} else {
 					m.zeg(m.t("buddy.hwnone"))
@@ -449,9 +450,7 @@ func (m *model) maatjeBericht(msg maatjeMsg) tea.Cmd {
 		s.gesprek = msg.gesprek
 		s.beurten++
 		s.regels = append(s.regels, regel{1, msg.antwoord})
-		if s.modus != modusVraag {
-			m.bewaarSessie(s, msg.vraag, msg.antwoord)
-		}
+		m.bewaarSessie(s, msg.vraag, msg.antwoord)
 	}
 	vraag := msg.vraag
 	if s.modus == modusVerhaal && oordeel == oordeelOK {

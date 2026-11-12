@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"testing"
@@ -118,7 +119,7 @@ func typ(m model, tekst string) model {
 func TestMaatjeVraag(t *testing.T) {
 	m, nep, _ := maatjeModel(t)
 	m = toets(m, "3")
-	if !strings.Contains(m.View(), "Vraag iets") || !strings.Contains(m.View(), "ouders kunnen lezen") {
+	if !strings.Contains(m.View(), "Vraag iets") || !strings.Contains(m.View(), "gesprekken teruglezen") {
 		t.Fatalf("keuzemenu niet te zien:\n%s", m.View())
 	}
 	m = toets(m, "enter") // Vraag iets
@@ -317,5 +318,27 @@ func TestHuiswerkBewarenHervattenEnTeruglezen(t *testing.T) {
 	m = typ(m, "dit mag niet verstuurd worden")
 	if len(nep.hoofdVerzoeken()) != voor {
 		t.Error("bij teruglezen mag er niets naar het maatje gaan")
+	}
+}
+
+func TestGesprekkenVierWekenBewaard(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+	m, _, _ := maatjeModel(t)
+	m = toets(m, "3")
+	m = toets(m, "enter") // vraag iets
+	m = typ(m, "hoe werkt een vulkaan?")
+	m = toets(m, "esc")
+	v := eerdereSessies(-1, 10)
+	if len(v) != 1 || v[0].modus != modusVraag {
+		t.Fatalf("losse vragen worden niet bewaard: %+v", v)
+	}
+	oud := filepath.Join(sessieMap(modusVraag), "2000-01-01-1200-vraag.txt")
+	_ = os.WriteFile(oud, []byte("» oud\n\nantwoord\n"), 0o600)
+	opruimen(time.Now())
+	if _, err := os.Stat(oud); err == nil {
+		t.Error("gesprekken ouder dan 4 weken horen weg te gaan")
+	}
+	if len(eerdereSessies(-1, 10)) != 1 {
+		t.Error("het gesprek van vandaag hoort te blijven")
 	}
 }

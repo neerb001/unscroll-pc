@@ -30,7 +30,7 @@ const (
 // sleutels in de vertalingen per tabblad
 var tabSleutels = []string{"tab.start", "tab.listen", "tab.read", "", "tab.discover", "tab.puzzles", "tab.write", "tab.today", "tab.system"}
 var menuSleutels = []string{"", "menu.listen", "menu.read", "menu.buddy", "menu.discover", "menu.puzzles", "menu.write", "menu.today", "menu.system"}
-var straksSleutels = map[int]string{tabLezen: "soon.read", tabOntdekken: "soon.discover", tabDenksport: "soon.puzzles", tabSchrijfhoek: "soon.write", tabVandaag: "soon.today"}
+var straksSleutels = map[int]string{tabOntdekken: "soon.discover", tabDenksport: "soon.puzzles", tabSchrijfhoek: "soon.write", tabVandaag: "soon.today"}
 
 type tickMsg time.Time
 type statusMsg struct {
@@ -70,6 +70,7 @@ type model struct {
 	vol          int
 	l            *luister
 	mj           *maatjeStaat
+	ls           *leesStaat
 }
 
 func nieuwModel() model {
@@ -88,6 +89,7 @@ func nieuwModel() model {
 	geheim := laadGeheimen()
 	m.l = nieuwLuister(geheim)
 	m.mj = nieuwMaatjeStaat(geheim, o)
+	m.ls = &leesStaat{}
 	m.pin = textinput.New()
 	m.pin.EchoMode = textinput.EchoPassword
 	m.pin.CharLimit = 8
@@ -128,6 +130,9 @@ func (m *model) naarTab(t int) tea.Cmd {
 	m.pinOpen = false
 	if t == tabLuisteren {
 		return m.luisterOpen()
+	}
+	if t == tabLezen {
+		return m.lezenOpen()
 	}
 	return nil
 }
@@ -188,6 +193,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case meldingMsg:
 		m.zeg(string(msg))
 		return m, nil
+	case eboekenMsg, boekMsg:
+		cmd := m.lezenBericht(msg)
+		return m, cmd
 	case maatjeMsg:
 		cmd := m.maatjeBericht(msg)
 		return m, cmd
@@ -260,6 +268,11 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 	if m.tab == tabLuisteren {
 		if cmd, ok := m.toetsLuisteren(msg); ok {
+			return m, cmd
+		}
+	}
+	if m.tab == tabLezen {
+		if cmd, ok := m.toetsLezen(msg); ok {
 			return m, cmd
 		}
 	}
@@ -397,6 +410,8 @@ func (m model) View() string {
 		inhoud = m.viewLuisteren(p)
 	case m.tab == tabMaatje:
 		inhoud = m.viewMaatje(p)
+	case m.tab == tabLezen:
+		inhoud = m.viewLezen(p)
 	default:
 		inhoud = m.viewStraks(p)
 	}

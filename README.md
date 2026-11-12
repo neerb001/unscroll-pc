@@ -44,7 +44,8 @@ The project started on an old Asus Eee PC, hence the "PC" in the name.
 | Quiet time | Separate times for school nights and weekends, opening time, what stays open, parent PIN, pause for 30 min, 2 hours, until morning or until switched back on | ✅ phase 0 |
 | Updates | New versions from GitHub releases, with checksum verification and fallback | ✅ phase 0 |
 | Listen | Navidrome, radio dial, audiobooks and podcasts from Audiobookshelf with progress, sleep timer | ✅ phase 1 |
-| Read + Today | E-books (EPUB) from Audiobookshelf, weather, alarm, moon, seasons and seasonal festivals | ⏳ phase 2 |
+| Read | E-books (EPUB) from Audiobookshelf, calm reading view, also offline, progress kept | ✅ phase 2 |
+| Today | Weather, alarm, moon, seasons and seasonal festivals | ⏳ phase 2 |
 | Spotify | Approved albums and playlists only, explicit tracks filtered, autoplay off (librespot) | ✅ phase 3 |
 | Ask the buddy | AI via the Anthropic API with budgets, filters and a weekly summary for parents | ✅ phase 4 |
 | Discover | Computer lab (learn Linux through missions), Python, animal of the day, nature journal | ⏳ phase 5 |

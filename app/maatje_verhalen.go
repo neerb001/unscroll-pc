@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -40,7 +41,40 @@ func sessieMap(modus int) string {
 	return unscrollData("huiswerk")
 }
 
-var modusBestand = map[int]string{modusHuiswerk: "-huiswerk", modusOverhoren: "-overhoren"}
+var modusBestand = map[int]string{modusHuiswerk: "-huiswerk", modusOverhoren: "-overhoren", modusVraag: "-vraag"}
+
+// bewaarDagen: zo lang blijven gesprekken (niet de verhalen) en de logboeken bewaard.
+const bewaarDagen = 28
+
+// opruimen haalt gesprekken en logregels weg die ouder zijn dan vier weken. Verhalen blijven:
+// die zijn van het kind.
+func opruimen(nu time.Time) {
+	grens := nu.AddDate(0, 0, -bewaarDagen)
+	namen, _ := filepath.Glob(filepath.Join(sessieMap(modusHuiswerk), "*.txt"))
+	for _, n := range namen {
+		if t, err := time.ParseInLocation("2006-01-02", filepath.Base(n)[:min(10, len(filepath.Base(n)))], time.Local); err == nil && t.Before(grens) {
+			_ = os.Remove(n)
+		}
+	}
+	for _, pad := range []string{logPad(), spLogPad()} {
+		data, err := os.ReadFile(pad)
+		if err != nil {
+			continue
+		}
+		var houden []string
+		for _, r := range strings.Split(strings.TrimSpace(string(data)), "\n") {
+			var x struct {
+				Tijd time.Time `json:"tijd"`
+			}
+			if json.Unmarshal([]byte(r), &x) == nil && x.Tijd.After(grens) {
+				houden = append(houden, r)
+			}
+		}
+		if len(houden) < len(strings.Split(strings.TrimSpace(string(data)), "\n")) {
+			_ = os.WriteFile(pad, []byte(strings.Join(houden, "\n")+"\n"), 0o644)
+		}
+	}
+}
 
 // eerdereSessies geeft de nieuwste eerst. Modus -1: alle huiswerk- en overhoorsessies (voor ouders).
 func eerdereSessies(modus, max int) []verhaalBestand {
