@@ -44,7 +44,17 @@ toets 4 en "dice" "choices is 1, 2, 3
 print 'dice ' choices at random"
 toets 5 nl "goed" "naam is Sam
 als naam is Sam print 'goed' anders print 'fout'"
-toets 7 en "hoi" "repeat 2 times print 'hoi'"
+# het eerste voorbeeld van "repeat" uit Hedy's eigen opdrachten moet draaien
+REPEAT="$(python3 -c "
+import json, sys
+d = json.load(open('$B/inhoud.json'))['en']
+for niveau in sorted(d, key=int):
+    for a in d[niveau]:
+        if a['sleutel'] == 'repeat_command':
+            print(niveau); print(next(b['code'] for b in a['blokken'] if b.get('code'))); sys.exit()
+")"
+toets "$(head -n1 <<<"$REPEAT")" en "" "$(tail -n +2 <<<"$REPEAT")"
+if grep -q HEDYFOUT <<<"$uitvoer"; then exit 1; fi
 toets 1 nl "⠀\|⢸\|⣀" "vooruit 50
 draai rechts
 vooruit 50"
