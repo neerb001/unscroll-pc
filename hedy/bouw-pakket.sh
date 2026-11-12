@@ -55,7 +55,7 @@ for niveau in sorted(d, key=int):
 ")"
 toets "$(head -n1 <<<"$REPEAT")" en "" "$(tail -n +2 <<<"$REPEAT")"
 if grep -q HEDYFOUT <<<"$uitvoer"; then exit 1; fi
-toets 1 nl "⠀\|⢸\|⣀" "vooruit 50
+toets 1 nl "37m" "vooruit 50
 draai rechts
 vooruit 50"
 toets 1 nl "HEDYFOUT" "prnt hallo"
