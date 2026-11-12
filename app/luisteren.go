@@ -238,7 +238,17 @@ func (m *model) laadWortel() tea.Cmd {
 		if l.abs == nil {
 			return nietIngesteld()
 		}
-		return nieuw("boeken", func() ([]item, error) { return l.abs.Items("book") })
+		return nieuw("boeken", func() ([]item, error) {
+			alle, err := l.abs.Items("book")
+			// alleen boeken met geluid: e-boeken (ook uit een aparte e-boekenbibliotheek) staan bij Lezen
+			var boeken []item
+			for _, it := range alle {
+				if it.duur > 0 {
+					boeken = append(boeken, it)
+				}
+			}
+			return boeken, err
+		})
 	case bronPodcasts:
 		if l.abs == nil {
 			return nietIngesteld()

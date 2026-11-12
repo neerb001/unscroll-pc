@@ -17,6 +17,9 @@ import struct
 import subprocess
 import sys
 import types
+import warnings
+
+warnings.filterwarnings("ignore")  # technische waarschuwingen van Hedy horen niet in beeld
 
 HIER = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HIER, "lib"))
