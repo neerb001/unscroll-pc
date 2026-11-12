@@ -179,7 +179,7 @@ parents only see that a story was written, not the story itself.
 
 Parents set the limits in `/etc/unscroll/ouders.yaml` (section `maatje`; 0 means no limit).
 Stories can be continued later: choosing "Story together" again offers the earlier stories.
-Parents set the key and model with `sudo unscroll-ouder`. The defaults and the buddy's instructions
+Parents set the key and model with `sudo unscroll-ouder`. Homework and quiz sessions are saved and can be continued later; parents read them back in parent mode (`h` in the buddy tab) or over ssh with `sudo unscroll-ouder huiswerk`. The defaults and the buddy's instructions
 are part of the app and are tuned through updates as we learn from real use.
 
 ## Passwords and keys

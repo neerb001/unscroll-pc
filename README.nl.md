@@ -170,7 +170,7 @@ Ouders zien de vragen van de afgelopen week in de ouderstand: open het tabblad v
 op `w`. Samen geschreven verhalen komen in de schrijfhoek (`~/.local/share/unscroll/verhalen`); ouders
 zien alleen dat er een verhaal is geschreven, niet het verhaal zelf.
 
-Ouders stellen de grenzen in in `/etc/unscroll/ouders.yaml` (onderdeel `maatje`; 0 betekent geen grens). Verhalen kun je later hervatten: kies je opnieuw "Samen een verhaal", dan staan de eerdere verhalen erbij. De standaardwaarden en de instructies
+Ouders stellen de grenzen in in `/etc/unscroll/ouders.yaml` (onderdeel `maatje`; 0 betekent geen grens). Verhalen en huiswerk kun je later hervatten. Ouders lezen huiswerk terug in de ouderstand (`h` in het tabblad van het maatje) of via ssh met `sudo unscroll-ouder huiswerk`. De standaardwaarden en de instructies
 voor het maatje zitten in de app en worden via updates bijgesteld op basis van ervaringen.
 
 ## Wachtwoorden en sleutels

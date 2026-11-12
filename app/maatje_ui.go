@@ -102,7 +102,9 @@ type sessie struct {
 	regels             []regel
 	wacht, geteld      bool
 	verhaal            string
-	eerder             string // het verhaal tot nu toe, bij het hervatten
+	eerder             string // het gesprek of verhaal tot nu toe, bij het hervatten
+	alleenLezen        bool   // ouders lezen een huiswerksessie terug
+	scroll             int    // regels omhoog gescrold
 }
 
 type maatjeStaat struct {
@@ -114,7 +116,8 @@ type maatjeStaat struct {
 	week    bool
 	volgID  int
 
-	kiesVerhaal bool // kiest tussen een nieuw verhaal en een eerder verhaal
+	kiesVerhaal bool // kiest tussen een nieuwe en een eerdere sessie
+	kiesModus   int  // voor welke modus; -1: ouders kiezen huiswerk om terug te lezen
 	verhalen    []verhaalBestand
 	verhaalSel  int
 }
@@ -212,17 +215,21 @@ func (m *model) toetsMaatje(msg tea.KeyMsg) (tea.Cmd, bool) {
 	k := msg.String()
 	s := mj.sessie
 	if s == nil && mj.kiesVerhaal {
+		eerste := 1 // plek 0 is "nieuw", behalve bij teruglezen door ouders
+		if mj.kiesModus < 0 {
+			eerste = 0
+		}
 		switch k {
 		case "up", "k":
 			mj.verhaalSel = max(mj.verhaalSel-1, 0)
 		case "down", "j":
-			mj.verhaalSel = min(mj.verhaalSel+1, len(mj.verhalen))
+			mj.verhaalSel = min(mj.verhaalSel+1, len(mj.verhalen)-1+eerste)
 		case "enter":
 			mj.kiesVerhaal = false
-			if mj.verhaalSel == 0 {
-				return m.startSessie(modusVerhaal), true
+			if eerste == 1 && mj.verhaalSel == 0 {
+				return m.startSessie(mj.kiesModus), true
 			}
-			return m.verderMetVerhaal(mj.verhalen[mj.verhaalSel-1]), true
+			return m.verderMet(mj.verhalen[mj.verhaalSel-eerste], mj.kiesModus < 0), true
 		case "esc":
 			mj.kiesVerhaal = false
 		default:
@@ -237,13 +244,23 @@ func (m *model) toetsMaatje(msg tea.KeyMsg) (tea.Cmd, bool) {
 		case "down", "j":
 			mj.keuze = (mj.keuze + 1) % aantalModi
 		case "enter":
-			if mj.keuze == modusVerhaal {
-				if v := eerdereVerhalen(6); len(v) > 0 {
-					mj.verhalen, mj.verhaalSel, mj.kiesVerhaal = v, 0, true
+			if mj.keuze != modusVraag {
+				if v := eerdereSessies(mj.keuze, 6); len(v) > 0 {
+					mj.verhalen, mj.verhaalSel, mj.kiesVerhaal, mj.kiesModus = v, 0, true, mj.keuze
 					return nil, true
 				}
 			}
 			return m.startSessie(mj.keuze), true
+		case "h":
+			if m.ouderModus {
+				if v := eerdereSessies(-1, 20); len(v) > 0 {
+					mj.verhalen, mj.verhaalSel, mj.kiesVerhaal, mj.kiesModus = v, 0, true, -1
+				} else {
+					m.zeg(m.t("buddy.hwnone"))
+				}
+				return nil, true
+			}
+			return nil, false
 		case "w":
 			if m.ouderModus {
 				mj.week = !mj.week
@@ -260,6 +277,25 @@ func (m *model) toetsMaatje(msg tea.KeyMsg) (tea.Cmd, bool) {
 	case "esc":
 		m.stopSessie()
 		return nil, true
+	case "up", "pgup":
+		stap := 1
+		if k == "pgup" {
+			stap = 10
+		}
+		s.scroll += stap
+		return nil, true
+	case "down", "pgdown":
+		stap := 1
+		if k == "pgdown" {
+			stap = 10
+		}
+		s.scroll = max(s.scroll-stap, 0)
+		return nil, true
+	}
+	if s.alleenLezen {
+		return nil, true
+	}
+	switch k {
 	case "enter":
 		tekst := strings.TrimSpace(mj.invoer.Value())
 		if tekst == "" || s.wacht {
@@ -297,8 +333,12 @@ func (m *model) startSessie(modus int) tea.Cmd {
 
 func (m *model) stopSessie() {
 	mj := m.mj
-	if s := mj.sessie; s != nil && s.verhaal != "" {
-		m.zeg(m.t("buddy.saved"))
+	if s := mj.sessie; s != nil && s.verhaal != "" && !s.alleenLezen {
+		if s.modus == modusVerhaal {
+			m.zeg(m.t("buddy.saved"))
+		} else {
+			m.zeg(m.t("buddy.hwsaved"))
+		}
 	}
 	mj.sessie = nil
 	mj.invoer.Blur()
@@ -388,6 +428,7 @@ func (m *model) maatjeBericht(msg maatjeMsg) tea.Cmd {
 		return nil
 	}
 	s.wacht = false
+	s.scroll = 0
 	oordeel := oordeelOK
 	var cmd tea.Cmd
 	switch {
@@ -408,8 +449,8 @@ func (m *model) maatjeBericht(msg maatjeMsg) tea.Cmd {
 		s.gesprek = msg.gesprek
 		s.beurten++
 		s.regels = append(s.regels, regel{1, msg.antwoord})
-		if s.modus == modusVerhaal {
-			m.bewaarVerhaal(s, msg.vraag, msg.antwoord)
+		if s.modus != modusVraag {
+			m.bewaarSessie(s, msg.vraag, msg.antwoord)
 		}
 	}
 	vraag := msg.vraag
@@ -425,25 +466,6 @@ func (m *model) naamOfKind() string {
 		return m.inst.Naam
 	}
 	return m.t("help.someone")
-}
-
-// bewaarVerhaal schrijft het verhaal in de schrijfhoek (~/.local/share/unscroll/verhalen).
-func (m *model) bewaarVerhaal(s *sessie, kind, maatje string) {
-	if s.verhaal == "" {
-		dir, err := os.UserHomeDir()
-		if err != nil {
-			return
-		}
-		dir = filepath.Join(dir, ".local", "share", "unscroll", "verhalen")
-		_ = os.MkdirAll(dir, 0o700)
-		s.verhaal = filepath.Join(dir, time.Now().Format("2006-01-02-1504")+".txt")
-	}
-	f, err := os.OpenFile(s.verhaal, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600)
-	if err != nil {
-		return
-	}
-	defer f.Close()
-	fmt.Fprintf(f, "%s\n\n%s\n\n", kind, maatje)
 }
 
 // stuurNtfy stuurt een berichtje naar de telefoons van de ouders (als ntfy is ingesteld).
@@ -482,21 +504,31 @@ func (m model) viewMaatje(p palet) string {
 	g := m.ouders.Maatje
 	tijd := dim.Render(m.t("buddy.time", mj.gebruik.Seconden/60, g.MaxMinutenPerDag))
 	if mj.sessie == nil && mj.kiesVerhaal {
-		regels := []string{dim.Render(m.t("buddy.pickstory")), ""}
-		for i := 0; i <= len(mj.verhalen); i++ {
-			naam := m.t("buddy.newstory")
+		vraag, nieuw, titel, eerste := "buddy.pickhw", "buddy.newhw", m.t(modusSleutels[max(mj.kiesModus, 0)]), 1
+		switch {
+		case mj.kiesModus == modusVerhaal:
+			vraag, nieuw = "buddy.pickstory", "buddy.newstory"
+		case mj.kiesModus < 0:
+			vraag, titel, eerste = "buddy.hwread", m.t("buddy.hwlist"), 0
+		}
+		regels := []string{dim.Render(m.t(vraag)), ""}
+		for i := 1 - eerste; i <= len(mj.verhalen); i++ {
+			naam := m.t(nieuw)
 			if i > 0 {
 				v := mj.verhalen[i-1]
 				naam = v.tijd.Format("2 Jan 15:04") + "  " + v.titel
+				if mj.kiesModus < 0 {
+					naam = v.tijd.Format("Mon 2 Jan 15:04") + "  " + m.t(modusSleutels[v.modus]) + ": " + v.titel
+				}
 			}
-			if i == mj.verhaalSel {
+			if i-1+eerste == mj.verhaalSel {
 				regels = append(regels, lipgloss.NewStyle().Background(p.sel).Foreground(p.acc).Bold(true).Render("▸ "+naam+" "))
 			} else {
 				regels = append(regels, "  "+naam)
 			}
 		}
 		regels = append(regels, "", dim.Render(m.t("buddy.pickkeys")))
-		return kop + "\n\n" + paneel(p, m.t("buddy.m.story"), strings.Join(regels, "\n"), breed, true)
+		return kop + "\n\n" + paneel(p, titel, strings.Join(regels, "\n"), breed, true)
 	}
 	if mj.sessie == nil {
 		var regels []string
@@ -519,7 +551,7 @@ func (m model) viewMaatje(p palet) string {
 		}
 		regels = append(regels, "", tijd, dim.Render(m.t("buddy.start")))
 		if m.ouderModus {
-			regels = append(regels, lipgloss.NewStyle().Foreground(p.geel).Render(m.t("buddy.weekhint")))
+			regels = append(regels, lipgloss.NewStyle().Foreground(p.geel).Render(m.t("buddy.weekhint")+" · "+m.t("buddy.hwhint")))
 		}
 		return kop + "\n\n" + paneel(p, m.t("buddy.choose"), strings.Join(regels, "\n"), breed, true)
 	}
@@ -544,13 +576,22 @@ func (m model) viewMaatje(p palet) string {
 	alles := strings.Split(strings.TrimRight(strings.Join(regels, "\n"), "\n"), "\n")
 	hoogte := max(m.hoog-12, 4)
 	if len(alles) > hoogte {
-		alles = alles[len(alles)-hoogte:]
+		// scrollen: s.scroll regels omhoog vanaf het einde, niet verder dan het begin
+		s.scroll = min(s.scroll, len(alles)-hoogte)
+		eind := len(alles) - s.scroll
+		alles = alles[eind-hoogte : eind]
+	} else {
+		s.scroll = 0
 	}
 	info := tijd
 	if mb := m.maxBeurten(s.modus); mb > 0 {
 		info = dim.Render(m.t("buddy.turns", s.beurten, mb)) + dim.Render(" · ") + tijd
 	} else {
 		info = dim.Render(m.t("buddy.left", max(m.overVandaag(modusVraag), 0))) + dim.Render(" · ") + tijd
+	}
+	if s.alleenLezen {
+		return kop + "\n\n" + paneel(p, m.t(modusSleutels[s.modus]), strings.Join(alles, "\n"), breed, true) + "\n" +
+			dim.Render(m.t("buddy.readkeys"))
 	}
 	return kop + "\n\n" + paneel(p, m.t(modusSleutels[s.modus]), strings.Join(alles, "\n"), breed, true) + "\n" +
 		mj.invoer.View() + "\n" + info + "\n" + dim.Render(m.t("buddy.keys"))

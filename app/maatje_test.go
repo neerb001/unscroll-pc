@@ -265,3 +265,57 @@ func TestNulIsOnbeperkt(t *testing.T) {
 		t.Error("0 moet onbeperkt betekenen")
 	}
 }
+
+func TestHuiswerkBewarenHervattenEnTeruglezen(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+	m, nep, _ := maatjeModel(t)
+	m.hoog = 20
+	m = toets(m, "3")
+	m = toets(m, "down") // Huiswerkcoach
+	m = toets(m, "enter")
+	m = typ(m, "Ik moet breuken optellen: een half plus een derde")
+	for i := 0; i < 4; i++ {
+		m = typ(m, "ik denk twee vijfde")
+	}
+	// scrollen naar boven laat het begin van het gesprek zien
+	if strings.Contains(m.View(), "breuken optellen") {
+		t.Fatal("het begin hoort buiten beeld te zijn in een klein scherm")
+	}
+	for i := 0; i < 30; i++ {
+		m = toets(m, "up")
+	}
+	if !strings.Contains(m.View(), "breuken optellen") {
+		t.Errorf("met ↑ moet hij terug kunnen scrollen:\n%s", m.View())
+	}
+	m = toets(m, "esc")
+	sessies := m.mj.gebruik.Huiswerk
+	// verder met de opdracht
+	m = toets(m, "enter")
+	if !m.mj.kiesVerhaal || !strings.Contains(m.View(), "breuken optellen") {
+		t.Fatalf("eerdere opdracht niet te kiezen:\n%s", m.View())
+	}
+	m = toets(m, "down")
+	m = toets(m, "enter")
+	m = typ(m, "o wacht vijf zesde")
+	hoofd := nep.hoofdVerzoeken()
+	laatste, _ := json.Marshal(hoofd[len(hoofd)-1]["messages"])
+	if !strings.Contains(string(laatste), "earlier part of this session") || !strings.Contains(string(laatste), "breuken optellen") {
+		t.Errorf("het maatje krijgt het eerdere gesprek niet mee: %s", laatste)
+	}
+	if m.mj.gebruik.Huiswerk != sessies {
+		t.Error("verder gaan mag niet als nieuwe huiswerksessie tellen")
+	}
+	m = toets(m, "esc")
+	// ouders lezen terug, met de antwoorden erbij
+	m.ouderModus = true
+	m = toets(m, "h")
+	m = toets(m, "enter")
+	if m.mj.sessie == nil || !m.mj.sessie.alleenLezen || !strings.Contains(m.View(), "vijf zesde") || !strings.Contains(m.View(), "berg met een gat") {
+		t.Fatalf("teruglezen voor ouders werkt niet:\n%s", m.View())
+	}
+	voor := len(nep.hoofdVerzoeken())
+	m = typ(m, "dit mag niet verstuurd worden")
+	if len(nep.hoofdVerzoeken()) != voor {
+		t.Error("bij teruglezen mag er niets naar het maatje gaan")
+	}
+}
