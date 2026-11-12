@@ -1,0 +1,16 @@
+name: Hedy-pakket testen
+
+# Bouwt en test het Hedy-pakket als er iets in hedy/ verandert, zonder een release te maken.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [hedy/**, .github/workflows/hedy.yml]
+
+jobs:
+  bouw:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: bouwen en testen in Debian 12
+        run: docker run --rm -v "$PWD:/w" -w /w debian:bookworm bash hedy/bouw-pakket.sh /w/uit

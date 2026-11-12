@@ -13,7 +13,8 @@ apt-get update
 apt-get install -y --no-install-recommends python3 python3-pip python3-regex python3-yaml git ca-certificates
 
 mkdir -p "$B/lib"
-pip3 download --no-deps --only-binary=:all: -d "$W/whl" "hedylang==$HEDYLANG"
+# hedylang vraagt officieel 3.12; pas_hedy_aan.py maakt het geschikt voor 3.11
+pip3 download --no-deps --only-binary=:all: --python-version 3.12 -d "$W/whl" "hedylang==$HEDYLANG"
 python3 -m zipfile -e "$W"/whl/hedylang-*.whl "$W/x"
 cp -r "$W/x/hedy" "$B/lib/"
 python3 "$HIER/pas_hedy_aan.py" "$B/lib/hedy"
