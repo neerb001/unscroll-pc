@@ -32,17 +32,23 @@ func TestLabAlleMissies(t *testing.T) {
 
 func TestDierVanDeDag(t *testing.T) {
 	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+	eerste := dieren[dierVanDag(time.Now())]
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if strings.HasPrefix(r.URL.Path, "/nl/") {
-			w.WriteHeader(404) // Nederlandse pagina bestaat niet: terugvallen op Engels
-			return
+		switch {
+		case strings.HasSuffix(r.URL.Path, "/api.php"):
+			_, _ = w.Write([]byte(`{"query":{"pages":[{"langlinks":[{"lang":"nl","title":"Nederlands Dier"}]}]}}`))
+		case strings.Contains(r.URL.Path, "/en/"+strings.ReplaceAll(eerste, " ", "_")):
+			w.WriteHeader(404) // dit dier bestaat niet meer: door naar het volgende
+		case strings.HasPrefix(r.URL.Path, "/nl/"):
+			w.WriteHeader(404) // Nederlandse pagina weg: terugvallen op Engels
+		default:
+			_, _ = w.Write([]byte(`{"type":"standard","title":"Hedgehog","description":"spiny mammal","extract":"A hedgehog is a spiny mammal."}`))
 		}
-		_, _ = w.Write([]byte(`{"type":"standard","title":"Hedgehog","description":"spiny mammal","extract":"A hedgehog is a spiny mammal."}`))
 	}))
 	defer srv.Close()
-	oud := wikiBasis
-	wikiBasis = srv.URL + "/%s/"
-	defer func() { wikiBasis = oud }()
+	oud, oudAPI := wikiBasis, wikiAPI
+	wikiBasis, wikiAPI = srv.URL+"/%s/", srv.URL+"/%s/w/api.php"
+	defer func() { wikiBasis, wikiAPI = oud, oudAPI }()
 	m, _ := testModel(t, Geheimen{})
 	m.inst.Taal = "nl"
 	m = toets(m, "4")

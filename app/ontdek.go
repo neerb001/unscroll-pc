@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -52,32 +53,12 @@ func nieuweOntdek() *ontdekStaat {
 
 /* ---------------- dier van de dag ---------------- */
 
-// De lijst staat in de app: Wikipedia kiest niets. [Nederlandse titel, Engelse titel]
-var dieren = [][2]string{
-	{"Egel", "Hedgehog"}, {"Octopussen", "Octopus"}, {"Gewone pad", "Common toad"}, {"Bultrug", "Humpback whale"},
-	{"Steenuil", "Little owl"}, {"Bever", "Beaver"}, {"Axolotl", "Axolotl"}, {"Honingbij", "Western honey bee"},
-	{"Zeepaardjes", "Seahorse"}, {"Das (dier)", "European badger"}, {"Kameleons", "Chameleon"}, {"Pinguïns", "Penguin"},
-	{"Eekhoorn", "Red squirrel"}, {"Gewone tuinslak", "Cornu aspersum"}, {"Olifanten", "Elephant"}, {"Vos", "Red fox"},
-	{"Kolibries", "Hummingbird"}, {"Reuzenpanda", "Giant panda"}, {"Mier", "Ant"}, {"Gierzwaluw", "Common swift"},
-	{"Spechtvinken", "Woodpecker finch"}, {"Baardagame", "Pogona"}, {"Zeehond", "Harbor seal"}, {"Dolfijnen", "Dolphin"},
-	{"Libellen", "Dragonfly"}, {"Wombats", "Wombat"}, {"Ijsvogel", "Common kingfisher"}, {"Lieveheersbeestjes", "Coccinellidae"},
-	{"Schildpadden", "Turtle"}, {"Oehoe", "Eurasian eagle-owl"}, {"Luiaards", "Sloth"}, {"Kwallen", "Jellyfish"},
-	{"Raaf", "Common raven"}, {"Ree", "Roe deer"}, {"Vleermuizen", "Bat"}, {"Kangoeroes", "Kangaroo"},
-	{"Ooievaar", "White stork"}, {"Haaien", "Shark"}, {"Regenworm", "Earthworm"}, {"Flamingo's", "Flamingo"},
-	{"Otter", "Eurasian otter"}, {"Giraffe", "Giraffe"}, {"Slakken", "Snail"}, {"Pauw", "Indian peafowl"},
-	{"Zeeotter", "Sea otter"}, {"Wolf", "Wolf"}, {"Mol (dier)", "European mole"}, {"Koolmees", "Great tit"},
-	{"Kraanvogel", "Common crane"}, {"Tapirs", "Tapir"}, {"Okapi", "Okapi"}, {"Kikkers", "Frog"},
-	{"Rendier", "Reindeer"}, {"Gekko's", "Gecko"}, {"Walrus", "Walrus"}, {"Koala", "Koala"},
-	{"Merel", "Common blackbird"}, {"Mantelbavianen", "Hamadryas baboon"}, {"Narwal", "Narwhal"}, {"Vuurvliegjes", "Firefly"},
-}
-
 type dierInfo struct {
 	Titel, Omschrijving, Tekst string
 }
 
-func dierVanDag(d time.Time) [2]string {
-	dag := d.YearDay() + d.Year()*366
-	return dieren[dag%len(dieren)]
+func dierVanDag(d time.Time) int {
+	return (d.YearDay() + d.Year()*366) % len(dieren)
 }
 
 func dierenCache() string {
@@ -88,27 +69,78 @@ func dierenCache() string {
 	return filepath.Join(dir, "unscroll", "dieren")
 }
 
-// wikiBasis is los te zetten voor tests.
-var wikiBasis = "https://%s.wikipedia.org/api/rest_v1/page/summary/"
+// wikiBasis en wikiAPI zijn los te zetten voor tests.
+var (
+	wikiBasis = "https://%s.wikipedia.org/api/rest_v1/page/summary/"
+	wikiAPI   = "https://%s.wikipedia.org/w/api.php"
+)
+
+var errGeenPagina = errors.New("wikipedia: page not found")
 
 func haalDier(taal string, d time.Time) tea.Cmd {
 	return func() tea.Msg {
-		titels := dierVanDag(d)
-		pogingen := [][2]string{{"en", titels[1]}}
-		if taal == "nl" {
-			// bestaat de Nederlandse pagina niet, dan de Engelse
-			pogingen = [][2]string{{"nl", titels[0]}, {"en", titels[1]}}
-		}
+		// lukt een dier niet (pagina weg of hernoemd), dan het volgende uit de lijst
 		var laatste error
-		for _, p := range pogingen {
-			info, err := wikiSamenvatting(p[0], p[1])
+		for i := 0; i < 3; i++ {
+			info, err := dierInfoVoor(dieren[(dierVanDag(d)+i)%len(dieren)], taal)
 			if err == nil {
 				return dierMsg{info: info}
 			}
 			laatste = err
+			if !errors.Is(err, errGeenPagina) {
+				break // geen wifi of Wikipedia druk: niet door blijven proberen
+			}
 		}
 		return dierMsg{err: laatste}
 	}
+}
+
+// dierInfoVoor haalt de samenvatting; in het Nederlands via de taalkoppeling, anders in het Engels.
+func dierInfoVoor(engels, taal string) (*dierInfo, error) {
+	if taal == "nl" {
+		if nl, err := nlTitel(engels); err == nil && nl != "" {
+			if info, err := wikiSamenvatting("nl", nl); err == nil {
+				return info, nil
+			}
+		}
+	}
+	return wikiSamenvatting("en", engels)
+}
+
+func nlTitel(engels string) (string, error) {
+	cache := filepath.Join(dierenCache(), "titel-"+strings.ReplaceAll(engels, "/", "_"))
+	if data, err := os.ReadFile(cache); err == nil {
+		return string(data), nil
+	}
+	q := url.Values{"action": {"query"}, "format": {"json"}, "formatversion": {"2"}, "redirects": {"1"},
+		"prop": {"langlinks"}, "lllang": {"nl"}, "titles": {engels}}
+	req, _ := http.NewRequest("GET", fmt.Sprintf(wikiAPI, "en")+"?"+q.Encode(), nil)
+	req.Header.Set("User-Agent", "Unscroll/"+versie+" (calm kids computer)")
+	c := http.Client{Timeout: 10 * time.Second}
+	resp, err := c.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	var r struct {
+		Query struct {
+			Pages []struct {
+				Langlinks []struct {
+					Title string `json:"title"`
+				} `json:"langlinks"`
+			} `json:"pages"`
+		} `json:"query"`
+	}
+	if resp.StatusCode != http.StatusOK || json.NewDecoder(resp.Body).Decode(&r) != nil {
+		return "", fmt.Errorf("wikipedia: %s", resp.Status)
+	}
+	titel := ""
+	if p := r.Query.Pages; len(p) > 0 && len(p[0].Langlinks) > 0 {
+		titel = p[0].Langlinks[0].Title
+	}
+	_ = os.MkdirAll(dierenCache(), 0o755)
+	_ = os.WriteFile(cache, []byte(titel), 0o644)
+	return titel, nil
 }
 
 func wikiSamenvatting(taal, titel string) (*dierInfo, error) {
@@ -131,8 +163,14 @@ func wikiSamenvatting(taal, titel string) (*dierInfo, error) {
 		Description string `json:"description"`
 		Extract     string `json:"extract"`
 	}
-	if resp.StatusCode != http.StatusOK || json.NewDecoder(resp.Body).Decode(&r) != nil || r.Extract == "" || r.Type == "disambiguation" {
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, errGeenPagina
+	}
+	if resp.StatusCode != http.StatusOK || json.NewDecoder(resp.Body).Decode(&r) != nil {
 		return nil, fmt.Errorf("wikipedia: %s", resp.Status)
+	}
+	if r.Extract == "" || r.Type == "disambiguation" {
+		return nil, errGeenPagina
 	}
 	info = dierInfo{r.Title, r.Description, r.Extract}
 	_ = os.MkdirAll(dierenCache(), 0o755)
