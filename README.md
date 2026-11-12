@@ -48,7 +48,8 @@ The project started on an old Asus Eee PC, hence the "PC" in the name.
 | Today | Weather, alarm, moon, seasons and seasonal festivals | ⏳ phase 2 |
 | Spotify | Approved albums and playlists only, explicit tracks filtered, autoplay off (librespot) | ✅ phase 3 |
 | Ask the buddy | AI via the Anthropic API with budgets, filters and a weekly summary for parents | ✅ phase 4 |
-| Discover | Computer lab (learn Linux through missions), Python, animal of the day, nature journal | ⏳ phase 5 |
+| Discover | Animal of the day (curated list, text from Wikipedia), computer lab (learn the terminal through missions in a practice computer), private nature journal | ✅ phase 5 |
+| Python | Code with only your own bedroom lamp as real output | ⏳ later |
 | Puzzles | Sudoku, chess problems, riddles. No timer, no score | ⏳ phase 5 |
 | Typing course | Calm typing lessons: home row first, short daily lessons, practise with your own sentences and stories, progress without scores or streaks | ⏳ later |
 | Writing nook | Private diary and stories | ⏳ phase 5 |

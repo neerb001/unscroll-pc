@@ -58,7 +58,6 @@ var teksten = map[string]map[string]string{
 
 		"soon.in":       "komt in %s",
 		"soon.building": "Dit onderdeel wordt nog gebouwd. Het komt vanzelf binnen met een update.",
-		"soon.discover": "fase 5\nComputerlab: Linux leren met missies in een oefenomgeving\nPython, met alleen je eigen kamerlamp als echte uitvoer\nDier van de dag (Wikipedia) en natuurdagboek",
 		"soon.puzzles":  "fase 5\nSudoku, schaakpuzzels en raadsels\nGeen timer, geen score, een paar per dag",
 		"soon.write":    "fase 5\nPrivé dagboek en verhalen\nAlleen jij kunt het lezen",
 		"soon.today":    "fase 2\nWeer met regen per uur en een praktische tip\nWekker, planning, maanfase en ISS\nSeizoen en het volgende jaarfeest",
@@ -125,6 +124,7 @@ var teksten = map[string]map[string]string{
 		"listen.spbusy": "Spotify vraagt even te wachten (%s). Probeer het daarna opnieuw.", "listen.splogsearch": "gezocht", "listen.sploglisten": "geluisterd",
 		"listen.spkeys": "f favoriet · ouders: w afgelopen week",
 		"read.books":    "jouw boeken", "read.notset": "Lezen is nog niet ingesteld. Vraag je ouders om Audiobookshelf in te stellen met sudo unscroll-ouder.", "read.empty": "Er staan nog geen e-boeken (EPUB) in Audiobookshelf.", "read.page": "pagina %d van %d · %d%%", "read.keys": "← → bladeren · ↑ ↓ regel · esc terug", "read.listkeys": "↑ ↓ kiezen · Enter lezen · r vernieuwen · een boek blijft ook zonder wifi leesbaar",
+		"disc.animal": "Dier van de dag", "disc.animal.d": "elke dag een ander dier", "disc.lab": "Computerlab", "disc.lab.d": "leer de terminal met missies", "disc.journal": "Natuurdagboek", "disc.journal.d": "schrijf op wat je buiten ziet", "disc.today": "vandaag", "disc.wiki": "Tekst: Wikipedia", "disc.animalkeys": "← eerdere dagen · → terug naar vandaag · esc terug", "disc.labwelcome": "Welkom in het computerlab! Dit is een oefencomputer: je kunt hier niets kapotmaken. Typ help voor de opdrachten.", "disc.labdone": "Missie gelukt!", "disc.labkeys": "Enter uitvoeren · missie: de opdracht nog eens · opnieuw: alles opnieuw · esc terug", "disc.journalask": "Wat heb je gezien? (een vogel, een spoor, een bloem…)", "disc.journalempty": "Nog niets opgeschreven. Druk op n voor je eerste notitie.", "disc.journalkeys": "n nieuwe notitie · Enter bewaren · esc terug · alleen jij leest dit", "disc.later": "Binnenkort: Python, met je eigen kamerlamp als uitvoer.",
 		"listen.spotify":     "Spotify",
 		"listen.spempty":     "Er zijn nog geen albums of playlists goedgekeurd. Je ouders zetten ze in ouders.yaml.",
 		"listen.nolibrespot": "De Spotify-speler (librespot) ontbreekt. Vraag je ouders om de update af te wachten of te installeren.",
@@ -178,7 +178,6 @@ var teksten = map[string]map[string]string{
 
 		"soon.in":       "coming in %s",
 		"soon.building": "This part is still being built. It will arrive by itself with an update.",
-		"soon.discover": "phase 5\nComputer lab: learn Linux through missions in a safe sandbox\nPython, with only your own bedroom lamp as real output\nAnimal of the day (Wikipedia) and nature journal",
 		"soon.puzzles":  "phase 5\nSudoku, chess puzzles and riddles\nNo timer, no score, a few per day",
 		"soon.write":    "phase 5\nPrivate diary and stories\nOnly you can read them",
 		"soon.today":    "phase 2\nWeather with rain per hour and a practical tip\nAlarm, schedule, moon phase and ISS passes\nSeason and the next seasonal festival",
@@ -245,6 +244,7 @@ var teksten = map[string]map[string]string{
 		"listen.spbusy": "Spotify asks to wait a moment (%s). Try again after that.", "listen.splogsearch": "searched", "listen.sploglisten": "listened",
 		"listen.spkeys": "f favourite · parents: w past week",
 		"read.books":    "your books", "read.notset": "Reading is not set up yet. Ask your parents to set up Audiobookshelf with sudo unscroll-ouder.", "read.empty": "There are no e-books (EPUB) in Audiobookshelf yet.", "read.page": "page %d of %d · %d%%", "read.keys": "← → turn pages · ↑ ↓ line · esc back", "read.listkeys": "↑ ↓ choose · Enter read · r refresh · a book stays readable without wifi",
+		"disc.animal": "Animal of the day", "disc.animal.d": "a different animal every day", "disc.lab": "Computer lab", "disc.lab.d": "learn the terminal with missions", "disc.journal": "Nature journal", "disc.journal.d": "write down what you see outside", "disc.today": "today", "disc.wiki": "Text: Wikipedia", "disc.animalkeys": "← earlier days · → back to today · esc back", "disc.labwelcome": "Welcome to the computer lab! This is a practice computer: you cannot break anything here. Type help for the commands.", "disc.labdone": "Mission done!", "disc.labkeys": "Enter run · missie: the mission again · opnieuw: start over · esc back", "disc.journalask": "What did you see? (a bird, a track, a flower…)", "disc.journalempty": "Nothing written yet. Press n for your first note.", "disc.journalkeys": "n new note · Enter save · esc back · only you read this", "disc.later": "Coming soon: Python, with your own bedroom lamp as output.",
 		"listen.spotify":     "Spotify",
 		"listen.spempty":     "No albums or playlists have been approved yet. Your parents add them in ouders.yaml.",
 		"listen.nolibrespot": "The Spotify player (librespot) is missing. Ask your parents to wait for the update or install it.",

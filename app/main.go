@@ -30,7 +30,7 @@ const (
 // sleutels in de vertalingen per tabblad
 var tabSleutels = []string{"tab.start", "tab.listen", "tab.read", "", "tab.discover", "tab.puzzles", "tab.write", "tab.today", "tab.system"}
 var menuSleutels = []string{"", "menu.listen", "menu.read", "menu.buddy", "menu.discover", "menu.puzzles", "menu.write", "menu.today", "menu.system"}
-var straksSleutels = map[int]string{tabOntdekken: "soon.discover", tabDenksport: "soon.puzzles", tabSchrijfhoek: "soon.write", tabVandaag: "soon.today"}
+var straksSleutels = map[int]string{tabDenksport: "soon.puzzles", tabSchrijfhoek: "soon.write", tabVandaag: "soon.today"}
 
 type tickMsg time.Time
 type statusMsg struct {
@@ -71,6 +71,7 @@ type model struct {
 	l            *luister
 	mj           *maatjeStaat
 	ls           *leesStaat
+	od           *ontdekStaat
 }
 
 func nieuwModel() model {
@@ -90,6 +91,7 @@ func nieuwModel() model {
 	m.l = nieuwLuister(geheim)
 	m.mj = nieuwMaatjeStaat(geheim, o)
 	m.ls = &leesStaat{}
+	m.od = nieuweOntdek()
 	m.pin = textinput.New()
 	m.pin.EchoMode = textinput.EchoPassword
 	m.pin.CharLimit = 8
@@ -193,6 +195,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case meldingMsg:
 		m.zeg(string(msg))
 		return m, nil
+	case dierMsg:
+		m.ontdekBericht(msg)
+		return m, nil
 	case eboekenMsg, boekMsg:
 		cmd := m.lezenBericht(msg)
 		return m, cmd
@@ -268,6 +273,11 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 	if m.tab == tabLuisteren {
 		if cmd, ok := m.toetsLuisteren(msg); ok {
+			return m, cmd
+		}
+	}
+	if m.tab == tabOntdekken {
+		if cmd, ok := m.toetsOntdek(msg); ok {
 			return m, cmd
 		}
 	}
@@ -412,6 +422,8 @@ func (m model) View() string {
 		inhoud = m.viewMaatje(p)
 	case m.tab == tabLezen:
 		inhoud = m.viewLezen(p)
+	case m.tab == tabOntdekken:
+		inhoud = m.viewOntdek(p)
 	default:
 		inhoud = m.viewStraks(p)
 	}

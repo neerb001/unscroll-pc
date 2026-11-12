@@ -47,7 +47,8 @@ Het project begon op een oude Asus EeePC, vandaar de "PC" in de naam.
 | Vandaag | Weer, wekker, maan, seizoenen en jaarfeesten | ⏳ fase 2 |
 | Spotify | Alleen goedgekeurde afspeellijsten, expliciete nummers gefilterd, autoplay uit (librespot) | ✅ fase 3 |
 | Vraag het maatje | AI via de Anthropic-API met dagbudget, filters en weekoverzicht voor ouders | ✅ fase 4 |
-| Ontdekken | Computerlab (Linux leren met missies), Python, dier van de dag, natuurdagboek | ⏳ fase 5 |
+| Ontdekken | Dier van de dag (vaste lijst, tekst van Wikipedia), computerlab (de terminal leren met missies op een oefencomputer), privé natuurdagboek | ✅ fase 5 |
+| Python | Programmeren met alleen je eigen kamerlamp als echte uitvoer | ⏳ later |
 | Denksport | Sudoku, schaakpuzzels, raadsels. Geen timer, geen score | ⏳ fase 5 |
 | Typcursus | Rustige typlessen: eerst de thuisrij, korte lessen per dag, oefenen met eigen zinnen en verhalen, vooruitgang zonder scores of reeksen | ⏳ later |
 | Schrijfhoek | Privé dagboek en verhalen | ⏳ fase 5 |
