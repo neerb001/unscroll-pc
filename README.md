@@ -49,7 +49,7 @@ The project started on an old Asus Eee PC, hence the "PC" in the name.
 | Spotify | Approved albums and playlists only, explicit tracks filtered, autoplay off (librespot) | ✅ phase 3 |
 | Ask the buddy | AI via the Anthropic API with budgets, filters and a weekly summary for parents | ✅ phase 4 |
 | Discover | Animal of the day (curated list, text from Wikipedia), computer lab (learn the terminal through missions in a practice computer), private nature journal | ✅ phase 5 |
-| Python | Code with only your own bedroom lamp as real output | ⏳ later |
+| Programming | [Hedy](https://hedy.org): the real Hedy language level by level towards Python, with Hedy's own assignments in Dutch and English, and a turtle that draws with characters | ✅ phase 5 |
 | Puzzles | Sudoku, chess problems, riddles. No timer, no score | ⏳ phase 5 |
 | Typing course | Calm typing lessons: home row first, short daily lessons, practise with your own sentences and stories, progress without scores or streaks | ⏳ later |
 | Writing nook | Private diary and stories | ⏳ phase 5 |
@@ -183,6 +183,17 @@ Parents set the limits in `/etc/unscroll/ouders.yaml` (section `maatje`; 0 means
 Stories can be continued later: choosing "Story together" again offers the earlier stories.
 Parents set the key and model with `sudo unscroll-ouder`. Homework and quiz sessions are saved and can be continued later; parents read them back in parent mode (`h` in the buddy tab) or over ssh with `sudo unscroll-ouder huiswerk`. The defaults and the buddy's instructions
 are part of the app and are tuned through updates as we learn from real use.
+
+## Programming with Hedy
+
+Discover (`4`) → Programming uses [Hedy](https://hedy.org) (Universiteit Leiden, EUPL-1.2): the language
+package [hedylang](https://pypi.org/project/hedylang/) and the assignments ("adventures") from
+[hedyorg/hedy](https://github.com/hedyorg/hedy). Releases ship them as `unscroll-hedy.tar.gz` (built by
+`hedy/bouw-pakket.sh` in Debian 12, with two small changes so it runs on Python 3.11); the updater installs it
+in `/opt/unscroll/hedy`. Programs run as a separate Python process with a time and memory limit and without
+file access or imports beyond `random`, `time` and `math`. Drawing with the turtle shows a picture made of
+braille characters; key presses and music are not available yet. The first run on a level can take a while
+on an old netbook, because Hedy prepares that level once.
 
 ## Passwords and keys
 

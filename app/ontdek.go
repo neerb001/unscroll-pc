@@ -24,9 +24,10 @@ const (
 	ontdekDier
 	ontdekLab
 	ontdekDagboek
+	ontdekHedy
 )
 
-var ontdekSleutels = []string{"", "disc.animal", "disc.lab", "disc.journal"}
+var ontdekSleutels = []string{"", "disc.animal", "disc.lab", "disc.journal", "disc.code"}
 
 type ontdekStaat struct {
 	scherm, keuze int
@@ -42,10 +43,12 @@ type ontdekStaat struct {
 	// natuurdagboek
 	notities  []notitie
 	schrijven bool
+	// programmeren
+	hedy *hedyStaat
 }
 
 func nieuweOntdek() *ontdekStaat {
-	o := &ontdekStaat{}
+	o := &ontdekStaat{hedy: nieuweHedy()}
 	o.invoer = textinput.New()
 	o.invoer.CharLimit = 300
 	return o
@@ -232,9 +235,9 @@ func (m *model) toetsOntdek(msg tea.KeyMsg) (tea.Cmd, bool) {
 	case ontdekMenu:
 		switch k {
 		case "up", "k":
-			o.keuze = (o.keuze + 2) % 3
+			o.keuze = (o.keuze + 3) % 4
 		case "down", "j":
-			o.keuze = (o.keuze + 1) % 3
+			o.keuze = (o.keuze + 1) % 4
 		case "enter":
 			o.scherm = o.keuze + 1
 			switch o.scherm {
@@ -251,6 +254,9 @@ func (m *model) toetsOntdek(msg tea.KeyMsg) (tea.Cmd, bool) {
 				return o.invoer.Focus(), true
 			case ontdekDagboek:
 				o.notities = laadNotities()
+			case ontdekHedy:
+				o.hedy.laad()
+				m.hedyLaadCode()
 			}
 		default:
 			return nil, false
@@ -303,6 +309,8 @@ func (m *model) toetsOntdek(msg tea.KeyMsg) (tea.Cmd, bool) {
 		var cmd tea.Cmd
 		o.invoer, cmd = o.invoer.Update(msg)
 		return cmd, true
+	case ontdekHedy:
+		return m.toetsHedy(msg)
 	case ontdekDagboek:
 		if o.schrijven {
 			switch k {
@@ -352,6 +360,8 @@ func (m model) viewOntdek(p palet) string {
 	breed := min(m.breed-8, 100)
 	kop := lipgloss.NewStyle().Bold(true).Render(m.t("menu.discover"))
 	switch o.scherm {
+	case ontdekHedy:
+		return m.viewHedy(p)
 	case ontdekDier:
 		var inhoud string
 		switch {
@@ -398,7 +408,7 @@ func (m model) viewOntdek(p palet) string {
 		return kop + "\n\n" + paneel(p, m.t("disc.journal"), strings.Join(regels, "\n"), breed, true) + "\n" + dim.Render(m.t("disc.journalkeys"))
 	}
 	var regels []string
-	for i := 1; i <= 3; i++ {
+	for i := 1; i <= 4; i++ {
 		naam := fmt.Sprintf(" %-18s ", m.t(ontdekSleutels[i]))
 		uitleg := m.t(ontdekSleutels[i] + ".d")
 		if i-1 == o.keuze {
@@ -407,7 +417,7 @@ func (m model) viewOntdek(p palet) string {
 			regels = append(regels, " "+naam+dim.Render(uitleg))
 		}
 	}
-	regels = append(regels, "", dim.Render(m.t("buddy.start")), dim.Render(m.t("disc.later")))
+	regels = append(regels, "", dim.Render(m.t("buddy.start")))
 	return kop + "\n\n" + paneel(p, m.t("buddy.choose"), strings.Join(regels, "\n"), breed, true)
 }
 

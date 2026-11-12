@@ -48,7 +48,7 @@ Het project begon op een oude Asus EeePC, vandaar de "PC" in de naam.
 | Spotify | Alleen goedgekeurde afspeellijsten, expliciete nummers gefilterd, autoplay uit (librespot) | ✅ fase 3 |
 | Vraag het maatje | AI via de Anthropic-API met dagbudget, filters en weekoverzicht voor ouders | ✅ fase 4 |
 | Ontdekken | Dier van de dag (vaste lijst, tekst van Wikipedia), computerlab (de terminal leren met missies op een oefencomputer), privé natuurdagboek | ✅ fase 5 |
-| Python | Programmeren met alleen je eigen kamerlamp als echte uitvoer | ⏳ later |
+| Programmeren | [Hedy](https://hedy.org): de echte Hedy-taal, niveau voor niveau richting Python, met Hedy's eigen opdrachten in het Nederlands en Engels, en een schildpad die met tekens tekent | ✅ fase 5 |
 | Denksport | Sudoku, schaakpuzzels, raadsels. Geen timer, geen score | ⏳ fase 5 |
 | Typcursus | Rustige typlessen: eerst de thuisrij, korte lessen per dag, oefenen met eigen zinnen en verhalen, vooruitgang zonder scores of reeksen | ⏳ later |
 | Schrijfhoek | Privé dagboek en verhalen | ⏳ fase 5 |
@@ -174,6 +174,17 @@ zien alleen dat er een verhaal is geschreven, niet het verhaal zelf.
 
 Ouders stellen de grenzen in in `/etc/unscroll/ouders.yaml` (onderdeel `maatje`; 0 betekent geen grens). Verhalen en huiswerk kun je later hervatten. Ouders lezen huiswerk terug in de ouderstand (`h` in het tabblad van het maatje) of via ssh met `sudo unscroll-ouder huiswerk`. De standaardwaarden en de instructies
 voor het maatje zitten in de app en worden via updates bijgesteld op basis van ervaringen.
+
+## Programmeren met Hedy
+
+Ontdekken (`4`) → Programmeren gebruikt [Hedy](https://hedy.org) (Universiteit Leiden, EUPL-1.2): het taalpakket
+[hedylang](https://pypi.org/project/hedylang/) en de opdrachten ("avonturen") uit
+[hedyorg/hedy](https://github.com/hedyorg/hedy). Releases leveren ze mee als `unscroll-hedy.tar.gz` (gebouwd door
+`hedy/bouw-pakket.sh` in Debian 12, met twee kleine aanpassingen zodat het op Python 3.11 draait); de updater
+installeert het in `/opt/unscroll/hedy`. Programma's draaien als apart Python-proces met een tijd- en
+geheugengrens, zonder toegang tot bestanden en zonder andere imports dan `random`, `time` en `math`. Tekenen met
+de schildpad geeft een plaatje van braille-tekens; toetsen indrukken en muziek kunnen nog niet. De eerste keer
+op een niveau kan op een oude netbook even duren, omdat Hedy dat niveau één keer voorbereidt.
 
 ## Wachtwoorden en sleutels
 

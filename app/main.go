@@ -195,6 +195,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case meldingMsg:
 		m.zeg(string(msg))
 		return m, nil
+	case hedyUitMsg, hedyKlaarMsg:
+		cmd := m.hedyBericht(msg)
+		return m, cmd
 	case dierMsg:
 		m.ontdekBericht(msg)
 		return m, nil

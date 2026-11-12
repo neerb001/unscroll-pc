@@ -30,6 +30,7 @@ DEBIAN_FRONTEND=noninteractive "${APT[@]}" install -y --no-install-recommends \
   network-manager wpasupplicant alsa-utils mpv \
   curl jq ca-certificates zram-tools \
   avahi-daemon libnss-mdns \
+  python3 python3-regex \
   sudo
 # Wifi firmware for common netbook chips (Atheros, Ralink, Realtek). Optional: skipped if unavailable.
 DEBIAN_FRONTEND=noninteractive "${APT[@]}" install -y --no-install-recommends \
@@ -83,6 +84,11 @@ fi
 ln -sfn /opt/unscroll/huidig/unscroll /usr/local/bin/unscroll
 # Spotify speaker from the offline bundle (otherwise the updater brings it)
 [[ -x "$HIER/librespot" ]] && install -m 0755 "$HIER/librespot" /usr/local/bin/librespot
+# Hedy (programming) from the offline bundle (otherwise the updater brings it)
+if [[ -f "$HIER/unscroll-hedy.tar.gz" ]]; then
+  rm -rf /opt/unscroll/hedy && mkdir -p /opt/unscroll/hedy
+  tar -xzf "$HIER/unscroll-hedy.tar.gz" --no-same-owner -C /opt/unscroll/hedy && chmod -R a+rX /opt/unscroll/hedy
+fi
 
 echo "==> Automatic login on tty1, starting the app right away"
 install -d /etc/systemd/system/getty@tty1.service.d

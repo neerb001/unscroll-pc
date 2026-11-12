@@ -26,7 +26,7 @@ case "$ARCH" in
 esac
 
 PAKKETTEN="cage foot fonts-jetbrains-mono network-manager wpasupplicant alsa-utils mpv curl jq
-ca-certificates zram-tools avahi-daemon libnss-mdns sudo git unzip
+ca-certificates zram-tools avahi-daemon libnss-mdns sudo git unzip python3 python3-regex
 firmware-misc-nonfree firmware-atheros firmware-realtek"
 
 echo "==> Debian archive keys"
@@ -69,6 +69,10 @@ curl -fsSL -o "$UIT/unscroll" "$BASIS"
 curl -fsSL -o "$WERK/sum" "$BASIS.sha256"
 [[ "$(awk '{print $1}' "$WERK/sum")" == "$(sha256sum "$UIT/unscroll" | awk '{print $1}')" ]] || { echo "Checksum mismatch"; exit 1; }
 chmod +x "$UIT/unscroll"
+
+# Hedy (programming), the same package for every processor
+curl -fsSL -o "$UIT/unscroll-hedy.tar.gz" "https://github.com/$REPO/releases/download/$TAG/unscroll-hedy.tar.gz" \
+  || { rm -f "$UIT/unscroll-hedy.tar.gz"; echo "(no Hedy package in this release)"; }
 
 # Spotify speaker (librespot), when this release has it for this processor
 if curl -fsSL -o "$UIT/librespot" "https://github.com/$REPO/releases/download/$TAG/librespot-linux-$GOARCH" \

@@ -78,6 +78,12 @@ jobs:
           # het updater-script installeert deze op de apparaten (sessie, updater, ouderhulp)
           tar -czf dist/unscroll-scripts.tar.gz -C scripts unscroll-sessie unscroll-update unscroll-ouder
           (cd dist && sha256sum unscroll-scripts.tar.gz > unscroll-scripts.tar.gz.sha256)
+      - name: Hedy-pakket bouwen (programmeren)
+        if: steps.versie.outputs.nieuw == 'ja'
+        run: |
+          # in Debian 12, zoals op de apparaten; mislukt het, dan gaat deze versie zonder nieuw Hedy-pakket
+          docker run --rm -v "$PWD:/w" -w /w debian:bookworm bash hedy/bouw-pakket.sh /w/dist \
+            || echo "::warning::Hedy-pakket niet gebouwd"
       - name: librespot meeleveren
         if: steps.versie.outputs.nieuw == 'ja'
         env:
