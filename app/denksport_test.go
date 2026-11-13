@@ -55,6 +55,7 @@ func TestRekenmachineScherm(t *testing.T) {
 	m.inst.Taal = "nl"
 	m = toets(m, "5")
 	m = toets(m, "down")
+	m = toets(m, "down")
 	m = toets(m, "enter")
 	m = toets(m, "1/3 + 1/6")
 	m = toets(m, "enter")
@@ -115,5 +116,57 @@ func TestWoordenboek(t *testing.T) {
 	m = toets(m, "enter")
 	if !strings.Contains(m.View(), "Bedoel je: fiets, fietsen?") {
 		t.Errorf("woordenboekscherm:\n%s", m.View())
+	}
+}
+
+func TestRekenmachineKnoppen(t *testing.T) {
+	m, _ := testModel(t, Geheimen{})
+	m.dk = nieuweDenksport()
+	m.inst.Taal = "nl"
+	m.breed, m.hoog = 100, 34
+	m = toets(m, "5")
+	m = toets(m, "down")
+	m = toets(m, "enter")
+	// typen: 7 ÷ 2 en Enter (cursor springt naar =)
+	m = toets(m, "7/2")
+	m = toets(m, "enter")
+	if r := m.dk.rm; r.uit != "3 1/2  = 3,5" {
+		t.Fatalf("7÷2: %q (fout %q)", r.uit, r.fout)
+	}
+	// verder rekenen met de uitkomst: × 2 =
+	m = toets(m, "*2")
+	m = toets(m, "enter")
+	if m.dk.rm.uit != "7" {
+		t.Fatalf("Ans × 2: %q som %q", m.dk.rm.uit, m.dk.rm.som)
+	}
+	// knoppen met de pijltjes: C, dan wetenschappelijk √ 9 =
+	m = toets(m, "c")
+	m = toets(m, "tab")
+	if !m.dk.rm.wet || !strings.Contains(m.View(), "sin") {
+		t.Fatalf("wetenschappelijke stand:\n%s", m.View())
+	}
+	m.dk.rm.rij, m.dk.rm.kol = 1, 2 // √
+	m = toets(m, "enter")
+	m = toets(m, "9")
+	m = toets(m, "enter")
+	if m.dk.rm.uit != "3" {
+		t.Fatalf("√9: %q som %q fout %q", m.dk.rm.uit, m.dk.rm.som, m.dk.rm.fout)
+	}
+	for som, verwacht := range map[string]string{"sin(30)": "0,5", "cos(90)": "0", "2^10": "1024", "log(1000)": "3", "π*2": "6,2831853072", "√(2)": "1,4142135624"} {
+		v, err := rekenWet(som)
+		if err != nil || toonKomma(v, ",") != verwacht {
+			t.Errorf("%s = %q (%v), verwacht %s", som, toonKomma(v, ","), err, verwacht)
+		}
+	}
+	if _, err := rekenWet("sqrt(-4)"); err != errWortelMin {
+		t.Errorf("wortel van -4: %v", err)
+	}
+	// geheugen
+	m = toets(m, "c")
+	m = toets(m, "5")
+	m.dk.rm.rij, m.dk.rm.kol = 3, 0 // M+
+	m = toets(m, "enter")
+	if !m.dk.rm.heeftM || m.dk.rm.geheugen != 5 || !strings.Contains(m.View(), "M  ") {
+		t.Errorf("geheugen: %+v", m.dk.rm)
 	}
 }

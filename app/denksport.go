@@ -23,6 +23,7 @@ const (
 	denkTafels
 	denkOverzicht
 	denkRekenmachine
+	denkKnoppen
 )
 
 // maxTafel: de tafels van 1 tot en met 12, elk van 1 × tot en met 12 ×.
@@ -42,6 +43,7 @@ type denkStaat struct {
 	fouten    []tafelSom
 	klaar     bool
 	// rekenmachine
+	rm       *rmStaat
 	reken    textinput.Model
 	geschied []string // som = uitkomst
 	vorige   []string // eerdere sommen, voor ↑
@@ -104,7 +106,7 @@ func (v tafelVoortgang) bewaar() {
 }
 
 func nieuweDenksport() *denkStaat {
-	d := &denkStaat{}
+	d := &denkStaat{rm: nieuweRekenmachine()}
 	d.reken = textinput.New()
 	d.reken.Prompt = "› "
 	d.reken.CharLimit = 80
@@ -170,12 +172,17 @@ func (m *model) toetsDenk(msg tea.KeyMsg) (tea.Cmd, bool) {
 	switch d.scherm {
 	case denkMenu:
 		switch k {
-		case "up", "k", "down", "j":
-			d.keuze = 1 - d.keuze
+		case "up", "k":
+			d.keuze = (d.keuze + 2) % 3
+		case "down", "j":
+			d.keuze = (d.keuze + 1) % 3
 		case "enter":
-			if d.keuze == 0 {
+			switch d.keuze {
+			case 0:
 				d.scherm = denkTafelsKies
-			} else {
+			case 1:
+				d.scherm = denkKnoppen
+			default:
 				d.scherm = denkRekenmachine
 				return d.reken.Focus(), true
 			}
@@ -284,6 +291,9 @@ func (m *model) toetsDenk(msg tea.KeyMsg) (tea.Cmd, bool) {
 		}
 		return nil, true
 
+	case denkKnoppen:
+		return m.toetsRekenmachine(msg)
+
 	case denkOverzicht:
 		if k == "esc" || k == "enter" || k == "o" {
 			d.scherm = denkTafelsKies
@@ -346,6 +356,8 @@ func (m model) viewDenk(p palet) string {
 	breed := min(m.breed-8, 90)
 	kop := lipgloss.NewStyle().Bold(true).Render(m.t("menu.puzzles"))
 	switch d.scherm {
+	case denkKnoppen:
+		return m.viewRekenmachine(p)
 	case denkTafelsKies:
 		v := laadTafels()
 		var regels []string
@@ -462,7 +474,7 @@ func (m model) viewDenk(p palet) string {
 		return kop + "\n\n" + paneel(p, m.t("calc.title"), strings.Join(opgemaakt, "\n")+"\n\n"+d.reken.View(), breed, true) + "\n" + dim.Render(m.t("calc.keys"))
 	}
 	var regels []string
-	for i, sl := range []string{"tables.title", "calc.title"} {
+	for i, sl := range []string{"tables.title", "calc.title", "calc.typed"} {
 		naam := fmt.Sprintf(" %-18s ", m.t(sl))
 		uitleg := m.t(sl + ".d")
 		if i == d.keuze {

@@ -49,7 +49,7 @@ Het project begon op een oude Asus EeePC, vandaar de "PC" in de naam.
 | Vraag het maatje | AI via de Anthropic-API met dagbudget, filters en weekoverzicht voor ouders | ✅ fase 4 |
 | Ontdekken | Dier van de dag (vaste lijst, tekst van Wikipedia), computerlab (de terminal leren met missies op een oefencomputer), privé natuurdagboek | ✅ fase 5 |
 | Programmeren | [Hedy](https://hedy.org): de echte Hedy-taal, niveau voor niveau richting Python, met Hedy's eigen opdrachten in het Nederlands en Engels, en een schildpad die met tekens tekent | ✅ fase 5 |
-| Denksport | Tafels van 1 tot en met 12 oefenen zonder klok (overzicht van wat erin zit, lastige sommen komen terug), rekenmachine met exacte breuken en procenten; later sudoku, schaakpuzzels, raadsels | ✅ fase 5 |
+| Denksport | Tafels van 1 tot en met 12 oefenen zonder klok (overzicht van wat erin zit, lastige sommen komen terug), rekenmachine met knoppen (basis en wetenschappelijk: sin, cos, tan, √, log, ln, π, geheugen) en een rekenmachine om sommen te typen, met exacte breuken en procenten; later sudoku, schaakpuzzels, raadsels | ✅ fase 5 |
 | Typcursus | Rustige typlessen: eerst de thuisrij, korte lessen per dag, oefenen met eigen zinnen en verhalen, vooruitgang zonder scores of reeksen | ⏳ later |
 | Schrijfhoek | Eenvoudige takenlijst, woordenboek met hulp bij spelling (Wiktionary), je eigen verhalen teruglezen; privé | ✅ fase 5 |
 
