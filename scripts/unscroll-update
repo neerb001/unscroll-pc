@@ -149,8 +149,9 @@ if [[ -n "$HEDY_URL" && -n "$HEDY_SUM_URL" ]] && haal "$HEDY_SUM_URL" "$TMP/hedy
   fi
 fi
 
-# Debian packages the app uses: Python for Hedy, Stockfish for chess, a font with chess symbols.
-for pakket in python3 python3-regex stockfish fonts-dejavu-core; do
+# Debian packages the app uses: Python for Hedy, Stockfish for chess, a font with chess symbols,
+# and gtypist for its typing lessons.
+for pakket in python3 python3-regex stockfish fonts-dejavu-core gtypist; do
   dpkg -s "$pakket" >/dev/null 2>&1 && continue
   DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends "$pakket" >/dev/null 2>&1 \
     || { apt-get update -q >/dev/null 2>&1 && DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends "$pakket" >/dev/null 2>&1; } \

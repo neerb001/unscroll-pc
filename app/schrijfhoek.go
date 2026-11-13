@@ -23,6 +23,7 @@ const (
 	schrijfVerhalen
 	schrijfLees
 	schrijfWoord
+	schrijfTypen
 )
 
 type taak struct {
@@ -46,10 +47,11 @@ type schrijfStaat struct {
 	leesTitel     string
 	leesBoven     int
 	wb            *woordStaat
+	ty            *typStaat
 }
 
 func nieuweSchrijfhoek() *schrijfStaat {
-	s := &schrijfStaat{weg: -1, bewerk: -1, wb: nieuwWoordenboek()}
+	s := &schrijfStaat{weg: -1, bewerk: -1, wb: nieuwWoordenboek(), ty: &typStaat{}}
 	s.invoer = textinput.New()
 	s.invoer.CharLimit = 120
 	s.invoer.Prompt = "☐ "
@@ -97,9 +99,9 @@ func (m *model) toetsSchrijf(msg tea.KeyMsg) (tea.Cmd, bool) {
 	case schrijfMenu:
 		switch k {
 		case "up", "k":
-			s.keuze = (s.keuze + 2) % 3
+			s.keuze = (s.keuze + 3) % 4
 		case "down", "j":
-			s.keuze = (s.keuze + 1) % 3
+			s.keuze = (s.keuze + 1) % 4
 		case "enter":
 			switch s.keuze {
 			case 0:
@@ -108,8 +110,11 @@ func (m *model) toetsSchrijf(msg tea.KeyMsg) (tea.Cmd, bool) {
 				s.scherm = schrijfWoord
 				s.wb.invoer.SetValue("")
 				return s.wb.invoer.Focus(), true
-			default:
+			case 2:
 				s.scherm, s.verhalen, s.verhaalSel = schrijfVerhalen, eerdereVerhalen(100), 0
+			default:
+				s.scherm = schrijfTypen
+				m.typOpen()
 			}
 		default:
 			return nil, false
@@ -229,6 +234,8 @@ func (m *model) toetsSchrijf(msg tea.KeyMsg) (tea.Cmd, bool) {
 
 	case schrijfWoord:
 		return m.toetsWoord(msg)
+	case schrijfTypen:
+		return m.toetsTypen(msg)
 
 	case schrijfLees:
 		pagina := max(m.hoog-10, 5)
@@ -268,6 +275,12 @@ func (m model) viewSchrijf(p palet) string {
 	switch s.scherm {
 	case schrijfWoord:
 		return kop + "\n\n" + paneel(p, m.t("dict.title"), m.viewWoord(p, breed), breed, true) + "\n" + dim.Render(m.t("dict.keys"))
+	case schrijfTypen:
+		toetsen := m.t("type.listkeys")
+		if s.ty.bezig {
+			toetsen = m.t("type.keys")
+		}
+		return kop + "\n\n" + paneel(p, m.t("type.title"), m.viewTypen(p, breed), breed, true) + "\n" + dim.Render(toetsen)
 	case schrijfTaken:
 		var regels []string
 		open := len(openTaken(s.taken))
@@ -340,6 +353,7 @@ func (m model) viewSchrijf(p palet) string {
 		kies(0, m.t("todo.name"), m.t("todo.desc", len(openTaken(s.taken)))),
 		kies(1, m.t("dict.title"), m.t("dict.desc")),
 		kies(2, m.t("write.stories"), m.t("write.storiesdesc")),
+		kies(3, m.t("type.title"), m.t("type.desc")),
 		"", dim.Render(m.t("buddy.start")), dim.Render(m.t("write.private")),
 	}
 	return kop + "\n\n" + paneel(p, m.t("buddy.choose"), strings.Join(regels, "\n"), breed, true)
