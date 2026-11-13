@@ -50,6 +50,7 @@ Het project begon op een oude Asus EeePC, vandaar de "PC" in de naam.
 | Ontdekken | Dier van de dag (vaste lijst, tekst van Wikipedia), computerlab (de terminal leren met missies op een oefencomputer), privé natuurdagboek | ✅ fase 5 |
 | Programmeren | [Hedy](https://hedy.org): de echte Hedy-taal, niveau voor niveau richting Python, met Hedy's eigen opdrachten in het Nederlands en Engels, en een schildpad die met tekens tekent | ✅ fase 5 |
 | Denksport | Tafels van 1 tot en met 12 oefenen zonder klok (overzicht van wat erin zit, lastige sommen komen terug), rekenmachine met knoppen (basis en wetenschappelijk: sin, cos, tan, √, log, ln, π, geheugen) en een rekenmachine om sommen te typen, met exacte breuken en procenten, sudoku (elke keer een nieuwe, drie niveaus), raadsels en getallenrijen, schaken: 2000 puzzels uit de [puzzeldatabase van Lichess](https://database.lichess.org/) (CC0), tegen [Stockfish](https://stockfishchess.org/) op acht niveaus, of met z'n tweeën | ✅ fase 5 |
+| Berichten naar ouders | Signal via signal-cli op de NAS (eigen nummer voor het kind): korte berichtjes alleen naar contacten in ouders.yaml, antwoorden als rustige lijst | ⏳ later |
 | Typcursus | Rustige typlessen: eerst de thuisrij, korte lessen per dag, oefenen met eigen zinnen en verhalen, vooruitgang zonder scores of reeksen | ⏳ later |
 | Schrijfhoek | Eenvoudige takenlijst, woordenboek met hulp bij spelling (Wiktionary), je eigen verhalen teruglezen; privé | ✅ fase 5 |
 
