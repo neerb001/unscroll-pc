@@ -47,7 +47,7 @@ Het project begon op een oude Asus EeePC, vandaar de "PC" in de naam.
 | Vandaag | Weer met regen per uur en praktische tips (Open-Meteo, geen sleutel), zon op en onder, maanfase, seizoen, de volgende jaarfeesten |
 | Spotify | Alleen goedgekeurde afspeellijsten, expliciete nummers gefilterd, autoplay uit (librespot) |
 | Vraag het maatje | AI via de Anthropic-API met dagbudget, filters en weekoverzicht voor ouders |
-| Ontdekken | Dier van de dag (vaste lijst, tekst van Wikipedia), computerlab (de terminal leren met missies op een oefencomputer), privé natuurdagboek |
+| Ontdekken | Dier van de dag (vaste lijst, tekst van Wikipedia), computerlab (de terminal leren met missies op een oefencomputer), privé natuurdagboek, sterrenhemel (planeten, maan en sterrenbeelden van vanavond, een hemelkaart, wanneer het ISS bij jou overkomt, en 21 korte uitleggen over sterrenkunde) |
 | Programmeren | [Hedy](https://hedy.org): de echte Hedy-taal, niveau voor niveau richting Python, met Hedy's eigen opdrachten in het Nederlands en Engels, en een schildpad die met tekens tekent |
 | Denksport | Tafels van 1 tot en met 12 oefenen zonder klok (overzicht van wat erin zit, lastige sommen komen terug), rekenmachine met knoppen (basis en wetenschappelijk: sin, cos, tan, √, log, ln, π, geheugen) en een rekenmachine om sommen te typen, met exacte breuken en procenten, sudoku (elke keer een nieuwe, drie niveaus), raadsels en getallenrijen, schaken: 2000 puzzels uit de [puzzeldatabase van Lichess](https://database.lichess.org/) (CC0), tegen [Stockfish](https://stockfishchess.org/) op acht niveaus, of met z'n tweeën |
 | Typcursus | Rustige lessen zonder klok of score (de Nederlandse juniorlessen van GNU Typist, geïnstalleerd uit Debian), een toetsenbord in beeld met de volgende toets en vinger, daarna eigen zinnen |
@@ -59,7 +59,6 @@ Het project begon op een oude Asus EeePC, vandaar de "PC" in de naam.
 Ideeën en plannen die nog niet gebouwd zijn, ongeveer in volgorde:
 
 - **Berichten naar ouders:** Signal via [signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api) op een thuisserver (eigen nummer voor het kind): korte berichtjes alleen naar contacten in ouders.yaml, antwoorden als rustige lijst
-- **Sterrenhemel:** welke planeten en sterrenbeelden je vanavond ziet, en wanneer het ISS (het internationale ruimtestation) overkomt.
 - **Updates zonder herstart:** de app herstart zichzelf op een rustig moment, of vraagt het in de ouderstand.
 - **Diagnose in de ouderstand:** per dienst of hij werkt, met de precieze foutmelding.
 - **Veilig bewaren:** bestanden zo wegschrijven dat een plotselinge stroomuitval niets kapotmaakt.
@@ -245,5 +244,6 @@ install.sh  installatie op een verse Debian 12
 Unscroll PC valt onder de [MIT-licentie](LICENSE). Onderdelen die het gebruikt houden hun eigen licentie:
 [Hedy](https://github.com/hedyorg/hedy) (EUPL-1.2, meegeleverd in het Hedy-pakket met het licentiebestand),
 de schaakpuzzels uit de [puzzeldatabase van Lichess](https://database.lichess.org/) (CC0),
+de satellietbibliotheek [go-satellite](https://github.com/joshuaferrara/go-satellite) (BSD-2) met baangegevens van het ISS van [CelesTrak](https://celestrak.org/),
 en Debian-pakketten die apart worden geïnstalleerd en geen deel zijn van deze repository, zoals
 [Stockfish](https://stockfishchess.org/) (GPL-3) en de typlessen van [GNU Typist](https://www.gnu.org/software/gtypist/) (GPL).

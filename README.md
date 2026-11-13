@@ -48,7 +48,7 @@ The project started on an old Asus Eee PC, hence the "PC" in the name.
 | Today | Weather with rain per hour and practical tips (Open-Meteo, no key), sunrise and sunset, moon phase, season, the next seasonal festivals |
 | Spotify | Approved albums and playlists only, explicit tracks filtered, autoplay off (librespot) |
 | Ask the buddy | AI via the Anthropic API with budgets, filters and a weekly summary for parents |
-| Discover | Animal of the day (curated list, text from Wikipedia), computer lab (learn the terminal through missions in a practice computer), private nature journal |
+| Discover | Animal of the day (curated list, text from Wikipedia), computer lab (learn the terminal through missions in a practice computer), private nature journal, night sky (planets, moon and constellations visible tonight, a sky map, ISS passes for your location, and 21 short explanations about astronomy) |
 | Programming | [Hedy](https://hedy.org): the real Hedy language level by level towards Python, with Hedy's own assignments in Dutch and English, and a turtle that draws with characters |
 | Puzzles | Times tables 1 to 12 without a clock (overview of what is known, tricky ones come back), calculator with buttons (basic and scientific: sin, cos, tan, √, log, ln, π, memory) and a typed calculator with exact fractions and percentages, sudoku (a new one every time, three levels), riddles and number sequences, chess: 2000 puzzles from the [Lichess puzzle database](https://database.lichess.org/) (CC0), against [Stockfish](https://stockfishchess.org/) on eight levels, or two players together |
 | Typing course | Calm lessons without clock or score (the Dutch junior lessons of GNU Typist, installed from Debian), a keyboard on screen showing the next key and finger, then own sentences |
@@ -60,7 +60,6 @@ The project started on an old Asus Eee PC, hence the "PC" in the name.
 Ideas and plans that are not built yet, roughly in order:
 
 - **Messages to parents:** Signal via [signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api) on a home server (own number for the child): short messages only to contacts in ouders.yaml, replies as a calm list
-- **Night sky:** planets and constellations visible tonight, and when the ISS (the International Space Station) passes over.
 - **Updates without a restart:** the app restarts itself at a quiet moment, or asks in parent mode.
 - **Diagnostics in parent mode:** per service whether it works, with the exact error.
 - **Safe saving:** write files in a way that survives a sudden power cut.
@@ -256,5 +255,6 @@ VERSION     the version that GitHub Actions releases
 Unscroll PC is released under the [MIT License](LICENSE). Parts it uses keep their own licences:
 [Hedy](https://github.com/hedyorg/hedy) (EUPL-1.2, shipped in the Hedy package with its licence file),
 the chess puzzles from the [Lichess puzzle database](https://database.lichess.org/) (CC0),
+the satellite library [go-satellite](https://github.com/joshuaferrara/go-satellite) (BSD-2) with ISS orbit data from [CelesTrak](https://celestrak.org/),
 and Debian packages that are installed separately and not part of this repository, such as
 [Stockfish](https://stockfishchess.org/) (GPL-3) and the typing lessons of [GNU Typist](https://www.gnu.org/software/gtypist/) (GPL).

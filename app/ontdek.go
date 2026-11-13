@@ -25,9 +25,10 @@ const (
 	ontdekLab
 	ontdekDagboek
 	ontdekHedy
+	ontdekHemel
 )
 
-var ontdekSleutels = []string{"", "disc.animal", "disc.lab", "disc.journal", "disc.code"}
+var ontdekSleutels = []string{"", "disc.animal", "disc.lab", "disc.journal", "disc.code", "disc.sky"}
 
 type ontdekStaat struct {
 	scherm, keuze int
@@ -44,11 +45,12 @@ type ontdekStaat struct {
 	notities  []notitie
 	schrijven bool
 	// programmeren
-	hedy *hedyStaat
+	hedy  *hedyStaat
+	hemel *hemelStaat
 }
 
 func nieuweOntdek() *ontdekStaat {
-	o := &ontdekStaat{hedy: nieuweHedy()}
+	o := &ontdekStaat{hedy: nieuweHedy(), hemel: &hemelStaat{}}
 	o.invoer = textinput.New()
 	o.invoer.CharLimit = 300
 	return o
@@ -273,9 +275,9 @@ func (m *model) toetsOntdek(msg tea.KeyMsg) (tea.Cmd, bool) {
 	case ontdekMenu:
 		switch k {
 		case "up", "k":
-			o.keuze = (o.keuze + 3) % 4
+			o.keuze = (o.keuze + len(ontdekSleutels) - 2) % (len(ontdekSleutels) - 1)
 		case "down", "j":
-			o.keuze = (o.keuze + 1) % 4
+			o.keuze = (o.keuze + 1) % (len(ontdekSleutels) - 1)
 		case "enter":
 			o.scherm = o.keuze + 1
 			switch o.scherm {
@@ -295,6 +297,8 @@ func (m *model) toetsOntdek(msg tea.KeyMsg) (tea.Cmd, bool) {
 			case ontdekHedy:
 				o.hedy.laad()
 				m.hedyLaadCode()
+			case ontdekHemel:
+				return m.hemelOpen(), true
 			}
 		default:
 			return nil, false
@@ -352,6 +356,38 @@ func (m *model) toetsOntdek(msg tea.KeyMsg) (tea.Cmd, bool) {
 		return cmd, true
 	case ontdekHedy:
 		return m.toetsHedy(msg)
+	case ontdekHemel:
+		h := o.hemel
+		if h.uitleg {
+			switch k {
+			case "esc", "u", "q":
+				h.uitleg = false
+			case "up", "k":
+				h.keuze, h.scroll = (h.keuze+len(hemelOnderwerpen)-1)%len(hemelOnderwerpen), 0
+			case "down", "j":
+				h.keuze, h.scroll = (h.keuze+1)%len(hemelOnderwerpen), 0
+			case " ", "right", "pgdown", "l":
+				h.scroll += 5
+			case "left", "pgup", "h":
+				h.scroll = max(h.scroll-5, 0)
+			default:
+				return nil, false
+			}
+			return nil, true
+		}
+		switch k {
+		case "esc":
+			o.scherm = ontdekMenu
+		case "u":
+			h.uitleg, h.kaart = true, false
+		case "k", "m":
+			o.hemel.kaart = !o.hemel.kaart
+		case "r":
+			return m.hemelOpen(), true
+		default:
+			return nil, false
+		}
+		return nil, true
 	case ontdekDagboek:
 		if o.schrijven {
 			switch k {
@@ -403,6 +439,8 @@ func (m model) viewOntdek(p palet) string {
 	switch o.scherm {
 	case ontdekHedy:
 		return m.viewHedy(p)
+	case ontdekHemel:
+		return m.viewHemel(p)
 	case ontdekDier:
 		var inhoud string
 		switch {
@@ -449,7 +487,7 @@ func (m model) viewOntdek(p palet) string {
 		return kop + "\n\n" + paneel(p, m.t("disc.journal"), strings.Join(regels, "\n"), breed, true) + "\n" + dim.Render(m.t("disc.journalkeys"))
 	}
 	var regels []string
-	for i := 1; i <= 4; i++ {
+	for i := 1; i < len(ontdekSleutels); i++ {
 		naam := fmt.Sprintf(" %-18s ", m.t(ontdekSleutels[i]))
 		uitleg := m.t(ontdekSleutels[i] + ".d")
 		if i-1 == o.keuze {
