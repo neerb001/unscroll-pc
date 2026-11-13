@@ -33,33 +33,48 @@ Het project begon op een oude Asus EeePC, vandaar de "PC" in de naam.
 - **Alleen goedgekeurde albums en lijsten.** Zoeken in heel Spotify staat standaard uit, omdat ook de volgorde van zoekresultaten door een algoritme wordt bepaald.
 - **Tip voor ouders:** gebruik een eigen Spotify-profiel voor het kind en keur geen door Spotify gemaakte mixen goed. Spotify leert nog steeds van wat er geluisterd wordt; dat zie je niet op Unscroll, wel in de officiële app.
 
-## Wat erin zit (en wat er nog komt)
+## Wat erin zit
 
-| Onderdeel | Inhoud | Status |
-|---|---|---|
-| Start | Begroeting, menu, avondslot, eigen naam in blokletters | ✅ fase 0 |
-| Talen | Engels (standaard) en Nederlands, te kiezen bij Systeem. Nieuwe talen in `app/i18n.go` | ✅ fase 0 |
-| Systeem | Naam computer, eigen naam, naam en gezicht van het maatje, 5 kleurthema's, wifi, accu, volume met maximum, hulp vragen (ntfy) | ✅ fase 0 |
-| Avondslot | Aparte tijden voor school- en weekendavonden, openingstijd, wat er na het slot nog mag, pincode voor ouders, pauzeren voor 30 min, 2 uur, tot morgenochtend of tot je hem weer aanzet | ✅ fase 0 |
-| Updates | Nieuwe versies via GitHub-releases, met checksum-controle en terugval | ✅ fase 0 |
-| Luisteren | Navidrome, radio met draaiknop, luisterboeken en podcasts uit Audiobookshelf met voortgang, slaaptimer | ✅ fase 1 |
-| Lezen | E-boeken (EPUB) uit Audiobookshelf, rustige leesweergave, ook offline, voortgang gaat mee | ✅ fase 2 |
-| Vandaag | Weer met regen per uur en praktische tips (Open-Meteo, geen sleutel), zon op en onder, maanfase, seizoen, de volgende jaarfeesten | ✅ fase 2 |
-| Spotify | Alleen goedgekeurde afspeellijsten, expliciete nummers gefilterd, autoplay uit (librespot) | ✅ fase 3 |
-| Vraag het maatje | AI via de Anthropic-API met dagbudget, filters en weekoverzicht voor ouders | ✅ fase 4 |
-| Ontdekken | Dier van de dag (vaste lijst, tekst van Wikipedia), computerlab (de terminal leren met missies op een oefencomputer), privé natuurdagboek | ✅ fase 5 |
-| Programmeren | [Hedy](https://hedy.org): de echte Hedy-taal, niveau voor niveau richting Python, met Hedy's eigen opdrachten in het Nederlands en Engels, en een schildpad die met tekens tekent | ✅ fase 5 |
-| Denksport | Tafels van 1 tot en met 12 oefenen zonder klok (overzicht van wat erin zit, lastige sommen komen terug), rekenmachine met knoppen (basis en wetenschappelijk: sin, cos, tan, √, log, ln, π, geheugen) en een rekenmachine om sommen te typen, met exacte breuken en procenten, sudoku (elke keer een nieuwe, drie niveaus), raadsels en getallenrijen, schaken: 2000 puzzels uit de [puzzeldatabase van Lichess](https://database.lichess.org/) (CC0), tegen [Stockfish](https://stockfishchess.org/) op acht niveaus, of met z'n tweeën | ✅ fase 5 |
-| Berichten naar ouders | Signal via [signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api) op een thuisserver (eigen nummer voor het kind): korte berichtjes alleen naar contacten in ouders.yaml, antwoorden als rustige lijst | ⏳ later |
-| Typcursus | Rustige lessen zonder klok of score (de Nederlandse juniorlessen van GNU Typist, geïnstalleerd uit Debian), een toetsenbord in beeld met de volgende toets en vinger, daarna eigen zinnen | ✅ fase 5 |
-| Schrijfhoek | Eenvoudige takenlijst, woordenboek met hulp bij spelling (Wiktionary), je eigen verhalen teruglezen; privé | ✅ fase 5 |
+| Onderdeel | Inhoud |
+|---|---|
+| Start | Begroeting, menu, avondslot, eigen naam in blokletters |
+| Talen | Engels (standaard) en Nederlands, te kiezen bij Systeem. Nieuwe talen in `app/i18n.go` |
+| Systeem | Naam computer, eigen naam, naam en gezicht van het maatje, 5 kleurthema's, wifi, accu, volume met maximum, hulp vragen (ntfy) |
+| Avondslot | Aparte tijden voor school- en weekendavonden, openingstijd, wat er na het slot nog mag, pincode voor ouders, pauzeren voor 30 min, 2 uur, tot morgenochtend of tot je hem weer aanzet |
+| Updates | Nieuwe versies via GitHub-releases, met checksum-controle en terugval |
+| Luisteren | Navidrome, radio met draaiknop, luisterboeken en podcasts uit Audiobookshelf met voortgang, slaaptimer |
+| Lezen | E-boeken (EPUB) uit Audiobookshelf, rustige leesweergave, ook offline, voortgang gaat mee |
+| Vandaag | Weer met regen per uur en praktische tips (Open-Meteo, geen sleutel), zon op en onder, maanfase, seizoen, de volgende jaarfeesten |
+| Spotify | Alleen goedgekeurde afspeellijsten, expliciete nummers gefilterd, autoplay uit (librespot) |
+| Vraag het maatje | AI via de Anthropic-API met dagbudget, filters en weekoverzicht voor ouders |
+| Ontdekken | Dier van de dag (vaste lijst, tekst van Wikipedia), computerlab (de terminal leren met missies op een oefencomputer), privé natuurdagboek |
+| Programmeren | [Hedy](https://hedy.org): de echte Hedy-taal, niveau voor niveau richting Python, met Hedy's eigen opdrachten in het Nederlands en Engels, en een schildpad die met tekens tekent |
+| Denksport | Tafels van 1 tot en met 12 oefenen zonder klok (overzicht van wat erin zit, lastige sommen komen terug), rekenmachine met knoppen (basis en wetenschappelijk: sin, cos, tan, √, log, ln, π, geheugen) en een rekenmachine om sommen te typen, met exacte breuken en procenten, sudoku (elke keer een nieuwe, drie niveaus), raadsels en getallenrijen, schaken: 2000 puzzels uit de [puzzeldatabase van Lichess](https://database.lichess.org/) (CC0), tegen [Stockfish](https://stockfishchess.org/) op acht niveaus, of met z'n tweeën |
+| Typcursus | Rustige lessen zonder klok of score (de Nederlandse juniorlessen van GNU Typist, geïnstalleerd uit Debian), een toetsenbord in beeld met de volgende toets en vinger, daarna eigen zinnen |
+| Schrijfhoek | Eenvoudige takenlijst, woordenboek met hulp bij spelling (Wiktionary), je eigen verhalen teruglezen; privé |
+| Ouderinstellingen | In de ouderstand (Systeem, `o` en de pincode, dan `i`): avondslot, volume, grenzen en model van het maatje, de woonplaats voor het weer, Spotify; wijzigingen werken meteen |
+
+## Nog op de lijst
+
+Ideeën en plannen die nog niet gebouwd zijn, ongeveer in volgorde:
+
+- **Berichten naar ouders:** Signal via [signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api) op een thuisserver (eigen nummer voor het kind): korte berichtjes alleen naar contacten in ouders.yaml, antwoorden als rustige lijst
+- **Sterrenhemel:** welke planeten en sterrenbeelden je vanavond ziet, en wanneer het ISS (het internationale ruimtestation) overkomt.
+- **Updates zonder herstart:** de app herstart zichzelf op een rustig moment, of vraagt het in de ouderstand.
+- **Diagnose in de ouderstand:** per dienst of hij werkt, met de precieze foutmelding.
+- **Veilig bewaren:** bestanden zo wegschrijven dat een plotselinge stroomuitval niets kapotmaakt.
+- **Ochtend- en avondlijstje** dat elke dag opnieuw begint.
+- **Verlanglijst voor de muziekbibliotheek:** het kind vraagt een album aan, ouders krijgen een melding.
+- **Weekoverzicht voor ouders** via ntfy.
+- **Hedy-galerij:** je eigen programma's terugzien en opnieuw draaien.
+- **Helpscherm per tabblad** en een instelling voor de lettergrootte.
 
 ## Geschikte apparaten
 
 Alles wat Debian 12 draait. Getest en bedoeld voor:
 
 | Apparaat | Architectuur | Opmerking |
-|---|---|---|
+|---|---|
 | Asus EeePC en andere netbooks | 386 (32-bit) | Het startpunt van dit project. 1 GB geheugen is genoeg. |
 | Oude laptops (ThinkPad, Dell, HP) | amd64 | Vaak voor een paar tientjes tweedehands te vinden |
 | Ex-school Chromebooks met Intel | amd64 | Eerst ombouwen met de firmware van MrChromebox |
@@ -90,13 +105,13 @@ Na het opstarten logt het kinderaccount automatisch in en start de app op het he
 - De scripts (sessie, updater, ouderhulp) komen mee in een `unscroll-scripts.tar.gz` met checksum en worden samen met de app geïnstalleerd (vanaf v0.2.0).
 - Is de repository privé, zet dan een fine-grained token met alleen-lezen rechten in `/etc/unscroll/geheimen.env` (de ouderhulp vraagt erom).
 
-## Luisteren (fase 1)
+## Luisteren
 
 Druk op `1` voor Luisteren en op `Tab` om te wisselen tussen Muziek, Luisterboeken, Podcasts en Radio.
 Alles speelt via `mpv`, zonder beeld. Er is geen autoplay: een album speelt tot het einde en dan is het stil.
 
 | Bron | Nodig | Instellen met |
-|---|---|---|
+|---|---|
 | Muziek | [Navidrome](https://www.navidrome.org/) met een eigen gebruiker voor het kind | `sudo unscroll-ouder` (adres, gebruiker, wachtwoord) |
 | Luisterboeken en podcasts | [Audiobookshelf](https://www.audiobookshelf.org/) met een account voor het kind, zodat de voortgang van het kind is | `sudo unscroll-ouder` (adres en API-token of API-sleutel) |
 | Radio | niets: NPO Radio 1, 2, 3FM, Klassiek en BBC World Service zitten erin | een eigen lijst onder `radio:` in `/etc/unscroll/ouders.yaml` |
@@ -115,13 +130,13 @@ Ouders kunnen het avondslot pauzeren in de ouderstand (`8`, dan `o` en de pincod
 ## Instellingen
 
 | Bestand | Van wie | Inhoud |
-|---|---|---|
+|---|---|
 | `~/.config/unscroll/instellingen.json` | het kind | naam, maatje, gezicht, kleurthema |
 | `/etc/unscroll/ouders.yaml` | ouders (root) | avondslot, pincode, maximaal volume, ntfy-topic |
 | `/etc/unscroll/update.conf` | ouders (root) | repository en updatekanaal |
 | `/etc/unscroll/geheimen.env` | ouders (root) | tokens en API-sleutels, nooit in git |
 
-## Spotify zonder algoritme (fase 3)
+## Spotify zonder algoritme
 
 Vraagt Spotify Premium (Duo werkt; met Family krijgt het kind een eigen account en loopt zijn
 luistergedrag niet door het jouwe). Het geluid komt uit [librespot](https://github.com/librespot-org/librespot),
@@ -145,7 +160,7 @@ In de app: `1` Luisteren, `Tab` naar Spotify. Een goedgekeurd album of playlist 
 Begint er iets anders te spelen op de speaker (autoplay, of iemand die hem vanaf een ander apparaat overneemt),
 dan pauzeert de app het.
 
-## Het AI-maatje (fase 4)
+## Het AI-maatje
 
 Druk op `3` (het tabblad heeft de naam van het maatje). Zet de API-sleutel en kies het model met `sudo unscroll-ouder`;
 maak hem aan op [console.anthropic.com](https://console.anthropic.com) en stel daar een maandlimiet in.
@@ -157,7 +172,7 @@ Het maatje is een hulpje, geen vriend: het praat alleen als het iets gevraagd wo
 nadenken in plaats van voor het kind te denken. De grenzen gaan per soort gebruik:
 
 | Modus | Hoe | Standaardgrens |
-|---|---|---|
+|---|---|
 | Huiswerkcoach en overhoren | Sessie rond één opdracht: eerst zelf proberen, hints in stappen, voorbeeld met andere getallen, afsluiten met "wat heb je geleerd?" | 2 sessies per dag, 40 beurten per sessie |
 | Samen een verhaal | Om de beurt schrijven, wordt bewaard in de schrijfhoek | 1 sessie per dag |
 | Vrije vragen | Nieuwsgierigheid: "hoe werkt het?" | 15 per dag |
