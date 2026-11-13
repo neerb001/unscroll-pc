@@ -185,6 +185,7 @@ func (m *model) bewaar() {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	klop()
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.breed, m.hoog = msg.Width, msg.Height
@@ -790,6 +791,14 @@ func main() {
 	lipgloss.SetHasDarkBackground(true)
 	begin := nieuwModel()
 	p := tea.NewProgram(begin, tea.WithAltScreen())
+	startWaakhond(func() {
+		// eerst netjes proberen; lukt dat niet binnen 5 seconden, dan hard stoppen
+		go p.Kill()
+		time.Sleep(5 * time.Second)
+		begin.l.sp.Afsluiten()
+		begin.l.lspot.Stop()
+		os.Exit(3)
+	})
 	_, err := p.Run()
 	begin.l.sp.Afsluiten()                            // mpv stoppen
 	begin.l.lspot.Stop()                              // librespot stoppen

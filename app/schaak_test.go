@@ -122,3 +122,31 @@ func TestStockfish(t *testing.T) {
 		}
 	}
 }
+
+func TestSchaakBordGrootte(t *testing.T) {
+	t.Setenv("PATH", t.TempDir())
+	for _, g := range []struct {
+		breed, hoog int
+		stuk        string
+	}{{100, 30, "▀▀▀▀▀"}, {92, 26, "▟█▙"}, {70, 16, " K "}} {
+		m, _ := testModel(t, Geheimen{})
+		m.dk = nieuweDenksport()
+		m.inst.Taal = "nl"
+		m.dk.sk.niveau = 1
+		m.dk.scherm = denkSchaak
+		m.tab = tabDenksport
+		nm := m
+		nm.nieuwePartij(soortSamen)
+		m.breed, m.hoog = g.breed, g.hoog
+		v := m.viewSchaak(palet{})
+		if !strings.Contains(v, g.stuk) {
+			t.Errorf("%dx%d: stuk %q niet op het bord:\n%s", g.breed, g.hoog, g.stuk, v)
+		}
+		if n := strings.Count(v, "\n") + 1; n > g.hoog-3 {
+			t.Errorf("%dx%d: bord is %d regels, past niet", g.breed, g.hoog, n)
+		}
+		if !strings.Contains(v, "paard") {
+			t.Errorf("%dx%d: uitleg van de stukken ontbreekt", g.breed, g.hoog)
+		}
+	}
+}

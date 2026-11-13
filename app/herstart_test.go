@@ -154,3 +154,16 @@ func TestHerstartInOuderstand(t *testing.T) {
 		t.Error("R zonder ouderstand mag niet herstarten")
 	}
 }
+
+func TestWaakhondVerslag(t *testing.T) {
+	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+	klop()
+	if stilSinds() > time.Second {
+		t.Error("klop zet de hartslag niet")
+	}
+	pad := schrijfVerslag(4 * time.Minute)
+	data, err := os.ReadFile(pad)
+	if err != nil || !strings.Contains(string(data), "zat vast: 4m0s") || !strings.Contains(string(data), "goroutine") {
+		t.Errorf("verslag: %v\n%.300s", err, data)
+	}
+}
