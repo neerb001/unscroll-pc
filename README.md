@@ -52,7 +52,7 @@ The project started on an old Asus Eee PC, hence the "PC" in the name.
 | Programming | [Hedy](https://hedy.org): the real Hedy language level by level towards Python, with Hedy's own assignments in Dutch and English, and a turtle that draws with characters | ✅ phase 5 |
 | Puzzles | Sudoku, chess problems, riddles. No timer, no score | ⏳ phase 5 |
 | Typing course | Calm typing lessons: home row first, short daily lessons, practise with your own sentences and stories, progress without scores or streaks | ⏳ later |
-| Writing nook | Private diary and stories | ⏳ phase 5 |
+| Writing nook | Simple to-do list (tick off, edit, clear), read back your own stories; private, also on the start screen | ✅ phase 5 |
 
 ## Suitable devices
 

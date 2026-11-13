@@ -30,7 +30,7 @@ const (
 // sleutels in de vertalingen per tabblad
 var tabSleutels = []string{"tab.start", "tab.listen", "tab.read", "", "tab.discover", "tab.puzzles", "tab.write", "tab.today", "tab.system"}
 var menuSleutels = []string{"", "menu.listen", "menu.read", "menu.buddy", "menu.discover", "menu.puzzles", "menu.write", "menu.today", "menu.system"}
-var straksSleutels = map[int]string{tabDenksport: "soon.puzzles", tabSchrijfhoek: "soon.write"}
+var straksSleutels = map[int]string{tabDenksport: "soon.puzzles"}
 
 type tickMsg time.Time
 type statusMsg struct {
@@ -73,6 +73,7 @@ type model struct {
 	ls           *leesStaat
 	od           *ontdekStaat
 	vd           *vandaagStaat
+	sh           *schrijfStaat
 }
 
 func nieuwModel() model {
@@ -94,6 +95,7 @@ func nieuwModel() model {
 	m.ls = &leesStaat{}
 	m.od = nieuweOntdek()
 	m.vd = &vandaagStaat{}
+	m.sh = nieuweSchrijfhoek()
 	m.pin = textinput.New()
 	m.pin.EchoMode = textinput.EchoPassword
 	m.pin.CharLimit = 8
@@ -140,6 +142,9 @@ func (m *model) naarTab(t int) tea.Cmd {
 	}
 	if t == tabVandaag {
 		return m.vandaagOpen()
+	}
+	if t == tabSchrijfhoek && !m.sh.typen {
+		m.sh.taken = laadTaken()
 	}
 	return nil
 }
@@ -295,6 +300,11 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		m.vd.laden = true
 		return m, haalWeer(m.ouders)
 	}
+	if m.tab == tabSchrijfhoek {
+		if cmd, ok := m.toetsSchrijf(msg); ok {
+			return m, cmd
+		}
+	}
 	if m.tab == tabOntdekken {
 		if cmd, ok := m.toetsOntdek(msg); ok {
 			return m, cmd
@@ -445,6 +455,8 @@ func (m model) View() string {
 		inhoud = m.viewOntdek(p)
 	case m.tab == tabVandaag:
 		inhoud = m.viewVandaag(p)
+	case m.tab == tabSchrijfhoek:
+		inhoud = m.viewSchrijf(p)
 	default:
 		inhoud = m.viewStraks(p)
 	}
@@ -530,6 +542,7 @@ func (m model) viewStart(p palet) string {
 		paneel(p, m.t("start.today"), slot, rbreed, false),
 		paneel(p, m.t("start.now"), dim.Render(m.nuKort()), rbreed, false),
 		paneel(p, m.t("start.buddy"), lipgloss.NewStyle().Foreground(p.acc).Render(gezichten[m.inst.Gezicht])+"  "+m.inst.Maatje, rbreed, false),
+		paneel(p, m.t("start.todo"), lipgloss.NewStyle().Width(rbreed-4).Render(m.takenKort(3)), rbreed, false),
 	)
 	return lipgloss.JoinHorizontal(lipgloss.Top, lipgloss.NewStyle().Width(m.breed-rbreed-10).Render(strings.Join(links, "\n")), rechts)
 }

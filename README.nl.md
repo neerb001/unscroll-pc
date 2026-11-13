@@ -51,7 +51,7 @@ Het project begon op een oude Asus EeePC, vandaar de "PC" in de naam.
 | Programmeren | [Hedy](https://hedy.org): de echte Hedy-taal, niveau voor niveau richting Python, met Hedy's eigen opdrachten in het Nederlands en Engels, en een schildpad die met tekens tekent | ✅ fase 5 |
 | Denksport | Sudoku, schaakpuzzels, raadsels. Geen timer, geen score | ⏳ fase 5 |
 | Typcursus | Rustige typlessen: eerst de thuisrij, korte lessen per dag, oefenen met eigen zinnen en verhalen, vooruitgang zonder scores of reeksen | ⏳ later |
-| Schrijfhoek | Privé dagboek en verhalen | ⏳ fase 5 |
+| Schrijfhoek | Eenvoudige takenlijst (afvinken, aanpassen, opruimen), je eigen verhalen teruglezen; privé, ook op het startscherm | ✅ fase 5 |
 
 ## Geschikte apparaten
 
