@@ -60,8 +60,45 @@ type dierInfo struct {
 	Titel, Omschrijving, Tekst string
 }
 
+// dierVanDag: elke dag een flinke sprong door de lijst, zodat zoogdieren, vogels, vissen en
+// insecten elkaar afwisselen. De sprong deelt geen factor met de lengte van de lijst, dus elk dier
+// komt één keer langs voordat er een herhaling is.
 func dierVanDag(d time.Time) int {
-	return (d.YearDay() + d.Year()*366) % len(dieren)
+	n := len(dieren)
+	dag := int(time.Date(d.Year(), d.Month(), d.Day(), 12, 0, 0, 0, time.UTC).Sub(time.Date(2024, 1, 1, 12, 0, 0, 0, time.UTC)).Hours() / 24)
+	return ((dag*dierStap(n)+7)%n + n) % n
+}
+
+func dierStap(n int) int {
+	ggd := func(a, b int) int {
+		for b != 0 {
+			a, b = b, a%b
+		}
+		return a
+	}
+	s := max(n*38/100, 1)
+	for ggd(s, n) != 1 {
+		s++
+	}
+	return s
+}
+
+// wikiAgent: Wikipedia vraagt apps zich voor te stellen met een naam en een adres.
+func wikiAgent() string {
+	return "Unscroll/" + versie + " (https://github.com/neerb001/unscroll-pc; calm computer for kids)"
+}
+
+// haalWeekDieren haalt rustig de dieren van de afgelopen week op, zodat terugbladeren meteen werkt.
+func haalWeekDieren(taal string) tea.Cmd {
+	return func() tea.Msg {
+		for terug := 1; terug <= 6; terug++ {
+			time.Sleep(1500 * time.Millisecond)
+			if _, err := dierInfoVoor(dieren[dierVanDag(time.Now().AddDate(0, 0, -terug))], taal); err != nil && !errors.Is(err, errGeenPagina) {
+				break // geen verbinding of Wikipedia druk: later opnieuw
+			}
+		}
+		return nil
+	}
 }
 
 func dierenCache() string {
@@ -80,21 +117,21 @@ var (
 
 var errGeenPagina = errors.New("wikipedia: page not found")
 
-func haalDier(taal string, d time.Time) tea.Cmd {
+func haalDier(taal string, d time.Time, terug int) tea.Cmd {
 	return func() tea.Msg {
 		// lukt een dier niet (pagina weg of hernoemd), dan het volgende uit de lijst
 		var laatste error
 		for i := 0; i < 3; i++ {
 			info, err := dierInfoVoor(dieren[(dierVanDag(d)+i)%len(dieren)], taal)
 			if err == nil {
-				return dierMsg{info: info}
+				return dierMsg{terug: terug, info: info}
 			}
 			laatste = err
 			if !errors.Is(err, errGeenPagina) {
 				break // geen wifi of Wikipedia druk: niet door blijven proberen
 			}
 		}
-		return dierMsg{err: laatste}
+		return dierMsg{terug: terug, err: laatste}
 	}
 }
 
@@ -118,7 +155,7 @@ func nlTitel(engels string) (string, error) {
 	q := url.Values{"action": {"query"}, "format": {"json"}, "formatversion": {"2"}, "redirects": {"1"},
 		"prop": {"langlinks"}, "lllang": {"nl"}, "titles": {engels}}
 	req, _ := http.NewRequest("GET", fmt.Sprintf(wikiAPI, "en")+"?"+q.Encode(), nil)
-	req.Header.Set("User-Agent", "Unscroll/"+versie+" (calm kids computer)")
+	req.Header.Set("User-Agent", wikiAgent())
 	c := http.Client{Timeout: 10 * time.Second}
 	resp, err := c.Do(req)
 	if err != nil {
@@ -153,7 +190,7 @@ func wikiSamenvatting(taal, titel string) (*dierInfo, error) {
 		return &info, nil
 	}
 	req, _ := http.NewRequest("GET", fmt.Sprintf(wikiBasis, taal)+url.PathEscape(strings.ReplaceAll(titel, " ", "_")), nil)
-	req.Header.Set("User-Agent", "Unscroll/"+versie+" (calm kids computer)")
+	req.Header.Set("User-Agent", wikiAgent())
 	c := http.Client{Timeout: 10 * time.Second}
 	resp, err := c.Do(req)
 	if err != nil {
@@ -183,8 +220,9 @@ func wikiSamenvatting(taal, titel string) (*dierInfo, error) {
 }
 
 type dierMsg struct {
-	info *dierInfo
-	err  error
+	terug int // voor welke dag (0 = vandaag); een laat antwoord van een andere dag telt niet
+	info  *dierInfo
+	err   error
 }
 
 /* ---------------- natuurdagboek ---------------- */
@@ -243,7 +281,7 @@ func (m *model) toetsOntdek(msg tea.KeyMsg) (tea.Cmd, bool) {
 			switch o.scherm {
 			case ontdekDier:
 				o.dagTerug, o.laden, o.dier, o.dierFout = 0, true, nil, ""
-				return haalDier(m.inst.Taal, time.Now()), true
+				return tea.Batch(haalDier(m.inst.Taal, time.Now(), 0), haalWeekDieren(m.inst.Taal)), true
 			case ontdekLab:
 				if o.lab == nil {
 					o.lab = laadLab()
@@ -271,7 +309,10 @@ func (m *model) toetsOntdek(msg tea.KeyMsg) (tea.Cmd, bool) {
 				o.dagTerug = max(o.dagTerug-1, 0)
 			}
 			o.laden, o.dier, o.dierFout = true, nil, ""
-			return haalDier(m.inst.Taal, time.Now().AddDate(0, 0, -o.dagTerug)), true
+			return haalDier(m.inst.Taal, time.Now().AddDate(0, 0, -o.dagTerug), o.dagTerug), true
+		case "r":
+			o.laden, o.dier, o.dierFout = true, nil, ""
+			return haalDier(m.inst.Taal, time.Now().AddDate(0, 0, -o.dagTerug), o.dagTerug), true
 		case "esc":
 			o.scherm = ontdekMenu
 			return nil, true
@@ -423,9 +464,12 @@ func (m model) viewOntdek(p palet) string {
 
 func (m *model) ontdekBericht(msg dierMsg) {
 	o := m.od
+	if msg.terug != o.dagTerug {
+		return
+	}
 	o.laden = false
 	if msg.err != nil {
-		o.dierFout = m.t("listen.err", msg.err.Error())
+		o.dierFout = m.t("disc.wikierr")
 		return
 	}
 	o.dier = msg.info

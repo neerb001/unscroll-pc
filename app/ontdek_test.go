@@ -56,8 +56,20 @@ func TestDierVanDeDag(t *testing.T) {
 	if !strings.Contains(m.View(), "A hedgehog is a spiny mammal") {
 		t.Fatalf("dier niet te zien:\n%s", m.View())
 	}
-	if dierVanDag(time.Now()) == dierVanDag(time.Now().AddDate(0, 0, 1)) {
-		t.Error("elke dag hoort een ander dier te zijn")
+	// afwisseling: in twee weken geen herhaling en geen lange reeks uit één groep van de lijst
+	gezien := map[int]bool{}
+	for d := 0; d < len(dieren); d++ {
+		i := dierVanDag(time.Now().AddDate(0, 0, d))
+		if gezien[i] {
+			t.Fatalf("dier %d komt binnen %d dagen twee keer", i, len(dieren))
+		}
+		gezien[i] = true
+		if d > 0 {
+			vorige := dierVanDag(time.Now().AddDate(0, 0, d-1))
+			if afstand := (i - vorige + len(dieren)) % len(dieren); afstand < 20 || afstand > len(dieren)-20 {
+				t.Fatalf("twee dagen na elkaar liggen te dicht bij elkaar in de lijst: %d en %d", vorige, i)
+			}
+		}
 	}
 }
 
