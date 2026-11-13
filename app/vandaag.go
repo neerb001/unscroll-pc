@@ -97,7 +97,7 @@ func haalWeer(o Ouders) tea.Cmd {
 		w.Opgehaald = time.Now()
 		_ = os.MkdirAll(filepath.Dir(weerCache()), 0o755)
 		if data, err := json.Marshal(w); err == nil {
-			_ = os.WriteFile(weerCache(), data, 0o644)
+			_ = veiligSchrijven(weerCache(), data, 0o644)
 		}
 		return weerMsg{w: &w}
 	}

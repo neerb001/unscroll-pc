@@ -72,7 +72,7 @@ func laadTaken() []taak {
 func bewaarTaken(t []taak) {
 	_ = os.MkdirAll(filepath.Dir(takenPad()), 0o700)
 	data, _ := json.MarshalIndent(t, "", "  ")
-	_ = os.WriteFile(takenPad(), data, 0o600)
+	_ = veiligSchrijven(takenPad(), data, 0o600)
 }
 
 // sorteerTaken: open taken boven, in de volgorde waarin ze gemaakt zijn; afgevinkte eronder.

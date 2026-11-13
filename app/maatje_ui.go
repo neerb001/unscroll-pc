@@ -48,7 +48,7 @@ func laadGebruik(nu time.Time) maatjeGebruik {
 func (g maatjeGebruik) bewaar() {
 	_ = os.MkdirAll(maatjeMap(), 0o755)
 	data, _ := json.Marshal(g)
-	_ = os.WriteFile(filepath.Join(maatjeMap(), "maatje.json"), data, 0o644)
+	_ = veiligSchrijven(filepath.Join(maatjeMap(), "maatje.json"), data, 0o644)
 }
 
 // logRegel is wat ouders in het weekoverzicht zien. Het kind weet dat.
@@ -63,7 +63,7 @@ func logPad() string { return filepath.Join(maatjeMap(), "maatje-log.jsonl") }
 
 func schrijfLog(r logRegel) {
 	_ = os.MkdirAll(maatjeMap(), 0o755)
-	f, err := os.OpenFile(logPad(), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+	f, err := os.OpenFile(logPad(), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644) // een logboek: hoeft niet per regel naar de schijf
 	if err != nil {
 		return
 	}

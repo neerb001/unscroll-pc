@@ -13,6 +13,7 @@ KIND="${KIND:-kind}"
 
 [[ $EUID -eq 0 ]] || { echo "Run this as root: sudo unscroll-ouder"; exit 1; }
 [[ -f $OUDERS ]] || { echo "$OUDERS does not exist. Run install.sh first."; exit 1; }
+trap sync EXIT   # no battery: make sure every change is really on disk when the helper ends
 
 
 vraag() {        # vraag "question" "default" -> answer

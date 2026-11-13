@@ -203,7 +203,7 @@ func issTLE() (string, string, error) {
 			resp.Body.Close()
 			if resp.StatusCode == http.StatusOK && strings.Contains(string(data), "\n1 25544") {
 				_ = os.MkdirAll(filepath.Dir(pad), 0o755)
-				_ = os.WriteFile(pad, data, 0o644)
+				_ = veiligSchrijven(pad, data, 0o644)
 			}
 		}
 	}

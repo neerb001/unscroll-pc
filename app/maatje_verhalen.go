@@ -71,7 +71,7 @@ func opruimen(nu time.Time) {
 			}
 		}
 		if len(houden) < len(strings.Split(strings.TrimSpace(string(data)), "\n")) {
-			_ = os.WriteFile(pad, []byte(strings.Join(houden, "\n")+"\n"), 0o644)
+			_ = veiligSchrijven(pad, []byte(strings.Join(houden, "\n")+"\n"), 0o644)
 		}
 	}
 }
@@ -204,14 +204,9 @@ func (m *model) bewaarSessie(s *sessie, kind, maatje string) {
 		_ = os.MkdirAll(dir, 0o700)
 		s.verhaal = filepath.Join(dir, time.Now().Format("2006-01-02-1504")+modusBestand[s.modus]+".txt")
 	}
-	f, err := os.OpenFile(s.verhaal, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600)
-	if err != nil {
-		return
+	tekst := fmt.Sprintf("%s\n\n%s\n\n", kind, maatje)
+	if s.modus != modusVerhaal {
+		tekst = kindTeken + tekst
 	}
-	defer f.Close()
-	if s.modus == modusVerhaal {
-		fmt.Fprintf(f, "%s\n\n%s\n\n", kind, maatje)
-	} else {
-		fmt.Fprintf(f, "%s%s\n\n%s\n\n", kindTeken, kind, maatje)
-	}
+	_ = veiligToevoegen(s.verhaal, []byte(tekst), 0o600)
 }

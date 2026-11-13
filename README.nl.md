@@ -53,14 +53,15 @@ Het project begon op een oude Asus EeePC, vandaar de "PC" in de naam.
 | Typcursus | Rustige lessen zonder klok of score (de Nederlandse juniorlessen van GNU Typist, geïnstalleerd uit Debian), een toetsenbord in beeld met de volgende toets en vinger, daarna eigen zinnen |
 | Schrijfhoek | Eenvoudige takenlijst, woordenboek met hulp bij spelling (Wiktionary), je eigen verhalen teruglezen; privé |
 | Ouderinstellingen | In de ouderstand (Systeem, `o` en de pincode, dan `i`): avondslot, volume, grenzen en model van het maatje, de woonplaats voor het weer, Spotify; wijzigingen werken meteen |
+| Diagnose | In de ouderstand `d`: per onderdeel (internet, ouders.yaml, opslag, weer, ISS-gegevens, Spotify, Audiobookshelf, Navidrome, AI-maatje, Stockfish, Hedy) of het werkt, met de precieze foutmelding; ook het verslag van de waakhond is daar te lezen en weg te gooien |
+| Veilig bewaren | Instellingen, verhalen, dagboek, takenlijst en leesplek gaan eerst naar een tijdelijk bestand, worden naar de schijf gedwongen en dan in één keer verwisseld: een plotselinge stroomuitval laat nooit een half bestand achter |
+| Wat is er nieuw | Na een update laat het startscherm een kort kaartje zien met wat er voor het kind veranderd is; `x` sluit het |
 
 ## Nog op de lijst
 
 Ideeën en plannen die nog niet gebouwd zijn, ongeveer in volgorde:
 
 - **Berichten naar ouders:** Signal via [signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api) op een thuisserver (eigen nummer voor het kind): korte berichtjes alleen naar contacten in ouders.yaml, antwoorden als rustige lijst
-- **Diagnose in de ouderstand:** per dienst of hij werkt, met de precieze foutmelding.
-- **Veilig bewaren:** bestanden zo wegschrijven dat een plotselinge stroomuitval niets kapotmaakt.
 - **Ochtend- en avondlijstje** dat elke dag opnieuw begint.
 - **Verlanglijst voor de muziekbibliotheek:** het kind vraagt een album aan, ouders krijgen een melding.
 - **Weekoverzicht voor ouders** via ntfy.

@@ -266,7 +266,7 @@ func laadLeesGeheugen() leesGeheugen {
 func (g leesGeheugen) bewaar() {
 	_ = os.MkdirAll(filepath.Dir(leesGeheugenPad()), 0o755)
 	data, _ := json.Marshal(g)
-	_ = os.WriteFile(leesGeheugenPad(), data, 0o644)
+	_ = veiligSchrijven(leesGeheugenPad(), data, 0o644)
 }
 
 /* ---------------- opdrachten ---------------- */
@@ -320,7 +320,7 @@ func (m *model) openEboek(it item) tea.Cmd {
 				return boekMsg{err: err}
 			}
 			_ = os.MkdirAll(boekenMap(), 0o700)
-			_ = os.WriteFile(pad, data, 0o600)
+			_ = veiligSchrijven(pad, data, 0o600)
 		}
 		alineas, err := leesEpub(data)
 		return boekMsg{id: it.id, titel: it.titel, alineas: alineas, err: err}

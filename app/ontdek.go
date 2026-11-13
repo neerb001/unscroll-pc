@@ -181,7 +181,7 @@ func nlTitel(engels string) (string, error) {
 		titel = p[0].Langlinks[0].Title
 	}
 	_ = os.MkdirAll(dierenCache(), 0o755)
-	_ = os.WriteFile(cache, []byte(titel), 0o644)
+	_ = veiligSchrijven(cache, []byte(titel), 0o644)
 	return titel, nil
 }
 
@@ -217,7 +217,7 @@ func wikiSamenvatting(taal, titel string) (*dierInfo, error) {
 	info = dierInfo{r.Title, r.Description, r.Extract}
 	_ = os.MkdirAll(dierenCache(), 0o755)
 	data, _ := json.Marshal(info)
-	_ = os.WriteFile(cache, data, 0o644)
+	_ = veiligSchrijven(cache, data, 0o644)
 	return &info, nil
 }
 
@@ -255,13 +255,8 @@ func laadNotities() []notitie {
 
 func bewaarNotitie(n notitie) {
 	_ = os.MkdirAll(filepath.Dir(dagboekPad()), 0o700)
-	f, err := os.OpenFile(dagboekPad(), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600)
-	if err != nil {
-		return
-	}
-	defer f.Close()
 	data, _ := json.Marshal(n)
-	_, _ = f.Write(append(data, '\n'))
+	_ = veiligToevoegen(dagboekPad(), append(data, '\n'), 0o600)
 }
 
 /* ---------------- toetsen ---------------- */

@@ -195,7 +195,7 @@ func (s *schaakStaat) bewaar() {
 	}
 	data, _ := json.Marshal(bewaardePartij{s.soort, s.startFEN, s.zetten, s.jijWit, s.niveau, s.letters})
 	_ = os.MkdirAll(filepath.Dir(schaakPad()), 0o755)
-	_ = os.WriteFile(schaakPad(), data, 0o644)
+	_ = veiligSchrijven(schaakPad(), data, 0o644)
 }
 
 // opnieuwOpbouwen speelt alle zetten opnieuw vanaf de begin­stand (voor terugnemen en laden).

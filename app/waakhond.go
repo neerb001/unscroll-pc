@@ -51,7 +51,7 @@ func schrijfVerslag(stil time.Duration) string {
 	pad := vastgelopenPad()
 	_ = os.MkdirAll(filepath.Dir(pad), 0o755)
 	kop := fmt.Sprintf("Unscroll %s zat vast: %s geen reactie, gestopt op %s\n\n", versie, stil.Round(time.Second), time.Now().Format("2006-01-02 15:04:05"))
-	_ = os.WriteFile(pad, append([]byte(kop), buf[:n]...), 0o644)
+	_ = veiligSchrijven(pad, append([]byte(kop), buf[:n]...), 0o644)
 	return pad
 }
 

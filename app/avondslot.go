@@ -77,5 +77,5 @@ func bewaarPauze(tot time.Time) {
 	data, _ := json.Marshal(struct {
 		Tot time.Time `json:"tot"`
 	}{tot})
-	_ = os.WriteFile(pauzePad(), data, 0o644)
+	_ = veiligSchrijven(pauzePad(), data, 0o644)
 }

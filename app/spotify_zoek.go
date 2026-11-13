@@ -36,7 +36,7 @@ func laadSpFavorieten() []spFavoriet {
 func bewaarSpFavorieten(f []spFavoriet) {
 	_ = os.MkdirAll(filepath.Dir(spFavorietenPad()), 0o755)
 	data, _ := json.MarshalIndent(f, "", "  ")
-	_ = os.WriteFile(spFavorietenPad(), data, 0o644)
+	_ = veiligSchrijven(spFavorietenPad(), data, 0o644)
 }
 
 func favorietItem(f spFavoriet) item {

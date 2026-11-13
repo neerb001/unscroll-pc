@@ -124,7 +124,7 @@ func laadSudoku() *sudoku {
 func (s *sudoku) bewaar() {
 	_ = os.MkdirAll(filepath.Dir(sudokuPad()), 0o755)
 	data, _ := json.Marshal(s)
-	_ = os.WriteFile(sudokuPad(), data, 0o644)
+	_ = veiligSchrijven(sudokuPad(), data, 0o644)
 }
 
 func (s *sudoku) klaar() bool { return s.Ingevuld == s.Oplossing }

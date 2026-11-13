@@ -159,7 +159,7 @@ func laadTypVoortgang() typVoortgang {
 func (v typVoortgang) bewaar() {
 	_ = os.MkdirAll(filepath.Dir(typPad()), 0o755)
 	data, _ := json.Marshal(v)
-	_ = os.WriteFile(typPad(), data, 0o644)
+	_ = veiligSchrijven(typPad(), data, 0o644)
 }
 
 /* ---------------- staat en toetsen ---------------- */

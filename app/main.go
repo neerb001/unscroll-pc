@@ -63,7 +63,9 @@ type model struct {
 	ouderModus   bool
 	ontgrendeld  time.Time
 	laatsteToets time.Time
-	nieuw        string // een nieuwe versie die klaarstaat maar nog niet draait
+	nieuw        string       // een nieuwe versie die klaarstaat maar nog niet draait
+	nieuws       []nieuwsItem // wat er nieuw is sinds het kind het laatst keek
+	diag         *diagStaat   // diagnose in de ouderstand
 	melding      string
 	bewaarFout   string // blijft staan zolang bewaren niet lukt
 	meldingTot   time.Time
@@ -82,6 +84,7 @@ type model struct {
 
 func nieuwModel() model {
 	o, err := laadOuders()
+	hadInstellingen := bestaatBestand(instellingenPad())
 	m := model{inst: laadInstellingen(), ouders: o, oudersFout: err, nu: time.Now(), focus: -1, vol: -1, wifi: "…", accu: "…", ontgrendeld: laadPauze()}
 	for _, w := range []struct {
 		waarde string
@@ -105,7 +108,9 @@ func nieuwModel() model {
 	m.pin = textinput.New()
 	m.pin.EchoMode = textinput.EchoPassword
 	m.pin.CharLimit = 8
+	m.diag = &diagStaat{}
 	m.zetTaalteksten()
+	m.nieuwsBijStart(hadInstellingen)
 	return m
 }
 
@@ -166,7 +171,19 @@ func (m *model) focusOp(f int) {
 	}
 }
 
+// bewaar neemt de velden over en zet de instellingen veilig op schijf.
 func (m *model) bewaar() {
+	m.neemVeldenOver()
+	if err := m.inst.bewaar(); err != nil {
+		m.bewaarFout = m.t("msg.saveerr", err.Error())
+		m.zeg(m.bewaarFout)
+	} else {
+		m.bewaarFout = ""
+	}
+}
+
+// neemVeldenOver: wat er in de velden staat, meteen gebruiken (nog zonder te bewaren).
+func (m *model) neemVeldenOver() {
 	m.inst.Computer = strings.TrimSpace(m.velden[veldComputer].Value())
 	if m.inst.Computer == "" {
 		m.inst.Computer = standaardInstellingen().Computer
@@ -175,12 +192,6 @@ func (m *model) bewaar() {
 	m.inst.Maatje = strings.TrimSpace(m.velden[veldMaatje].Value())
 	if m.inst.Maatje == "" {
 		m.inst.Maatje = "Bliep"
-	}
-	if err := m.inst.bewaar(); err != nil {
-		m.bewaarFout = m.t("msg.saveerr", err.Error())
-		m.zeg(m.bewaarFout)
-	} else {
-		m.bewaarFout = ""
 	}
 }
 
@@ -194,7 +205,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.nu = time.Time(msg)
 		m.maatjeTik(m.nu)
 		if m.ouderModus && m.nu.Sub(m.laatsteToets) > 10*time.Minute {
-			m.ouderModus, m.ouderPin, m.oi.open = false, "", false
+			m.ouderModus, m.ouderPin, m.oi.open, m.diag.open = false, "", false, false
 			m.zeg(m.t("msg.parentauto"))
 		}
 		if m.dicht() && m.tab != tabSysteem && !magTijdensSlot(m.ouders, m.tab) {
@@ -236,6 +247,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	case woordMsg:
 		m.woordBericht(msg)
+		return m, nil
+	case diagMsg:
+		m.diagnoseBericht(msg)
 		return m, nil
 	case weerMsg:
 		m.vandaagBericht(msg)
@@ -315,10 +329,13 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		}
 		var cmd tea.Cmd
 		m.velden[m.focus], cmd = m.velden[m.focus].Update(msg)
-		m.bewaar()
+		m.neemVeldenOver() // bewaard wordt bij Enter, esc of naar een ander veld gaan
 		return m, cmd
 	}
 
+	if m.tab == tabSysteem && m.diag.open && m.ouderModus {
+		return m, m.toetsDiagnose(k)
+	}
 	if m.tab == tabSysteem && m.oi.open && m.ouderModus {
 		if cmd, ok := m.toetsOuderInst(msg); ok {
 			return m, cmd
@@ -371,6 +388,8 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case tabStart:
 		n := len(menuSleutels) - 1
 		switch k {
+		case "x":
+			m.nieuwsGelezen()
 		case "up", "k":
 			m.sel = (m.sel - 1 + n) % n
 		case "down", "j":
@@ -432,7 +451,7 @@ func (m model) toetsSysteem(k string) (tea.Model, tea.Cmd) {
 		return m, hulpVragen(m.ouders, m.inst.Naam, m.inst.Taal)
 	case "o":
 		if m.ouderModus {
-			m.ouderModus, m.ouderPin, m.oi.open = false, "", false
+			m.ouderModus, m.ouderPin, m.oi.open, m.diag.open = false, "", false, false
 			m.zeg(m.t("msg.parentoff"))
 		} else {
 			m.pinOpen = true
@@ -461,6 +480,11 @@ func (m model) toetsSysteem(k string) (tea.Model, tea.Cmd) {
 	case "i":
 		if m.ouderModus {
 			m.oi.open, m.oi.melding = true, ""
+		}
+	case "d":
+		if m.ouderModus {
+			m.diag.open, m.diag.verslag, m.diag.scroll = true, false, 0
+			return m, m.diagnoseStart()
 		}
 	case "Q":
 		if m.ouderModus {
@@ -492,6 +516,8 @@ func (m model) View() string {
 		inhoud = m.viewSlot(p)
 	case m.tab == tabStart:
 		inhoud = m.viewStart(p)
+	case m.tab == tabSysteem && m.diag.open && m.ouderModus:
+		inhoud = m.viewDiagnose(p)
 	case m.tab == tabSysteem && m.oi.open && m.ouderModus:
 		inhoud = m.viewOuderInst(p)
 	case m.tab == tabSysteem:
@@ -572,17 +598,22 @@ func (m model) viewStart(p palet) string {
 		lipgloss.NewStyle().Foreground(p.groen).Render(m.groet() + " " + m.t("start.hint")),
 		"",
 	}
+	rbreed := 38
+	if m.breed < 110 {
+		rbreed = 30
+	}
+	// de uitleg achter een menu-item inkorten in plaats van over twee regels laten lopen
+	infoRuimte := max(m.breed-rbreed-10-24, 8)
 	for tab := 1; tab < len(menuSleutels); tab++ {
 		naam, info := m.menuNaam(tab), m.t(menuSleutels[tab]+".d")
+		if r := []rune(info); len(r) > infoRuimte {
+			info = strings.TrimRight(string(r[:infoRuimte-1]), " ,") + "…"
+		}
 		if tab-1 == m.sel {
 			links = append(links, lipgloss.NewStyle().Background(p.sel).Foreground(p.acc).Bold(true).Render(fmt.Sprintf(" %d  %-16s ", tab, naam))+lipgloss.NewStyle().Background(p.sel).Foreground(p.dim).Render(info+" "))
 		} else {
 			links = append(links, fmt.Sprintf(" %d  %-16s %s ", tab, naam, dim.Render(info)))
 		}
-	}
-	rbreed := 38
-	if m.breed < 110 {
-		rbreed = 30
 	}
 	slot := m.t("start.lock", bedtijd(m.ouders, m.nu), m.ouders.Avondslot.Open)
 	if m.oudersFout != nil {
@@ -597,6 +628,14 @@ func (m model) viewStart(p palet) string {
 		paneel(p, m.t("start.buddy"), lipgloss.NewStyle().Foreground(p.acc).Render(gezichten[m.inst.Gezicht])+"  "+m.inst.Maatje, rbreed, false),
 		paneel(p, m.t("start.todo"), lipgloss.NewStyle().Width(rbreed-4).Render(m.takenKort(3)), rbreed, false),
 	)
+	if len(m.nieuws) > 0 {
+		// het nieuws bovenaan; het maatje-paneel maakt zolang plaats
+		rechts = lipgloss.JoinVertical(lipgloss.Left,
+			m.nieuwsPaneel(p, rbreed),
+			paneel(p, m.t("start.today"), slot, rbreed, false),
+			paneel(p, m.t("start.todo"), lipgloss.NewStyle().Width(rbreed-4).Render(m.takenKort(3)), rbreed, false),
+		)
+	}
 	return lipgloss.JoinHorizontal(lipgloss.Top, lipgloss.NewStyle().Width(m.breed-rbreed-10).Render(strings.Join(links, "\n")), rechts)
 }
 
@@ -724,35 +763,76 @@ func (m model) viewStatus(p palet) string {
 	if sessie == "" {
 		sessie = "unscroll"
 	}
-	delen := []string{lipgloss.NewStyle().Background(p.groen).Foreground(p.bg).Bold(true).Render(" " + sessie + " ")}
-	for i, s := range tabSleutels {
-		n := strings.ToLower(m.inst.Maatje)
-		if s != "" {
-			n = m.t(s)
+	// links: de tabbladen. Op een smal scherm eerst korter, dan alleen nummers (het open tabblad
+	// houdt zijn naam), zodat de balk altijd op één regel past en de klok nooit wegvalt.
+	links := func(stand int) string {
+		var delen []string
+		if stand < 3 {
+			delen = append(delen, lipgloss.NewStyle().Background(p.groen).Foreground(p.bg).Bold(true).Render(" "+sessie+" "))
 		}
-		if len([]rune(n)) > 8 {
-			n = string([]rune(n)[:8])
+		for i, s := range tabSleutels {
+			n := strings.ToLower(m.inst.Maatje)
+			if s != "" {
+				n = m.t(s)
+			}
+			lengte := []int{8, 4, 0, 0}[stand]
+			if i == m.tab {
+				lengte = 8
+			}
+			if len([]rune(n)) > lengte {
+				n = string([]rune(n)[:lengte])
+			}
+			t := fmt.Sprintf(" %d:%s ", i, n)
+			if n == "" {
+				t = fmt.Sprintf(" %d ", i)
+				if stand == 3 {
+					t = fmt.Sprintf("%d ", i)
+				}
+			}
+			if i == m.tab {
+				delen = append(delen, lipgloss.NewStyle().Background(p.acc).Foreground(p.bg).Bold(true).Render(t))
+			} else {
+				delen = append(delen, lipgloss.NewStyle().Foreground(p.dim).Render(t))
+			}
 		}
-		t := fmt.Sprintf(" %d:%s ", i, n)
-		if i == m.tab {
-			delen = append(delen, lipgloss.NewStyle().Background(p.acc).Foreground(p.bg).Bold(true).Render(t))
-		} else {
-			delen = append(delen, lipgloss.NewStyle().Foreground(p.dim).Render(t))
-		}
+		return strings.Join(delen, "")
 	}
-	links := strings.Join(delen, "")
-	rechts := m.nu.Format("15:04")
+	klok := m.nu.Format("15:04")
 	if m.dicht() {
-		rechts = lipgloss.NewStyle().Foreground(p.geel).Render(m.t("lock.status")) + " · " + rechts
+		klok = lipgloss.NewStyle().Foreground(p.geel).Render(m.t("lock.status")) + " · " + klok
 	}
+	melding := ""
 	if m.melding != "" && time.Now().Before(m.meldingTot) {
-		rechts = lipgloss.NewStyle().Foreground(p.geel).Render(m.melding) + "  " + rechts
+		melding = m.melding
 	}
-	ruimte := m.breed - lipgloss.Width(links) - lipgloss.Width(rechts) - 1
-	if ruimte < 1 {
-		ruimte = 1
+	past := func(l string, melding string) bool {
+		w := lipgloss.Width(l) + lipgloss.Width(klok) + 2
+		if melding != "" {
+			w += lipgloss.Width(melding) + 2
+		}
+		return w <= m.breed
 	}
-	return lipgloss.NewStyle().Background(p.bg2).Width(m.breed).Render(links + strings.Repeat(" ", ruimte) + rechts)
+	stand := 0
+	for stand < 3 && !past(links(stand), melding) {
+		stand++
+	}
+	l := links(stand)
+	if melding != "" && !past(l, melding) {
+		// nog steeds te lang: de melding inkorten
+		ruimte := m.breed - lipgloss.Width(l) - lipgloss.Width(klok) - 5
+		r := []rune(melding)
+		if ruimte < 6 {
+			melding = ""
+		} else if len(r) > ruimte {
+			melding = string(r[:ruimte]) + "…"
+		}
+	}
+	rechts := klok
+	if melding != "" {
+		rechts = lipgloss.NewStyle().Foreground(p.geel).Render(melding) + "  " + klok
+	}
+	ruimte := max(m.breed-lipgloss.Width(l)-lipgloss.Width(rechts)-1, 1)
+	return lipgloss.NewStyle().Background(p.bg2).Width(m.breed).MaxWidth(m.breed).Render(l + strings.Repeat(" ", ruimte) + rechts)
 }
 
 func main() {

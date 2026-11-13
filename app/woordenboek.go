@@ -79,7 +79,7 @@ func zoekWoord(taal, woord string) (woordUitleg, error) {
 	}
 	_ = os.MkdirAll(filepath.Dir(woordCache(taal, woord)), 0o755)
 	if data, err := json.Marshal(u); err == nil {
-		_ = os.WriteFile(woordCache(taal, woord), data, 0o644)
+		_ = veiligSchrijven(woordCache(taal, woord), data, 0o644)
 	}
 	return u, nil
 }

@@ -75,6 +75,9 @@ func (m model) rustigMoment() bool {
 // herstart stopt wat er speelt (het luisterboek onthoudt zijn plek) en sluit de app af;
 // unscroll-sessie start hem daarna opnieuw.
 func (m *model) herstart() tea.Cmd {
+	if m.tab == tabSysteem && m.focus >= 0 {
+		m.bewaar() // een half getypte naam niet kwijtraken
+	}
 	return tea.Sequence(m.stopHuidig(true), tea.Quit)
 }
 

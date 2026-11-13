@@ -111,7 +111,7 @@ func laadTafels() tafelVoortgang {
 func (v tafelVoortgang) bewaar() {
 	_ = os.MkdirAll(filepath.Dir(tafelPad()), 0o755)
 	data, _ := json.Marshal(v)
-	_ = os.WriteFile(tafelPad(), data, 0o644)
+	_ = veiligSchrijven(tafelPad(), data, 0o644)
 }
 
 func nieuweDenksport() *denkStaat {

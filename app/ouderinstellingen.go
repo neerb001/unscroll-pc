@@ -164,15 +164,11 @@ func ouderZet(in io.Reader) error {
 	if err := yaml.Unmarshal(nieuw, &proef); err != nil {
 		return fmt.Errorf("result not valid: %w", err)
 	}
-	info, _ := os.Stat(pad)
-	tmp := pad + ".nieuw"
-	if err := os.WriteFile(tmp, nieuw, 0o644); err != nil {
-		return err
+	perm := os.FileMode(0o644)
+	if info, err := os.Stat(pad); err == nil {
+		perm = info.Mode().Perm()
 	}
-	if info != nil {
-		_ = os.Chmod(tmp, info.Mode().Perm())
-	}
-	return os.Rename(tmp, pad)
+	return veiligSchrijven(pad, nieuw, perm)
 }
 
 // pasYAMLAan wijzigt waarden in ouders.yaml en laat commentaar en volgorde staan.

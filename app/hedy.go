@@ -110,7 +110,7 @@ func (m *model) hedyBewaar() {
 	h := m.od.hedy
 	if o, ok := h.huidige(m.inst.Taal); ok {
 		_ = os.MkdirAll(unscrollData("hedy"), 0o700)
-		_ = os.WriteFile(hedyCodePad(h.niveau, o.Sleutel), []byte(h.editor.Value()), 0o600)
+		_ = veiligSchrijven(hedyCodePad(h.niveau, o.Sleutel), []byte(h.editor.Value()), 0o600)
 	}
 }
 

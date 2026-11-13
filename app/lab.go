@@ -49,7 +49,7 @@ func laadLab() *labWereld {
 func (w *labWereld) bewaar() {
 	_ = os.MkdirAll(filepath.Dir(labPad()), 0o755)
 	data, _ := json.Marshal(w)
-	_ = os.WriteFile(labPad(), data, 0o644)
+	_ = veiligSchrijven(labPad(), data, 0o644)
 }
 
 func (w *labWereld) volledig(p string) string {

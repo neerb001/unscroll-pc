@@ -117,7 +117,7 @@ func (s *Spotify) token() (string, error) {
 		s.vernieuw = t.RefreshToken
 		data, _ := json.Marshal(map[string]string{"Bron": s.bron, "Token": t.RefreshToken})
 		_ = os.MkdirAll(filepath.Dir(spotifyTokenPad()), 0o700)
-		_ = os.WriteFile(spotifyTokenPad(), data, 0o600)
+		_ = veiligSchrijven(spotifyTokenPad(), data, 0o600)
 	}
 	return s.toegang, nil
 }

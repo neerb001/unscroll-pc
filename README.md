@@ -54,14 +54,15 @@ The project started on an old Asus Eee PC, hence the "PC" in the name.
 | Typing course | Calm lessons without clock or score (the Dutch junior lessons of GNU Typist, installed from Debian), a keyboard on screen showing the next key and finger, then own sentences |
 | Writing nook | Simple to-do list, dictionary with spelling help (Wiktionary), read back your own stories; private |
 | Parent settings | In parent mode (System, `o` and the PIN, then `i`): quiet time, volume, the buddy's limits and model, the town for the weather, Spotify; changes work right away |
+| Diagnostics | In parent mode `d`: per part (internet, ouders.yaml, storage, weather, ISS data, Spotify, Audiobookshelf, Navidrome, AI buddy, Stockfish, Hedy) whether it works, with the exact error; the watchdog report can be read and deleted there too |
+| Safe saving | Settings, stories, journal, task list and reading position are written to a temporary file, forced to disk and then swapped in at once, so a sudden power cut never leaves a half-written file |
+| What's new | After an update the start screen shows a short card about what changed for the child; `x` closes it |
 
 ## Backlog
 
 Ideas and plans that are not built yet, roughly in order:
 
 - **Messages to parents:** Signal via [signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api) on a home server (own number for the child): short messages only to contacts in ouders.yaml, replies as a calm list
-- **Diagnostics in parent mode:** per service whether it works, with the exact error.
-- **Safe saving:** write files in a way that survives a sudden power cut.
 - **Morning and evening checklist** that starts fresh every day.
 - **Wish list for the music library:** the child asks for an album, parents get a notification.
 - **Weekly summary for parents** via ntfy.

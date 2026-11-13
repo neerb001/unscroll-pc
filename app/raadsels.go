@@ -280,7 +280,7 @@ func (m *model) volgendRaadsel() tea.Cmd {
 	}
 	if data, err := json.Marshal(r.gezien); err == nil {
 		_ = os.MkdirAll(filepath.Dir(raadselPad()), 0o755)
-		_ = os.WriteFile(raadselPad(), data, 0o644)
+		_ = veiligSchrijven(raadselPad(), data, 0o644)
 	}
 	return r.invoer.Focus()
 }

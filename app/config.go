@@ -20,6 +20,8 @@ type Instellingen struct {
 	Gezicht  int    `json:"gezicht"`
 	Thema    string `json:"thema"`
 	Taal     string `json:"taal"`
+	// NieuwsGezien: tot en met welke versie het kind het "wat is er nieuw"-kaartje heeft gezien.
+	NieuwsGezien string `json:"nieuws_gezien,omitempty"`
 }
 
 func standaardInstellingen() Instellingen {
@@ -71,11 +73,7 @@ func (i Instellingen) bewaar() error {
 		return err
 	}
 	data, _ := json.MarshalIndent(i, "", "  ")
-	tmp := pad + ".tmp"
-	if err := os.WriteFile(tmp, data, 0o644); err != nil {
-		return err
-	}
-	return os.Rename(tmp, pad)
+	return veiligSchrijven(pad, data, 0o644)
 }
 
 // Ouders bevat de instellingen van de ouders. Dit bestand is van root,

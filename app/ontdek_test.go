@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -31,7 +32,11 @@ func TestLabAlleMissies(t *testing.T) {
 }
 
 func TestDierVanDeDag(t *testing.T) {
-	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+	// het ophalen van de week loopt op de achtergrond door na de test: die map ruimen we zelf
+	// op, zonder te klagen als er nog net een bestand bij komt
+	cache, _ := os.MkdirTemp("", "dieren")
+	t.Cleanup(func() { time.Sleep(200 * time.Millisecond); os.RemoveAll(cache) })
+	t.Setenv("XDG_CACHE_HOME", cache)
 	eerste := dieren[dierVanDag(time.Now())]
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch {
