@@ -1,8 +1,13 @@
 package main
 
 import (
+	"unicode"
+
 	"errors"
 	"fmt"
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 	"os"
 	"strings"
 	"time"
@@ -58,16 +63,33 @@ type lijst struct {
 	fout           string
 }
 
-// zichtbaar geeft de plaatsen van de items die bij het zoekwoord passen.
+// zichtbaar geeft de plaatsen van de items die bij het zoekwoord passen. Hoofdletters en accenten
+// tellen niet mee, en elk woord moet ergens in de titel of de schrijver/artiest staan:
+// "harry steen" vindt "Harry Potter en de Steen der Wijzen", "eloise" vindt "Éloïse".
 func (l *lijst) zichtbaar() []int {
 	var uit []int
-	f := strings.ToLower(l.filter)
+	woorden := strings.Fields(zoekVorm(l.filter))
 	for i, it := range l.items {
-		if f == "" || strings.Contains(strings.ToLower(it.titel+" "+it.sub), f) {
+		tekst := zoekVorm(it.titel + " " + it.sub)
+		past := true
+		for _, w := range woorden {
+			if !strings.Contains(tekst, w) {
+				past = false
+				break
+			}
+		}
+		if past {
 			uit = append(uit, i)
 		}
 	}
 	return uit
+}
+
+// zoekVorm: kleine letters en zonder accenten, om te kunnen vergelijken.
+func zoekVorm(s string) string {
+	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
+	s, _, _ = transform.String(t, strings.ToLower(s))
+	return s
 }
 
 func (l *lijst) gekozen() (item, bool) {

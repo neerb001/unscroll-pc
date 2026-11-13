@@ -43,7 +43,7 @@ Het project begon op een oude Asus EeePC, vandaar de "PC" in de naam.
 | Avondslot | Aparte tijden voor school- en weekendavonden, openingstijd, wat er na het slot nog mag, pincode voor ouders, pauzeren voor 30 min, 2 uur, tot morgenochtend of tot je hem weer aanzet |
 | Updates | Nieuwe versies via GitHub-releases, met checksum-controle en terugval; de app herstart zelf op een rustig moment (avondslot of midden in de nacht, als er niets speelt), of meteen met `R` in de ouderstand |
 | Luisteren | Navidrome, radio met draaiknop, luisterboeken en podcasts uit Audiobookshelf met voortgang, slaaptimer |
-| Lezen | E-boeken (EPUB) uit Audiobookshelf, rustige leesweergave, ook offline, voortgang gaat mee |
+| Lezen | E-boeken (EPUB) uit Audiobookshelf, rustige leesweergave, ook offline, voortgang gaat mee; met `/` zoek je op titel of schrijver (hoofdletters en accenten maken niet uit) |
 | Vandaag | Weer met regen per uur en praktische tips (Open-Meteo, geen sleutel), zon op en onder, maanfase, seizoen, de volgende jaarfeesten |
 | Spotify | Alleen goedgekeurde afspeellijsten, expliciete nummers gefilterd, autoplay uit (librespot) |
 | Vraag het maatje | AI via de Anthropic-API met dagbudget, filters en weekoverzicht voor ouders |

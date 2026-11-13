@@ -7,6 +7,8 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
+	"github.com/charmbracelet/bubbles/cursor"
+	"github.com/charmbracelet/bubbles/textinput"
 	"io"
 	"net/http"
 	"os"
@@ -212,6 +214,8 @@ type leesStaat struct {
 	lijst   lijst
 	geladen bool
 	boek    *openBoek
+	zoeken  bool            // typt in het zoekveld
+	zoek    textinput.Model // zoeken met /
 }
 
 type openBoek struct {
@@ -443,11 +447,47 @@ func (m *model) toetsLezen(msg tea.KeyMsg) (tea.Cmd, bool) {
 		return m.bewaarPlek(false), true
 	}
 	lj := &ls.lijst
+	if ls.zoeken {
+		switch k {
+		case "esc":
+			m.stopLeesZoeken()
+		case "enter":
+			it, ok := lj.gekozen()
+			m.stopLeesZoeken()
+			if ok {
+				lj.laden = true
+				return m.openEboek(it), true
+			}
+		case "up":
+			lj.sel = max(lj.sel-1, 0)
+		case "down":
+			lj.sel = min(lj.sel+1, max(len(lj.zichtbaar())-1, 0))
+		default:
+			var cmd tea.Cmd
+			ls.zoek, cmd = ls.zoek.Update(msg)
+			if lj.filter != ls.zoek.Value() {
+				lj.filter, lj.sel = ls.zoek.Value(), 0
+			}
+			return cmd, true
+		}
+		return nil, true
+	}
 	switch k {
+	case "/":
+		if lj.laden || lj.fout != "" || len(lj.items) == 0 {
+			return nil, true
+		}
+		ls.zoek = textinput.New()
+		ls.zoek.Prompt = "/ "
+		ls.zoek.Placeholder = m.t("read.searchhint")
+		ls.zoek.CharLimit = 40
+		ls.zoek.Cursor.SetMode(cursor.CursorStatic) // rustig: geen knipperende cursor
+		ls.zoeken = true
+		return ls.zoek.Focus(), true
 	case "up", "k":
 		lj.sel = max(lj.sel-1, 0)
 	case "down", "j":
-		lj.sel = min(lj.sel+1, max(len(lj.items)-1, 0))
+		lj.sel = min(lj.sel+1, max(len(lj.zichtbaar())-1, 0))
 	case "enter":
 		if it, ok := lj.gekozen(); ok {
 			lj.laden = true
@@ -460,6 +500,14 @@ func (m *model) toetsLezen(msg tea.KeyMsg) (tea.Cmd, bool) {
 		return nil, false
 	}
 	return nil, true
+}
+
+// stopLeesZoeken: zoekveld dicht en weer de hele lijst.
+func (m *model) stopLeesZoeken() {
+	ls := m.ls
+	ls.zoeken = false
+	ls.zoek.Blur()
+	ls.lijst.filter, ls.lijst.sel = "", 0
 }
 
 /* ---------------- weergave ---------------- */
@@ -496,9 +544,16 @@ func (m model) viewLezen(p palet) string {
 		inhoud = dim.Render(m.t("listen.loading"))
 	case lj.fout != "":
 		inhoud = lipgloss.NewStyle().Foreground(p.geel).Width(m.breed - 12).Render(lj.fout)
+	case ls.zoeken:
+		aantal := dim.Render("  " + m.t("read.found", len(lj.zichtbaar()), len(lj.items)))
+		inhoud = ls.zoek.View() + aantal + "\n\n" + m.viewRegels(p, lj, m.breed-14, max(m.hoog-12, 3))
 	default:
 		inhoud = m.viewRegels(p, lj, m.breed-14, max(m.hoog-10, 3))
 	}
+	toetsen := m.t("read.listkeys")
+	if ls.zoeken {
+		toetsen = m.t("read.searchkeys")
+	}
 	return lipgloss.NewStyle().Bold(true).Render(m.t("menu.read")) + "\n\n" +
-		paneel(p, m.t("read.books"), inhoud, m.breed-8, true) + "\n" + dim.Render(m.t("read.listkeys"))
+		paneel(p, m.t("read.books"), inhoud, m.breed-8, true) + "\n" + dim.Render(toetsen)
 }

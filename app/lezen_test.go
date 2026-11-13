@@ -107,3 +107,79 @@ func TestLezen(t *testing.T) {
 		t.Fatalf("plek niet onthouden of offline niet te lezen:\n%s", m.View())
 	}
 }
+
+func TestLezenZoeken(t *testing.T) {
+	epub := maakEpub(t, 1)
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.URL.Path == "/api/libraries":
+			_, _ = w.Write([]byte(`{"libraries":[{"id":"lb","mediaType":"book"}]}`))
+		case r.URL.Path == "/api/me":
+			_, _ = w.Write([]byte(`{"mediaProgress":[]}`))
+		case r.URL.Path == "/api/libraries/lb/items":
+			_, _ = w.Write([]byte(`{"results":[
+				{"id":"e1","media":{"metadata":{"title":"Pluk van de Petteflet","authorName":"Annie M.G. Schmidt"},"ebookFormat":"epub"}},
+				{"id":"e2","media":{"metadata":{"title":"Harry Potter en de Steen der Wijzen","authorName":"J.K. Rowling"},"ebookFormat":"epub"}},
+				{"id":"e3","media":{"metadata":{"title":"Éloïse en de draak","authorName":"Thé Tjong-Khing"},"ebookFormat":"epub"}},
+				{"id":"e4","media":{"metadata":{"title":"Harry Potter en de Geheime Kamer","authorName":"J.K. Rowling"},"ebookFormat":"epub"}}]}`))
+		case strings.HasSuffix(r.URL.Path, "/ebook"):
+			_, _ = w.Write(epub)
+		default:
+			w.WriteHeader(404)
+		}
+	}))
+	defer srv.Close()
+	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+	m, _ := testModel(t, Geheimen{"ABS_URL": srv.URL, "ABS_TOKEN": "x"})
+	m.l = nieuwLuister(Geheimen{"ABS_URL": srv.URL, "ABS_TOKEN": "x"})
+	m.inst.Taal = "nl"
+	m = toets(m, "2")
+	typ := func(m model, s string) model {
+		for _, r := range s {
+			m = toets(m, string(r))
+		}
+		return m
+	}
+	m = toets(m, "/")
+	if !m.ls.zoeken {
+		t.Fatal("/ opent het zoekveld niet")
+	}
+	m = typ(m, "harry steen")
+	v := m.View()
+	if !strings.Contains(v, "Steen der Wijzen") || strings.Contains(v, "Geheime Kamer") || strings.Contains(v, "Pluk") || !strings.Contains(v, "1 van 4 boeken") {
+		t.Fatalf("zoeken op twee woorden:\n%s", v)
+	}
+	// zoeken zonder accenten en op schrijver
+	for i := 0; i < len("harry steen"); i++ {
+		m = toets(m, "backspace")
+	}
+	m = typ(m, "eloise")
+	if v := m.View(); !strings.Contains(v, "draak") || strings.Contains(v, "Harry") {
+		t.Errorf("zoeken zonder accenten:\n%s", v)
+	}
+	for i := 0; i < len("eloise"); i++ {
+		m = toets(m, "backspace")
+	}
+	m = typ(m, "rowling")
+	if v := m.View(); !strings.Contains(v, "2 van 4 boeken") {
+		t.Errorf("zoeken op schrijver:\n%s", v)
+	}
+	// letters als j en k zijn gewoon letters in het zoekveld; pijltjes kiezen
+	m = toets(m, "down")
+	m = toets(m, "enter")
+	// op alfabet: eerst Geheime Kamer, dan Steen der Wijzen
+	if m.ls.boek == nil || m.ls.boek.id != "e2" {
+		t.Fatalf("het tweede gevonden boek is niet geopend")
+	}
+	if m.ls.zoeken || m.ls.lijst.filter != "" {
+		t.Error("na het openen hoort het zoeken klaar te zijn")
+	}
+	// esc wist het zoeken en laat de hele lijst weer zien
+	m = toets(m, "esc") // boek dicht
+	m = toets(m, "/")
+	m = typ(m, "pluk")
+	m = toets(m, "esc")
+	if v := m.View(); m.ls.zoeken || !strings.Contains(v, "Pluk") || !strings.Contains(v, "Harry") {
+		t.Errorf("esc geeft de hele lijst niet terug:\n%s", v)
+	}
+}

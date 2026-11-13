@@ -44,7 +44,7 @@ The project started on an old Asus Eee PC, hence the "PC" in the name.
 | Quiet time | Separate times for school nights and weekends, opening time, what stays open, parent PIN, pause for 30 min, 2 hours, until morning or until switched back on |
 | Updates | New versions from GitHub releases, with checksum verification and fallback; the app restarts itself at a quiet moment (quiet time or the middle of the night, nothing playing), or straight away with `R` in parent mode |
 | Listen | Navidrome, radio dial, audiobooks and podcasts from Audiobookshelf with progress, sleep timer |
-| Read | E-books (EPUB) from Audiobookshelf, calm reading view, also offline, progress kept |
+| Read | E-books (EPUB) from Audiobookshelf, calm reading view, also offline, progress kept; `/` searches by title or author (without worrying about capitals or accents) |
 | Today | Weather with rain per hour and practical tips (Open-Meteo, no key), sunrise and sunset, moon phase, season, the next seasonal festivals |
 | Spotify | Approved albums and playlists only, explicit tracks filtered, autoplay off (librespot) |
 | Ask the buddy | AI via the Anthropic API with budgets, filters and a weekly summary for parents |

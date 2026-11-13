@@ -19,6 +19,10 @@ type nieuwsItem struct {
 
 // nieuwsLijst: nieuwste bovenaan.
 var nieuwsLijst = []nieuwsItem{
+	{"v0.24.0", [2]string{
+		"Zoeken in je boeken: druk bij 2 Lezen op / en typ een stukje van de titel of de schrijver.",
+		"Search your books: in 2 Read, press / and type part of the title or the author.",
+	}},
 	{"v0.22.0", [2]string{
 		"Het schaakbord is veel groter, met stukken die je goed herkent. Naast het bord staat welk plaatje de koning, dame, toren, loper, paard en pion is. Ga naar 5 Denksport en kies Schaken.",
 		"The chess board is much bigger, with pieces that are easy to recognise. Next to the board you can see which picture is the king, queen, rook, bishop, knight and pawn. Go to 5 Puzzles and choose Chess.",
@@ -70,8 +74,8 @@ func (m *model) nieuwsBijStart(hadInstellingen bool) {
 			_ = m.inst.bewaar()
 			return
 		}
-		if len(nieuwsLijst) > 0 && !versieNieuwer(nieuwsLijst[0].versie, versie) {
-			m.nieuws = nieuwsLijst[:1]
+		if n := nieuwsSinds("", versie); len(n) > 0 {
+			m.nieuws = n[:1]
 		}
 		return
 	}
