@@ -51,7 +51,7 @@ The project started on an old Asus Eee PC, hence the "PC" in the name.
 | Discover | Animal of the day (curated list, text from Wikipedia), computer lab (learn the terminal through missions in a practice computer), private nature journal | ✅ phase 5 |
 | Programming | [Hedy](https://hedy.org): the real Hedy language level by level towards Python, with Hedy's own assignments in Dutch and English, and a turtle that draws with characters | ✅ phase 5 |
 | Puzzles | Times tables 1 to 12 without a clock (overview of what is known, tricky ones come back), calculator with buttons (basic and scientific: sin, cos, tan, √, log, ln, π, memory) and a typed calculator with exact fractions and percentages, sudoku (a new one every time, three levels), riddles and number sequences, chess: 2000 puzzles from the [Lichess puzzle database](https://database.lichess.org/) (CC0), against [Stockfish](https://stockfishchess.org/) on eight levels, or two players together | ✅ phase 5 |
-| Messages to parents | Signal via signal-cli on the NAS (own number for the child): short messages only to contacts in ouders.yaml, replies as a calm list | ⏳ later |
+| Messages to parents | Signal via [signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api) on a home server (own number for the child): short messages only to contacts in ouders.yaml, replies as a calm list | ⏳ later |
 | Typing course | Calm typing lessons: home row first, short daily lessons, practise with your own sentences and stories, progress without scores or streaks | ⏳ later |
 | Writing nook | Simple to-do list, dictionary with spelling help (Wiktionary), read back your own stories; private | ✅ phase 5 |
 
@@ -238,4 +238,8 @@ VERSION     the version that GitHub Actions releases
 
 ## License
 
-To be decided.
+Unscroll PC is released under the [MIT License](LICENSE). Parts it uses keep their own licences:
+[Hedy](https://github.com/hedyorg/hedy) (EUPL-1.2, shipped in the Hedy package with its licence file),
+the chess puzzles from the [Lichess puzzle database](https://database.lichess.org/) (CC0),
+and Debian packages that are installed separately and not part of this repository, such as
+[Stockfish](https://stockfishchess.org/) (GPL-3) and the typing lessons of [GNU Typist](https://www.gnu.org/software/gtypist/) (GPL).
