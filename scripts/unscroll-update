@@ -40,6 +40,18 @@ zet_conf /etc/systemd/logind.conf.d/unscroll.conf "$(printf '[Login]\nHandleLidS
 zet_conf /etc/NetworkManager/conf.d/unscroll-wifi.conf "$(printf '[connection]\nwifi.powersave = 2')" \
   systemctl reload NetworkManager
 
+# Parent settings in the app: the app (running as the child) may run exactly one command as root,
+# which checks the parent PIN itself before it changes ouders.yaml. Checked with visudo first.
+SUDO_REGEL="$KIND ALL=(root) NOPASSWD: /usr/local/bin/unscroll --ouder-zet"
+if [[ "$(cat /etc/sudoers.d/unscroll 2>/dev/null)" != "$SUDO_REGEL" ]]; then
+  SUDO_TMP="$(mktemp)"
+  printf '%s\n' "$SUDO_REGEL" > "$SUDO_TMP"
+  if visudo -cf "$SUDO_TMP" >/dev/null 2>&1; then
+    install -m 0440 "$SUDO_TMP" /etc/sudoers.d/unscroll && echo "Updated /etc/sudoers.d/unscroll"
+  fi
+  rm -f "$SUDO_TMP"
+fi
+
 [[ "${1:-}" == "--nu" ]] || sleep $((RANDOM % 60))
 
 case "$(uname -m)" in

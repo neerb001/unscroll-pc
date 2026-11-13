@@ -105,6 +105,19 @@ fi
 EOF
 chown "$KIND:$KIND" "/home/$KIND/.bash_profile"
 
+echo "==> Parent settings in the app (one command as root, PIN checked by the app itself)"
+# Parent settings in the app: the app (running as the child) may run exactly one command as root,
+# which checks the parent PIN itself before it changes ouders.yaml. Checked with visudo first.
+SUDO_REGEL="$KIND ALL=(root) NOPASSWD: /usr/local/bin/unscroll --ouder-zet"
+if [[ "$(cat /etc/sudoers.d/unscroll 2>/dev/null)" != "$SUDO_REGEL" ]]; then
+  SUDO_TMP="$(mktemp)"
+  printf '%s\n' "$SUDO_REGEL" > "$SUDO_TMP"
+  if visudo -cf "$SUDO_TMP" >/dev/null 2>&1; then
+    install -m 0440 "$SUDO_TMP" /etc/sudoers.d/unscroll && echo "Updated /etc/sudoers.d/unscroll"
+  fi
+  rm -f "$SUDO_TMP"
+fi
+
 echo "==> Updater every 15 minutes"
 install -m 0644 "$HIER/systemd/unscroll-update.service" /etc/systemd/system/
 install -m 0644 "$HIER/systemd/unscroll-update.timer" /etc/systemd/system/

@@ -74,6 +74,8 @@ type model struct {
 	od           *ontdekStaat
 	vd           *vandaagStaat
 	sh           *schrijfStaat
+	oi           *ouderInstStaat
+	ouderPin     string // alleen zolang de ouderstand aan is, voor het wijzigen van instellingen
 	dk           *denkStaat
 }
 
@@ -97,6 +99,7 @@ func nieuwModel() model {
 	m.od = nieuweOntdek()
 	m.vd = &vandaagStaat{}
 	m.sh = nieuweSchrijfhoek()
+	m.oi = nieuweOuderInst()
 	m.dk = nieuweDenksport()
 	m.pin = textinput.New()
 	m.pin.EchoMode = textinput.EchoPassword
@@ -189,7 +192,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.nu = time.Time(msg)
 		m.maatjeTik(m.nu)
 		if m.ouderModus && m.nu.Sub(m.laatsteToets) > 10*time.Minute {
-			m.ouderModus = false
+			m.ouderModus, m.ouderPin, m.oi.open = false, "", false
 			m.zeg(m.t("msg.parentauto"))
 		}
 		if m.dicht() && m.tab != tabSysteem && !magTijdensSlot(m.ouders, m.tab) {
@@ -213,6 +216,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	case hedyUitMsg, hedyKlaarMsg:
 		cmd := m.hedyBericht(msg)
+		return m, cmd
+	case instMsg:
+		cmd := m.instBericht(msg)
 		return m, cmd
 	case motorZetMsg:
 		cmd := m.schaakBericht(msg)
@@ -260,7 +266,7 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		case "enter":
 			switch {
 			case m.ouders.pinKlopt(m.pin.Value()):
-				m.ouderModus = true
+				m.ouderModus, m.ouderPin = true, m.pin.Value()
 				m.zeg(m.t("msg.parenton"))
 			case m.ouders.PinSHA256 == "":
 				m.zeg(m.t("msg.nopin"))
@@ -302,6 +308,11 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return m, cmd
 	}
 
+	if m.tab == tabSysteem && m.oi.open && m.ouderModus {
+		if cmd, ok := m.toetsOuderInst(msg); ok {
+			return m, cmd
+		}
+	}
 	if m.tab == tabLuisteren {
 		if cmd, ok := m.toetsLuisteren(msg); ok {
 			return m, cmd
@@ -410,7 +421,7 @@ func (m model) toetsSysteem(k string) (tea.Model, tea.Cmd) {
 		return m, hulpVragen(m.ouders, m.inst.Naam, m.inst.Taal)
 	case "o":
 		if m.ouderModus {
-			m.ouderModus = false
+			m.ouderModus, m.ouderPin, m.oi.open = false, "", false
 			m.zeg(m.t("msg.parentoff"))
 		} else {
 			m.pinOpen = true
@@ -436,6 +447,10 @@ func (m model) toetsSysteem(k string) (tea.Model, tea.Cmd) {
 		bewaarPauze(m.ontgrendeld)
 		m.nu = nu
 		m.zeg(m.pauzeTekst())
+	case "i":
+		if m.ouderModus {
+			m.oi.open, m.oi.melding = true, ""
+		}
 	case "Q":
 		if m.ouderModus {
 			return m, tea.Sequence(m.stopHuidig(true), tea.Quit)
@@ -459,6 +474,8 @@ func (m model) View() string {
 		inhoud = m.viewSlot(p)
 	case m.tab == tabStart:
 		inhoud = m.viewStart(p)
+	case m.tab == tabSysteem && m.oi.open && m.ouderModus:
+		inhoud = m.viewOuderInst(p)
 	case m.tab == tabSysteem:
 		inhoud = m.viewSysteem(p)
 	case m.tab == tabLuisteren:
@@ -730,6 +747,13 @@ func main() {
 			}
 			if err := spotifyInloggen(os.Args[2], os.Stdin, os.Stdout); err != nil {
 				fmt.Fprintln(os.Stderr, "Spotify login failed:", err)
+				os.Exit(1)
+			}
+			return
+		case "--ouder-zet":
+			// als root, via sudo: wijzigt ouders.yaml na controle van de pincode (zie ouderinstellingen.go)
+			if err := ouderZet(os.Stdin); err != nil {
+				fmt.Fprintln(os.Stderr, "unscroll:", err)
 				os.Exit(1)
 			}
 			return
