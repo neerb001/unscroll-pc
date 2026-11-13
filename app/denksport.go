@@ -25,11 +25,14 @@ const (
 	denkRekenmachine
 )
 
+// maxTafel: de tafels van 1 tot en met 12, elk van 1 × tot en met 12 ×.
+const maxTafel = 12
+
 type denkStaat struct {
 	scherm, keuze int
 	// tafels
-	gekozen   [11]bool // 1..10
-	delen     bool     // ook deelsommen
+	gekozen   [maxTafel + 1]bool // 1..maxTafel
+	delen     bool               // ook deelsommen
 	kiesSel   int
 	vragen    []tafelSom
 	nr        int
@@ -107,12 +110,12 @@ func nieuweDenksport() *denkStaat {
 	d.reken.CharLimit = 80
 	v := laadTafels()
 	for _, t := range v.Gekozen {
-		if t >= 1 && t <= 10 {
+		if t >= 1 && t <= maxTafel {
 			d.gekozen[t] = true
 		}
 	}
 	if len(v.Gekozen) == 0 {
-		for t := 1; t <= 10; t++ {
+		for t := 1; t <= maxTafel; t++ {
 			d.gekozen[t] = true
 		}
 	}
@@ -124,11 +127,11 @@ func nieuweDenksport() *denkStaat {
 func (d *denkStaat) maakRonde() {
 	v := laadTafels()
 	var pot []tafelSom
-	for t := 1; t <= 10; t++ {
+	for t := 1; t <= maxTafel; t++ {
 		if !d.gekozen[t] {
 			continue
 		}
-		for n := 1; n <= 10; n++ {
+		for n := 1; n <= maxTafel; n++ {
 			soorten := []bool{false}
 			if d.delen {
 				soorten = append(soorten, true)
@@ -186,19 +189,19 @@ func (m *model) toetsDenk(msg tea.KeyMsg) (tea.Cmd, bool) {
 		case "up", "k":
 			d.kiesSel = max(d.kiesSel-1, 0)
 		case "down", "j":
-			d.kiesSel = min(d.kiesSel+1, 10)
+			d.kiesSel = min(d.kiesSel+1, maxTafel)
 		case " ", "x":
-			if d.kiesSel < 10 {
+			if d.kiesSel < maxTafel {
 				d.gekozen[d.kiesSel+1] = !d.gekozen[d.kiesSel+1]
 			} else {
 				d.delen = !d.delen
 			}
 		case "a":
 			alle := true
-			for t := 1; t <= 10; t++ {
+			for t := 1; t <= maxTafel; t++ {
 				alle = alle && d.gekozen[t]
 			}
-			for t := 1; t <= 10; t++ {
+			for t := 1; t <= maxTafel; t++ {
 				d.gekozen[t] = !alle
 			}
 		case "o":
@@ -206,7 +209,7 @@ func (m *model) toetsDenk(msg tea.KeyMsg) (tea.Cmd, bool) {
 		case "enter":
 			v := laadTafels()
 			v.Gekozen, v.Delen = nil, d.delen
-			for t := 1; t <= 10; t++ {
+			for t := 1; t <= maxTafel; t++ {
 				if d.gekozen[t] {
 					v.Gekozen = append(v.Gekozen, t)
 				}
@@ -346,18 +349,18 @@ func (m model) viewDenk(p palet) string {
 	case denkTafelsKies:
 		v := laadTafels()
 		var regels []string
-		for t := 1; t <= 10; t++ {
+		for t := 1; t <= maxTafel; t++ {
 			vak := "☐"
 			if d.gekozen[t] {
 				vak = "☑"
 			}
 			kent := 0
-			for n := 1; n <= 10; n++ {
+			for n := 1; n <= maxTafel; n++ {
 				if v.Reeks[tafelSom{a: n, b: t}.sleutel()] >= 3 {
 					kent++
 				}
 			}
-			regel := fmt.Sprintf("%s %s", vak, m.t("tables.table", t)) + dim.Render(fmt.Sprintf("  %s", strings.Repeat("●", kent)+strings.Repeat("·", 10-kent)))
+			regel := fmt.Sprintf("%s %s", vak, m.t("tables.table", t)) + dim.Render(fmt.Sprintf("  %s", strings.Repeat("●", kent)+strings.Repeat("·", maxTafel-kent)))
 			if t-1 == d.kiesSel {
 				regel = acc.Render("▸ ") + regel
 			} else {
@@ -370,7 +373,7 @@ func (m model) viewDenk(p palet) string {
 			vak = "☑"
 		}
 		deel := vak + " " + m.t("tables.division")
-		if d.kiesSel == 10 {
+		if d.kiesSel == maxTafel {
 			deel = acc.Render("▸ ") + deel
 		} else {
 			deel = "  " + deel
@@ -411,10 +414,14 @@ func (m model) viewDenk(p palet) string {
 
 	case denkOverzicht:
 		v := laadTafels()
-		regels := []string{dim.Render("      " + strings.Repeat(" ", 0) + m.t("tables.gridhead"))}
-		for t := 1; t <= 10; t++ {
+		kopregel := "      "
+		for n := 1; n <= maxTafel; n++ {
+			kopregel += fmt.Sprintf("%4d", n)
+		}
+		regels := []string{dim.Render(kopregel)}
+		for t := 1; t <= maxTafel; t++ {
 			var cellen []string
-			for n := 1; n <= 10; n++ {
+			for n := 1; n <= maxTafel; n++ {
 				r := v.Reeks[tafelSom{a: n, b: t}.sleutel()]
 				kleur := p.lijn
 				switch {
