@@ -22,6 +22,7 @@ const (
 	schrijfTaken
 	schrijfVerhalen
 	schrijfLees
+	schrijfWoord
 )
 
 type taak struct {
@@ -44,10 +45,11 @@ type schrijfStaat struct {
 	leesRegels    []string
 	leesTitel     string
 	leesBoven     int
+	wb            *woordStaat
 }
 
 func nieuweSchrijfhoek() *schrijfStaat {
-	s := &schrijfStaat{weg: -1, bewerk: -1}
+	s := &schrijfStaat{weg: -1, bewerk: -1, wb: nieuwWoordenboek()}
 	s.invoer = textinput.New()
 	s.invoer.CharLimit = 120
 	s.invoer.Prompt = "☐ "
@@ -94,12 +96,19 @@ func (m *model) toetsSchrijf(msg tea.KeyMsg) (tea.Cmd, bool) {
 	switch s.scherm {
 	case schrijfMenu:
 		switch k {
-		case "up", "k", "down", "j":
-			s.keuze = 1 - s.keuze
+		case "up", "k":
+			s.keuze = (s.keuze + 2) % 3
+		case "down", "j":
+			s.keuze = (s.keuze + 1) % 3
 		case "enter":
-			if s.keuze == 0 {
+			switch s.keuze {
+			case 0:
 				s.scherm, s.taken = schrijfTaken, laadTaken()
-			} else {
+			case 1:
+				s.scherm = schrijfWoord
+				s.wb.invoer.SetValue("")
+				return s.wb.invoer.Focus(), true
+			default:
 				s.scherm, s.verhalen, s.verhaalSel = schrijfVerhalen, eerdereVerhalen(100), 0
 			}
 		default:
@@ -218,6 +227,9 @@ func (m *model) toetsSchrijf(msg tea.KeyMsg) (tea.Cmd, bool) {
 		}
 		return nil, true
 
+	case schrijfWoord:
+		return m.toetsWoord(msg)
+
 	case schrijfLees:
 		pagina := max(m.hoog-10, 5)
 		switch k {
@@ -254,6 +266,8 @@ func (m model) viewSchrijf(p palet) string {
 		return " " + naam + dim.Render(uitleg)
 	}
 	switch s.scherm {
+	case schrijfWoord:
+		return kop + "\n\n" + paneel(p, m.t("dict.title"), m.viewWoord(p, breed), breed, true) + "\n" + dim.Render(m.t("dict.keys"))
 	case schrijfTaken:
 		var regels []string
 		open := len(openTaken(s.taken))
@@ -324,7 +338,8 @@ func (m model) viewSchrijf(p palet) string {
 	}
 	regels := []string{
 		kies(0, m.t("todo.name"), m.t("todo.desc", len(openTaken(s.taken)))),
-		kies(1, m.t("write.stories"), m.t("write.storiesdesc")),
+		kies(1, m.t("dict.title"), m.t("dict.desc")),
+		kies(2, m.t("write.stories"), m.t("write.storiesdesc")),
 		"", dim.Render(m.t("buddy.start")), dim.Render(m.t("write.private")),
 	}
 	return kop + "\n\n" + paneel(p, m.t("buddy.choose"), strings.Join(regels, "\n"), breed, true)

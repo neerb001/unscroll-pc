@@ -70,6 +70,7 @@ func TestVerhalenTeruglezen(t *testing.T) {
 	m.inst.Taal = "nl"
 	m = toets(m, "6")
 	m = toets(m, "down")
+	m = toets(m, "down")
 	m = toets(m, "enter")
 	if !strings.Contains(m.View(), "robot die kon vliegen") {
 		t.Fatalf("verhalenlijst:\n%s", m.View())

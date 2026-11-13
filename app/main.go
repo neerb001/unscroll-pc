@@ -30,7 +30,7 @@ const (
 // sleutels in de vertalingen per tabblad
 var tabSleutels = []string{"tab.start", "tab.listen", "tab.read", "", "tab.discover", "tab.puzzles", "tab.write", "tab.today", "tab.system"}
 var menuSleutels = []string{"", "menu.listen", "menu.read", "menu.buddy", "menu.discover", "menu.puzzles", "menu.write", "menu.today", "menu.system"}
-var straksSleutels = map[int]string{tabDenksport: "soon.puzzles"}
+var straksSleutels = map[int]string{}
 
 type tickMsg time.Time
 type statusMsg struct {
@@ -74,6 +74,7 @@ type model struct {
 	od           *ontdekStaat
 	vd           *vandaagStaat
 	sh           *schrijfStaat
+	dk           *denkStaat
 }
 
 func nieuwModel() model {
@@ -96,6 +97,7 @@ func nieuwModel() model {
 	m.od = nieuweOntdek()
 	m.vd = &vandaagStaat{}
 	m.sh = nieuweSchrijfhoek()
+	m.dk = nieuweDenksport()
 	m.pin = textinput.New()
 	m.pin.EchoMode = textinput.EchoPassword
 	m.pin.CharLimit = 8
@@ -212,6 +214,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case hedyUitMsg, hedyKlaarMsg:
 		cmd := m.hedyBericht(msg)
 		return m, cmd
+	case woordMsg:
+		m.woordBericht(msg)
+		return m, nil
 	case weerMsg:
 		m.vandaagBericht(msg)
 		return m, nil
@@ -299,6 +304,11 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	if m.tab == tabVandaag && k == "r" && !m.vd.laden {
 		m.vd.laden = true
 		return m, haalWeer(m.ouders)
+	}
+	if m.tab == tabDenksport {
+		if cmd, ok := m.toetsDenk(msg); ok {
+			return m, cmd
+		}
 	}
 	if m.tab == tabSchrijfhoek {
 		if cmd, ok := m.toetsSchrijf(msg); ok {
@@ -457,6 +467,8 @@ func (m model) View() string {
 		inhoud = m.viewVandaag(p)
 	case m.tab == tabSchrijfhoek:
 		inhoud = m.viewSchrijf(p)
+	case m.tab == tabDenksport:
+		inhoud = m.viewDenk(p)
 	default:
 		inhoud = m.viewStraks(p)
 	}
