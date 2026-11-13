@@ -63,6 +63,7 @@ type model struct {
 	ouderModus   bool
 	ontgrendeld  time.Time
 	laatsteToets time.Time
+	nieuw        string // een nieuwe versie die klaarstaat maar nog niet draait
 	melding      string
 	bewaarFout   string // blijft staan zolang bewaren niet lukt
 	meldingTot   time.Time
@@ -198,6 +199,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.dicht() && m.tab != tabSysteem && !magTijdensSlot(m.ouders, m.tab) {
 			m.tab = tabStart
 		}
+		if m.nieuw = nieuweVersieKlaar(); m.nieuw != "" && m.rustigMoment() {
+			return m, m.herstart()
+		}
 		var luister tea.Cmd
 		if m.dicht() && m.tab == tabLuisteren && m.l.bron != bronBoeken {
 			luister = m.luisterOpen()
@@ -271,6 +275,9 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			case m.ouders.pinKlopt(m.pin.Value()):
 				m.ouderModus, m.ouderPin = true, m.pin.Value()
 				m.zeg(m.t("msg.parenton"))
+				if m.nieuw = nieuweVersieKlaar(); m.nieuw != "" {
+					m.zeg(m.t("msg.parenton") + " " + m.t("msg.updateready", m.nieuw))
+				}
 			case m.ouders.PinSHA256 == "":
 				m.zeg(m.t("msg.nopin"))
 			default:
@@ -457,6 +464,13 @@ func (m model) toetsSysteem(k string) (tea.Model, tea.Cmd) {
 	case "Q":
 		if m.ouderModus {
 			return m, tea.Sequence(m.stopHuidig(true), tea.Quit)
+		}
+	case "R":
+		if m.ouderModus {
+			if m.nieuw = nieuweVersieKlaar(); m.nieuw != "" {
+				return m, m.herstart()
+			}
+			m.zeg(m.t("msg.noupdate", versie))
 		}
 	}
 	return m, nil
@@ -671,7 +685,7 @@ func (m model) viewSysteem(p palet) string {
 		kol(m.t("sys.wifi")) + m.wifi,
 		kol(m.t("sys.battery")) + m.accu,
 		kol(m.t("sys.volume")) + vol,
-		kol(m.t("sys.version")) + versie + dim.Render(m.t("sys.autoupdate")),
+		kol(m.t("sys.version")) + versie + m.versieExtra(dim),
 		"",
 		m.t("sys.actions"),
 		m.t("sys.parent"),
@@ -692,6 +706,9 @@ func (m model) viewSysteem(p palet) string {
 			m.t("sys.p.after", jn(a.LezenMag), jn(a.LuisterboekMag)) + "\n" +
 			lipgloss.NewStyle().Foreground(p.acc).Render(m.pauzeTekst()) + "\n" +
 			dim.Render(m.t("sys.p.edit")) + "\n" + m.t("sys.p.keys")
+		if m.nieuw != "" {
+			apparaat += "\n" + lipgloss.NewStyle().Foreground(p.acc).Render(m.t("sys.p.restart", m.nieuw))
+		}
 	}
 	breed := (m.breed - 10) / 2
 	return lipgloss.JoinHorizontal(lipgloss.Top,

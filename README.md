@@ -42,7 +42,7 @@ The project started on an old Asus Eee PC, hence the "PC" in the name.
 | Languages | English (default) and Dutch, selectable under System. Add languages in `app/i18n.go` |
 | System | Computer name, own name, buddy name and face, 5 colour themes, wifi, battery, volume with a maximum, ask for help (ntfy) |
 | Quiet time | Separate times for school nights and weekends, opening time, what stays open, parent PIN, pause for 30 min, 2 hours, until morning or until switched back on |
-| Updates | New versions from GitHub releases, with checksum verification and fallback |
+| Updates | New versions from GitHub releases, with checksum verification and fallback; the app restarts itself at a quiet moment (quiet time or the middle of the night, nothing playing), or straight away with `R` in parent mode |
 | Listen | Navidrome, radio dial, audiobooks and podcasts from Audiobookshelf with progress, sleep timer |
 | Read | E-books (EPUB) from Audiobookshelf, calm reading view, also offline, progress kept |
 | Today | Weather with rain per hour and practical tips (Open-Meteo, no key), sunrise and sunset, moon phase, season, the next seasonal festivals |
@@ -60,7 +60,6 @@ The project started on an old Asus Eee PC, hence the "PC" in the name.
 Ideas and plans that are not built yet, roughly in order:
 
 - **Messages to parents:** Signal via [signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api) on a home server (own number for the child): short messages only to contacts in ouders.yaml, replies as a calm list
-- **Updates without a restart:** the app restarts itself at a quiet moment, or asks in parent mode.
 - **Diagnostics in parent mode:** per service whether it works, with the exact error.
 - **Safe saving:** write files in a way that survives a sudden power cut.
 - **Morning and evening checklist** that starts fresh every day.
@@ -108,7 +107,7 @@ After booting, the child account logs in automatically and the app starts full s
 
 - **Releasing a new version:** bump the number in `VERSION` and push to `main`. GitHub Actions runs the tests, builds the app for 386, amd64, arm64 and arm (with a `sha256` file per binary) and creates the release.
 - A number with a dash (`0.2.0-test`) becomes a pre-release. It only goes to devices with `KANAAL="test"` in `/etc/unscroll/update.conf`.
-- Devices check for a new release every 15 minutes (`unscroll-update.timer`), verify the checksum and that the new binary starts, then install it. The previous version is kept. The new version is active after the next restart of the app (or a reboot).
+- Devices check for a new release every 15 minutes (`unscroll-update.timer`), verify the checksum and that the new binary starts, then install it. The previous version is kept. The app then restarts itself at a quiet moment: during quiet time or in the middle of the night, when nobody has touched the keyboard for 15 minutes, nothing is playing and no unsaved work can be open. In parent mode the System tab shows that a new version is ready, and `R` restarts straight away.
 - The scripts (session, updater, parent helper) come along in a checksummed `unscroll-scripts.tar.gz` and are installed with the app (from v0.2.0 on).
 - If the repository is private, put a fine-grained read-only token in `/etc/unscroll/geheimen.env` (the parent helper asks for it).
 

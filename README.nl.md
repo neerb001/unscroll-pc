@@ -41,7 +41,7 @@ Het project begon op een oude Asus EeePC, vandaar de "PC" in de naam.
 | Talen | Engels (standaard) en Nederlands, te kiezen bij Systeem. Nieuwe talen in `app/i18n.go` |
 | Systeem | Naam computer, eigen naam, naam en gezicht van het maatje, 5 kleurthema's, wifi, accu, volume met maximum, hulp vragen (ntfy) |
 | Avondslot | Aparte tijden voor school- en weekendavonden, openingstijd, wat er na het slot nog mag, pincode voor ouders, pauzeren voor 30 min, 2 uur, tot morgenochtend of tot je hem weer aanzet |
-| Updates | Nieuwe versies via GitHub-releases, met checksum-controle en terugval |
+| Updates | Nieuwe versies via GitHub-releases, met checksum-controle en terugval; de app herstart zelf op een rustig moment (avondslot of midden in de nacht, als er niets speelt), of meteen met `R` in de ouderstand |
 | Luisteren | Navidrome, radio met draaiknop, luisterboeken en podcasts uit Audiobookshelf met voortgang, slaaptimer |
 | Lezen | E-boeken (EPUB) uit Audiobookshelf, rustige leesweergave, ook offline, voortgang gaat mee |
 | Vandaag | Weer met regen per uur en praktische tips (Open-Meteo, geen sleutel), zon op en onder, maanfase, seizoen, de volgende jaarfeesten |
@@ -59,7 +59,6 @@ Het project begon op een oude Asus EeePC, vandaar de "PC" in de naam.
 Ideeën en plannen die nog niet gebouwd zijn, ongeveer in volgorde:
 
 - **Berichten naar ouders:** Signal via [signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api) op een thuisserver (eigen nummer voor het kind): korte berichtjes alleen naar contacten in ouders.yaml, antwoorden als rustige lijst
-- **Updates zonder herstart:** de app herstart zichzelf op een rustig moment, of vraagt het in de ouderstand.
 - **Diagnose in de ouderstand:** per dienst of hij werkt, met de precieze foutmelding.
 - **Veilig bewaren:** bestanden zo wegschrijven dat een plotselinge stroomuitval niets kapotmaakt.
 - **Ochtend- en avondlijstje** dat elke dag opnieuw begint.
@@ -100,7 +99,7 @@ Na het opstarten logt het kinderaccount automatisch in en start de app op het he
 
 - **Een nieuwe versie uitbrengen:** verhoog het nummer in `VERSION` en push naar `main`. GitHub Actions test alles, bouwt de app voor 386, amd64, arm64 en arm (met een `sha256`-bestand per binary) en maakt de release aan.
 - Een nummer met een streepje (`0.2.0-test`) wordt een pre-release. Die gaat alleen naar apparaten met `KANAAL="test"` in `/etc/unscroll/update.conf`.
-- Het apparaat kijkt elke 15 minuten of er een nieuwe release is (`unscroll-update.timer`), controleert de checksum en of de nieuwe versie start, en zet hem klaar. De vorige versie blijft bewaard. De nieuwe versie is actief na een herstart van de app (of van het apparaat).
+- Het apparaat kijkt elke 15 minuten of er een nieuwe release is (`unscroll-update.timer`), controleert de checksum en of de nieuwe versie start, en zet hem klaar. De vorige versie blijft bewaard. De app herstart daarna zelf op een rustig moment: tijdens het avondslot of midden in de nacht, als er een kwartier niemand aan het toetsenbord zat, er niets speelt en er geen onbewaard werk open kan staan. In de ouderstand laat het tabblad Systeem zien dat er een nieuwe versie klaarstaat, en met `R` herstart je meteen.
 - De scripts (sessie, updater, ouderhulp) komen mee in een `unscroll-scripts.tar.gz` met checksum en worden samen met de app geïnstalleerd (vanaf v0.2.0).
 - Is de repository privé, zet dan een fine-grained token met alleen-lezen rechten in `/etc/unscroll/geheimen.env` (de ouderhulp vraagt erom).
 
