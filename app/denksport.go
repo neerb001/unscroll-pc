@@ -26,10 +26,11 @@ const (
 	denkKnoppen
 	denkSudoku
 	denkRaadsel
+	denkSchaak
 )
 
 // het menu van Denksport, in deze volgorde
-var denkMenuSleutels = []string{"tables.title", "calc.title", "calc.typed", "sudoku.title", "riddle.title"}
+var denkMenuSleutels = []string{"tables.title", "calc.title", "calc.typed", "sudoku.title", "riddle.title", "chess.title"}
 
 // maxTafel: de tafels van 1 tot en met 12, elk van 1 × tot en met 12 ×.
 const maxTafel = 12
@@ -51,6 +52,7 @@ type denkStaat struct {
 	rm       *rmStaat
 	sd       *sudokuStaat
 	rd       *raadselStaat
+	sk       *schaakStaat
 	reken    textinput.Model
 	geschied []string // som = uitkomst
 	vorige   []string // eerdere sommen, voor ↑
@@ -113,7 +115,7 @@ func (v tafelVoortgang) bewaar() {
 }
 
 func nieuweDenksport() *denkStaat {
-	d := &denkStaat{rm: nieuweRekenmachine(), sd: &sudokuStaat{}, rd: nieuweRaadsels()}
+	d := &denkStaat{rm: nieuweRekenmachine(), sd: &sudokuStaat{}, rd: nieuweRaadsels(), sk: nieuwSchaak()}
 	d.reken = textinput.New()
 	d.reken.Prompt = "› "
 	d.reken.CharLimit = 80
@@ -198,6 +200,9 @@ func (m *model) toetsDenk(msg tea.KeyMsg) (tea.Cmd, bool) {
 			case 4:
 				d.scherm = denkRaadsel
 				return m.volgendRaadsel(), true
+			case 5:
+				d.scherm = denkSchaak
+				m.schaakOpen()
 			}
 		default:
 			return nil, false
@@ -310,6 +315,8 @@ func (m *model) toetsDenk(msg tea.KeyMsg) (tea.Cmd, bool) {
 		return m.toetsSudoku(msg)
 	case denkRaadsel:
 		return m.toetsRaadsel(msg)
+	case denkSchaak:
+		return m.toetsSchaak(msg)
 
 	case denkOverzicht:
 		if k == "esc" || k == "enter" || k == "o" {
@@ -379,6 +386,8 @@ func (m model) viewDenk(p palet) string {
 		return m.viewSudoku(p)
 	case denkRaadsel:
 		return m.viewRaadsel(p)
+	case denkSchaak:
+		return m.viewSchaak(p)
 	case denkTafelsKies:
 		v := laadTafels()
 		var regels []string

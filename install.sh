@@ -30,7 +30,7 @@ DEBIAN_FRONTEND=noninteractive "${APT[@]}" install -y --no-install-recommends \
   network-manager wpasupplicant alsa-utils mpv \
   curl jq ca-certificates zram-tools \
   avahi-daemon libnss-mdns \
-  python3 python3-regex \
+  python3 python3-regex stockfish fonts-dejavu-core \
   sudo
 # Wifi firmware for common netbook chips (Atheros, Ralink, Realtek). Optional: skipped if unavailable.
 DEBIAN_FRONTEND=noninteractive "${APT[@]}" install -y --no-install-recommends \

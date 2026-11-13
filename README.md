@@ -50,7 +50,7 @@ The project started on an old Asus Eee PC, hence the "PC" in the name.
 | Ask the buddy | AI via the Anthropic API with budgets, filters and a weekly summary for parents | ✅ phase 4 |
 | Discover | Animal of the day (curated list, text from Wikipedia), computer lab (learn the terminal through missions in a practice computer), private nature journal | ✅ phase 5 |
 | Programming | [Hedy](https://hedy.org): the real Hedy language level by level towards Python, with Hedy's own assignments in Dutch and English, and a turtle that draws with characters | ✅ phase 5 |
-| Puzzles | Times tables 1 to 12 without a clock (overview of what is known, tricky ones come back), calculator with buttons (basic and scientific: sin, cos, tan, √, log, ln, π, memory) and a typed calculator with exact fractions and percentages, sudoku (a new one every time, three levels), riddles and number sequences; chess coming | ✅ phase 5 |
+| Puzzles | Times tables 1 to 12 without a clock (overview of what is known, tricky ones come back), calculator with buttons (basic and scientific: sin, cos, tan, √, log, ln, π, memory) and a typed calculator with exact fractions and percentages, sudoku (a new one every time, three levels), riddles and number sequences, chess: 2000 puzzles from the [Lichess puzzle database](https://database.lichess.org/) (CC0), against [Stockfish](https://stockfishchess.org/) on eight levels, or two players together | ✅ phase 5 |
 | Typing course | Calm typing lessons: home row first, short daily lessons, practise with your own sentences and stories, progress without scores or streaks | ⏳ later |
 | Writing nook | Simple to-do list, dictionary with spelling help (Wiktionary), read back your own stories; private | ✅ phase 5 |
 

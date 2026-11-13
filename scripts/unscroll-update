@@ -147,13 +147,15 @@ if [[ -n "$HEDY_URL" && -n "$HEDY_SUM_URL" ]] && haal "$HEDY_SUM_URL" "$TMP/hedy
       echo "Hedy package not valid, keeping the current one."
     fi
   fi
-  for pakket in python3 python3-regex; do
-    dpkg -s "$pakket" >/dev/null 2>&1 && continue
-    DEBIAN_FRONTEND=noninteractive apt-get install -y -q "$pakket" >/dev/null 2>&1 \
-      || { apt-get update -q >/dev/null 2>&1 && DEBIAN_FRONTEND=noninteractive apt-get install -y -q "$pakket" >/dev/null 2>&1; } \
-      || echo "Could not install $pakket (no internet?)"
-  done
 fi
+
+# Debian packages the app uses: Python for Hedy, Stockfish for chess, a font with chess symbols.
+for pakket in python3 python3-regex stockfish fonts-dejavu-core; do
+  dpkg -s "$pakket" >/dev/null 2>&1 && continue
+  DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends "$pakket" >/dev/null 2>&1 \
+    || { apt-get update -q >/dev/null 2>&1 && DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends "$pakket" >/dev/null 2>&1; } \
+    || echo "Could not install $pakket (no internet?)"
+done
 
 # keep only the three most recent versions
 find /opt/unscroll/releases -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' | sort -rn | tail -n +4 | cut -d' ' -f2- | xargs -r rm -rf
