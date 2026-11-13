@@ -214,6 +214,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case hedyUitMsg, hedyKlaarMsg:
 		cmd := m.hedyBericht(msg)
 		return m, cmd
+	case sudokuMsg:
+		m.sudokuBericht(msg)
+		return m, nil
 	case woordMsg:
 		m.woordBericht(msg)
 		return m, nil

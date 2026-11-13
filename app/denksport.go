@@ -24,7 +24,12 @@ const (
 	denkOverzicht
 	denkRekenmachine
 	denkKnoppen
+	denkSudoku
+	denkRaadsel
 )
+
+// het menu van Denksport, in deze volgorde
+var denkMenuSleutels = []string{"tables.title", "calc.title", "calc.typed", "sudoku.title", "riddle.title"}
 
 // maxTafel: de tafels van 1 tot en met 12, elk van 1 × tot en met 12 ×.
 const maxTafel = 12
@@ -44,6 +49,8 @@ type denkStaat struct {
 	klaar     bool
 	// rekenmachine
 	rm       *rmStaat
+	sd       *sudokuStaat
+	rd       *raadselStaat
 	reken    textinput.Model
 	geschied []string // som = uitkomst
 	vorige   []string // eerdere sommen, voor ↑
@@ -106,7 +113,7 @@ func (v tafelVoortgang) bewaar() {
 }
 
 func nieuweDenksport() *denkStaat {
-	d := &denkStaat{rm: nieuweRekenmachine()}
+	d := &denkStaat{rm: nieuweRekenmachine(), sd: &sudokuStaat{}, rd: nieuweRaadsels()}
 	d.reken = textinput.New()
 	d.reken.Prompt = "› "
 	d.reken.CharLimit = 80
@@ -173,18 +180,24 @@ func (m *model) toetsDenk(msg tea.KeyMsg) (tea.Cmd, bool) {
 	case denkMenu:
 		switch k {
 		case "up", "k":
-			d.keuze = (d.keuze + 2) % 3
+			d.keuze = (d.keuze + len(denkMenuSleutels) - 1) % len(denkMenuSleutels)
 		case "down", "j":
-			d.keuze = (d.keuze + 1) % 3
+			d.keuze = (d.keuze + 1) % len(denkMenuSleutels)
 		case "enter":
 			switch d.keuze {
 			case 0:
 				d.scherm = denkTafelsKies
 			case 1:
 				d.scherm = denkKnoppen
-			default:
+			case 2:
 				d.scherm = denkRekenmachine
 				return d.reken.Focus(), true
+			case 3:
+				d.scherm = denkSudoku
+				return m.sudokuOpen(), true
+			case 4:
+				d.scherm = denkRaadsel
+				return m.volgendRaadsel(), true
 			}
 		default:
 			return nil, false
@@ -293,6 +306,10 @@ func (m *model) toetsDenk(msg tea.KeyMsg) (tea.Cmd, bool) {
 
 	case denkKnoppen:
 		return m.toetsRekenmachine(msg)
+	case denkSudoku:
+		return m.toetsSudoku(msg)
+	case denkRaadsel:
+		return m.toetsRaadsel(msg)
 
 	case denkOverzicht:
 		if k == "esc" || k == "enter" || k == "o" {
@@ -358,6 +375,10 @@ func (m model) viewDenk(p palet) string {
 	switch d.scherm {
 	case denkKnoppen:
 		return m.viewRekenmachine(p)
+	case denkSudoku:
+		return m.viewSudoku(p)
+	case denkRaadsel:
+		return m.viewRaadsel(p)
 	case denkTafelsKies:
 		v := laadTafels()
 		var regels []string
@@ -474,7 +495,7 @@ func (m model) viewDenk(p palet) string {
 		return kop + "\n\n" + paneel(p, m.t("calc.title"), strings.Join(opgemaakt, "\n")+"\n\n"+d.reken.View(), breed, true) + "\n" + dim.Render(m.t("calc.keys"))
 	}
 	var regels []string
-	for i, sl := range []string{"tables.title", "calc.title", "calc.typed"} {
+	for i, sl := range denkMenuSleutels {
 		naam := fmt.Sprintf(" %-18s ", m.t(sl))
 		uitleg := m.t(sl + ".d")
 		if i == d.keuze {
