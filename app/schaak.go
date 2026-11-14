@@ -691,14 +691,7 @@ func (m model) viewSchaak(p palet) string {
 		return kiesLijst(m.t("chess.computer"), items, s.niveau-1, m.t("chess.youplay", kleur)+"   "+m.t("chess.levelkeys"))
 	}
 
-	// Hoe groot kan het bord? Elk veld is h regels hoog en 2h+1 tekens breed (een terminalteken is
-	// ongeveer twee keer zo hoog als breed, dus dan is een veld bijna vierkant).
-	beschikbaar := m.hoog - 3 - 1 // binnen de rand van de app, min de regel met a-h
-	h := min(3, beschikbaar/8)
-	for h > 1 && 3+8*(2*h+1)+30 > m.breed-4 {
-		h--
-	}
-	h = max(h, 1)
+	h, vol := m.schaakMaat()
 	bord := m.schaakBord(p, h)
 	// rechts: wie is aan zet, melding, toetsen
 	var info []string
@@ -721,7 +714,7 @@ func (m model) viewSchaak(p palet) string {
 		}
 		info = append(info, beurt)
 	}
-	rechts := max(m.breed-4-lipgloss.Width(bord)-3, 20)
+	rechts := max(m.breed-4-schaakBordBreedte(h)-3, 20)
 	if s.melding != "" {
 		info = append(info, "", lipgloss.NewStyle().Foreground(meldKleur(p, s)).Width(rechts).Render(s.melding))
 	}
@@ -732,9 +725,33 @@ func (m model) viewSchaak(p palet) string {
 	case s.soort == soortComputer:
 		toetsen = m.t("chess.computerkeys")
 	}
-	info = append(info, "", m.stukkenUitleg(p, h, rechts), "", lipgloss.NewStyle().Foreground(p.dim).Width(rechts).Render(toetsen))
-	kolom := kop + "\n\n" + strings.Join(info, "\n")
-	return lipgloss.JoinHorizontal(lipgloss.Top, bord, "   ", kolom)
+	toetsTekst := lipgloss.NewStyle().Foreground(p.dim).Width(rechts).Render(toetsen)
+	// de uitleg van de stukken krijgt de regels die overblijven naast het bord
+	regelsMax := m.hoog - 3
+	if vol {
+		regelsMax = m.hoog - 1
+	}
+	vast := 2 + strings.Count(strings.Join(info, "\n"), "\n") + 1 + strings.Count(toetsTekst, "\n") + 1 + 2
+	if uitleg := m.stukkenUitleg(h, rechts, regelsMax-vast); uitleg != "" {
+		info = append(info, "", uitleg)
+	}
+	info = append(info, "", toetsTekst)
+	kolom := strings.Split(kop+"\n\n"+strings.Join(info, "\n"), "\n")
+	// bord en kolom regel voor regel naast elkaar (sneller dan lipgloss, het bord zit vol kleurcodes)
+	bordRegels := strings.Split(bord, "\n")
+	leeg := strings.Repeat(" ", schaakBordBreedte(h))
+	var uit []string
+	for i := 0; i < max(len(bordRegels), len(kolom)); i++ {
+		l, r := leeg, ""
+		if i < len(bordRegels) {
+			l = bordRegels[i]
+		}
+		if i < len(kolom) {
+			r = kolom[i]
+		}
+		uit = append(uit, l+"   "+r)
+	}
+	return strings.Join(uit, "\n")
 }
 
 func meldKleur(p palet, s *schaakStaat) lipgloss.TerminalColor {
@@ -744,210 +761,33 @@ func meldKleur(p palet, s *schaakStaat) lipgloss.TerminalColor {
 	return p.acc
 }
 
-// Tekeningen van de stukken. Groot (5 breed, 3 hoog) en middel (3 breed, 2 hoog).
-// Alleen blokjes en lijnen die in elk terminallettertype zitten.
-var stukTekening = map[int]map[chess.PieceType][]string{
-	3: {
-		chess.King:   {"  ╋  ", " ▟█▙ ", "▀▀▀▀▀"},
-		chess.Queen:  {"▚ ● ▞", " ▜█▛ ", "▀▀▀▀▀"},
-		chess.Rook:   {"▙▄▙▄▟", " ███ ", "▀▀▀▀▀"},
-		chess.Bishop: {" ▗█▖ ", " ▝█▘ ", " ▀▀▀ "},
-		chess.Knight: {" ▄██▖", "▝▘▐█ ", " ▀▀▀ "},
-		chess.Pawn:   {"  ●  ", "  █  ", " ▀▀▀ "},
-	},
-	2: {
-		chess.King:   {" ╋ ", "▟█▙"},
-		chess.Queen:  {"▖●▗", "▜█▛"},
-		chess.Rook:   {"▙▄▟", "▐█▌"},
-		chess.Bishop: {"▗█▖", "▝█▘"},
-		chess.Knight: {"▄█▖", "▝█▌"},
-		chess.Pawn:   {" ● ", " ▀ "},
-	},
+// schaakMaat: hoe hoog een veld kan zijn (1, 2 of 3 regels; een veld is 2h+1 tekens breed, en omdat
+// een terminalteken ongeveer twee keer zo hoog is als breed, is het dan bijna vierkant).
+// vol zegt of het bord de lege regels boven en onder nodig heeft om zo groot te kunnen zijn.
+func (m model) schaakMaat() (h int, vol bool) {
+	past := func(h int) bool { return schaakBordBreedte(h)+3+26 <= m.breed-4 }
+	maat := func(regels int) int {
+		h := max(min(3, (regels-1)/8), 1) // min de regel met a-h
+		for h > 1 && !past(h) {
+			h--
+		}
+		return h
+	}
+	gewoon, ruim := maat(m.hoog-3), maat(m.hoog-1)
+	if ruim > gewoon {
+		return ruim, true
+	}
+	return gewoon, false
 }
 
-var (
-	veldLicht   = lipgloss.Color("#b58f63")
-	veldDonker  = lipgloss.Color("#8c6642")
-	veldGekozen = lipgloss.Color("#5e8f35")
-	veldTip     = lipgloss.Color("#3d78b5")
-	veldLaatste = lipgloss.Color("#9c8f2e")
-	stukWit     = lipgloss.Color("#ffffff")
-	stukZwart   = lipgloss.Color("#000000")
-	cursorKleur = lipgloss.Color("#ffd23f")
-)
-
-// schaakBord tekent het bord met velden van h regels hoog.
-func (m model) schaakBord(p palet, h int) string {
-	s := m.dk.sk
-	dim := lipgloss.NewStyle().Foreground(p.dim)
-	w := 2*h + 1
-	draai := !s.jijWit && s.soort != soortSamen
-	bord := s.spel.Position().Board()
-	doelen := map[chess.Square]bool{}
-	if s.gekozen >= 0 {
-		for _, z := range s.spel.ValidMoves() {
-			if z.S1() == s.gekozen {
-				doelen[z.S2()] = true
-			}
-		}
+// volScherm: het schaakbord mag de lege regels boven en onder gebruiken als het daardoor groter kan.
+func (m model) volScherm() bool {
+	if m.tab != tabDenksport || m.dk == nil || m.dk.scherm != denkSchaak {
+		return false
 	}
-	var laatsteVan, laatsteNaar chess.Square = -1, -1
-	if zz := s.spel.Moves(); len(zz) > 0 {
-		laatsteVan, laatsteNaar = zz[len(zz)-1].S1(), zz[len(zz)-1].S2()
+	if sch := m.dk.sk.scherm; sch == schaakMenu || sch == schaakPuzzelKies || sch == schaakNiveauKies {
+		return false
 	}
-	letters := stukLettersEN
-	if m.inst.Taal == "nl" {
-		letters = stukLettersNL
-	}
-	// veld geeft de h regels van één veld, elk w tekens breed.
-	veld := func(sq chess.Square, licht bool) []string {
-		achter := veldDonker
-		if licht {
-			achter = veldLicht
-		}
-		switch {
-		case sq == s.cursor && h == 1:
-			achter = lipgloss.Color("#c9a227") // te klein voor hoekjes: dan het hele veld
-		case sq == s.gekozen:
-			achter = veldGekozen
-		case sq == s.tipVan || sq == s.tipNaar:
-			achter = veldTip
-		case sq == laatsteVan || sq == laatsteNaar:
-			achter = veldLaatste
-		}
-		st := lipgloss.NewStyle().Background(achter)
-		regels := make([]string, h)
-		stuk := bord.Piece(sq)
-		var plaatje []string
-		switch {
-		case stuk != chess.NoPiece && (s.letters || h == 1):
-			plaatje = make([]string, h)
-			for i := range plaatje {
-				plaatje[i] = strings.Repeat(" ", w-2)
-			}
-			l := letters[stuk.Type()]
-			if l == "o" {
-				l = "i" // pion: een rechtopstaand poppetje leest beter dan een rondje
-			}
-			mid := (w - 2) / 2
-			plaatje[h/2] = strings.Repeat(" ", mid) + l + strings.Repeat(" ", w-2-mid-1)
-		case stuk != chess.NoPiece:
-			plaatje = stukTekening[h][stuk.Type()]
-		}
-		for i := 0; i < h; i++ {
-			binnen := strings.Repeat(" ", w-2)
-			if plaatje != nil {
-				binnen = plaatje[i]
-				kleur := stukWit
-				if stuk.Color() == chess.Black {
-					kleur = stukZwart
-				}
-				binnen = st.Foreground(kleur).Bold(true).Render(binnen)
-			} else if doelen[sq] && i == h/2 {
-				mid := (w - 2) / 2
-				binnen = st.Render(strings.Repeat(" ", mid)) + st.Foreground(lipgloss.Color("#d4f5b0")).Bold(true).Render("●") + st.Render(strings.Repeat(" ", w-2-mid-1))
-			} else {
-				binnen = st.Render(binnen)
-			}
-			links, rechts := " ", " "
-			if sq == s.cursor && h > 1 {
-				switch i {
-				case 0:
-					links, rechts = "┏", "┓"
-				case h - 1:
-					links, rechts = "┗", "┛"
-				}
-			} else if doelen[sq] && stuk != chess.NoPiece && (i == 0 || i == h-1) {
-				links, rechts = "▪", "▪" // een stuk dat je kunt slaan
-			}
-			rand := st.Foreground(cursorKleur).Bold(true)
-			if sq != s.cursor {
-				rand = st.Foreground(lipgloss.Color("#c8f0a0")).Bold(true)
-			}
-			regels[i] = rand.Render(links) + binnen + rand.Render(rechts)
-		}
-		return regels
-	}
-
-	var b strings.Builder
-	for ri := 0; ri < 8; ri++ {
-		rij := 7 - ri
-		if draai {
-			rij = ri
-		}
-		rijRegels := make([]string, h)
-		for i := range rijRegels {
-			if i == h/2 {
-				rijRegels[i] = dim.Render(fmt.Sprintf(" %d ", rij+1))
-			} else {
-				rijRegels[i] = "   "
-			}
-		}
-		for fi := 0; fi < 8; fi++ {
-			lijn := fi
-			if draai {
-				lijn = 7 - fi
-			}
-			sq := chess.Square(rij*8 + lijn)
-			for i, r := range veld(sq, (rij+lijn)%2 == 1) {
-				rijRegels[i] += r
-			}
-		}
-		b.WriteString(strings.Join(rijRegels, "\n") + "\n")
-	}
-	kolommen := "abcdefgh"
-	if draai {
-		kolommen = "hgfedcba"
-	}
-	b.WriteString("   ")
-	for _, c := range kolommen {
-		half := (w - 1) / 2
-		b.WriteString(dim.Render(strings.Repeat(" ", half) + string(c) + strings.Repeat(" ", w-1-half)))
-	}
-	return b.String()
-}
-
-// stukkenUitleg: welk plaatje welk stuk is, zodat je ze leert herkennen.
-func (m model) stukkenUitleg(p palet, h, breed int) string {
-	s := m.dk.sk
-	namen := []struct {
-		stuk  chess.PieceType
-		sleut string
-	}{{chess.King, "chess.n.king"}, {chess.Queen, "chess.n.queen"}, {chess.Rook, "chess.n.rook"}, {chess.Bishop, "chess.n.bishop"}, {chess.Knight, "chess.n.knight"}, {chess.Pawn, "chess.n.pawn"}}
-	letters := stukLettersEN
-	if m.inst.Taal == "nl" {
-		letters = stukLettersNL
-	}
-	vak := lipgloss.NewStyle().Background(veldLicht).Foreground(stukWit).Bold(true)
-	var r []string
-	if s.letters || h == 1 || breed < 24 {
-		var delen []string
-		for _, n := range namen {
-			l := letters[n.stuk]
-			if l == "o" {
-				l = "i"
-			}
-			delen = append(delen, vak.Render(" "+l+" ")+" "+m.t(n.sleut))
-		}
-		for i := 0; i < len(delen); i += 2 {
-			r = append(r, delen[i]+"   "+delen[min(i+1, len(delen)-1)])
-		}
-		return lipgloss.NewStyle().Width(breed).Render(strings.Join(r, "\n"))
-	}
-	th := h // dezelfde tekeningen als op het bord
-	for i := 0; i < len(namen); i += 2 {
-		regels := make([]string, th)
-		for j := i; j < i+2; j++ {
-			t := stukTekening[th][namen[j].stuk]
-			for k := 0; k < th; k++ {
-				naam := ""
-				if k == th/2 {
-					naam = " " + m.t(namen[j].sleut)
-				}
-				regels[k] += vak.Render(" "+t[k]+" ") + naam + strings.Repeat(" ", max(11-lipgloss.Width(naam), 1))
-			}
-		}
-		r = append(r, strings.Join(regels, "\n"))
-	}
-	return strings.Join(r, "\n\n")
+	_, vol := m.schaakMaat()
+	return vol
 }

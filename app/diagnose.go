@@ -47,7 +47,7 @@ type diagStaat struct {
 type diagMsg []diagRegel
 
 // diagVolgorde: zo staan ze op het scherm.
-var diagVolgorde = []string{"internet", "parents", "storage", "watchdog", "version", "weather", "iss", "spotify", "abs", "navidrome", "ai", "stockfish", "hedy"}
+var diagVolgorde = []string{"internet", "parents", "storage", "watchdog", "version", "screen", "weather", "iss", "spotify", "abs", "navidrome", "ai", "stockfish", "hedy"}
 
 // korteFout: een foutmelding zonder eindeloze JSON, op één regel.
 func korteFout(err error) string {
@@ -66,6 +66,7 @@ func (m *model) diagnoseStart() tea.Cmd {
 	d.bezig = true
 	taal, ouders, oudersFout := m.inst.Taal, m.ouders, m.oudersFout
 	wifi, l, nieuw := m.wifi, m.l, m.nieuw
+	breed, hoog := m.breed, m.hoog
 	t := func(k string, a ...any) string { return tr(taal, k, a...) }
 
 	return func() tea.Msg {
@@ -141,6 +142,9 @@ func (m *model) diagnoseStart() tea.Cmd {
 			} else {
 				zet("version", diagGoed, versie)
 			}
+		})
+		test(func() { // scherm: hoeveel tekens er passen (handig bij vragen over de opmaak)
+			zet("screen", diagGoed, t("diag.screensize", breed, hoog, os.Getenv("TERM")))
 		})
 		test(func() { // weer
 			msg := haalWeer(ouders)()

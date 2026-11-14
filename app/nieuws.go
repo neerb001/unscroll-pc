@@ -19,6 +19,10 @@ type nieuwsItem struct {
 
 // nieuwsLijst: nieuwste bovenaan.
 var nieuwsLijst = []nieuwsItem{
+	{"v0.25.0", [2]string{
+		"Schaken is veel sneller geworden en de stukken zijn mooier getekend. Naast het bord zie je welk stuk wat is.",
+		"Chess is much faster now and the pieces are drawn more nicely. Next to the board you can see which piece is which.",
+	}},
 	{"v0.24.0", [2]string{
 		"Zoeken in je boeken: druk bij 2 Lezen op / en typ een stukje van de titel of de schrijver.",
 		"Search your books: in 2 Read, press / and type part of the title or the author.",

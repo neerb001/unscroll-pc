@@ -168,7 +168,7 @@ func ouderZet(in io.Reader) error {
 	if info, err := os.Stat(pad); err == nil {
 		perm = info.Mode().Perm()
 	}
-	return veiligSchrijven(pad, nieuw, perm)
+	return veiligSchrijvenNu(pad, nieuw, perm)
 }
 
 // pasYAMLAan wijzigt waarden in ouders.yaml en laat commentaar en volgorde staan.

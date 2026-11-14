@@ -21,6 +21,10 @@ func TestVeiligSchrijven(t *testing.T) {
 	if info, _ := os.Stat(pad); info.Mode().Perm() != 0o600 {
 		t.Errorf("rechten: %v", info.Mode().Perm())
 	}
+	wachtOpSchijf()
+	if err := veiligSchrijvenNu(pad, []byte("nieuw"), 0o600); err != nil {
+		t.Fatal(err)
+	}
 	if l, _ := os.ReadDir(dir); len(l) != 1 {
 		t.Errorf("tijdelijke bestanden blijven liggen: %v", l)
 	}

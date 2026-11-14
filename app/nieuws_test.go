@@ -34,7 +34,7 @@ func TestVersieVergelijken(t *testing.T) {
 func TestNieuwsOpStartscherm(t *testing.T) {
 	oud := versie
 	t.Cleanup(func() { versie = oud })
-	versie = "v0.24.0"
+	versie = "v0.25.0"
 
 	// een computer die al instellingen had maar nog nooit nieuws zag: het nieuwste stukje
 	m, _ := testModel(t, Geheimen{})
@@ -42,14 +42,14 @@ func TestNieuwsOpStartscherm(t *testing.T) {
 	m.inst.NieuwsGezien = "" // zoals een instellingenbestand van voor deze functie
 	m.nieuwsBijStart(true)
 	m.tab = tabStart
-	if v := m.View(); !strings.Contains(v, "nieuw!") || !strings.Contains(v, "Zoeken in je boeken") {
+	if v := m.View(); !strings.Contains(v, "nieuw!") || !strings.Contains(v, "Schaken is veel sneller") {
 		t.Fatalf("geen nieuws op het startscherm:\n%s", v)
 	}
 	m = toets(m, "x")
-	if v := m.View(); strings.Contains(v, "Zoeken in je boeken") {
+	if v := m.View(); strings.Contains(v, "Schaken is veel sneller") {
 		t.Errorf("x sluit het nieuws niet:\n%s", v)
 	}
-	if l := laadInstellingen(); l.NieuwsGezien != "v0.24.0" {
+	if l := laadInstellingen(); l.NieuwsGezien != "v0.25.0" {
 		t.Errorf("gezien niet bewaard: %q", l.NieuwsGezien)
 	}
 	// opnieuw starten: geen nieuws meer
@@ -65,7 +65,7 @@ func TestNieuwsOpStartscherm(t *testing.T) {
 	_ = os.Remove(instellingenPad())
 	m3.inst.NieuwsGezien = ""
 	m3.nieuwsBijStart(false)
-	if len(m3.nieuws) != 0 || m3.inst.NieuwsGezien != "v0.24.0" {
+	if len(m3.nieuws) != 0 || m3.inst.NieuwsGezien != "v0.25.0" {
 		t.Errorf("nieuwe computer: %v %q", m3.nieuws, m3.inst.NieuwsGezien)
 	}
 }

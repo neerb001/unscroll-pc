@@ -540,7 +540,11 @@ func (m model) View() string {
 		inhoud = m.viewStraks(p)
 	}
 	h := m.hoog - 1
-	body := lipgloss.NewStyle().Padding(1, 2).Width(m.breed).Height(h).MaxHeight(h).Render(inhoud)
+	boven := 1
+	if m.volScherm() {
+		boven = 0 // het schaakbord gebruikt elke regel
+	}
+	body := lipgloss.NewStyle().Padding(boven, 2).Width(m.breed).Height(h).MaxHeight(h).Render(inhoud)
 	return body + "\n" + m.viewStatus(p)
 }
 
@@ -875,11 +879,18 @@ func main() {
 		// eerst netjes proberen; lukt dat niet binnen 5 seconden, dan hard stoppen
 		go p.Kill()
 		time.Sleep(5 * time.Second)
+		klaar := make(chan struct{})
+		go func() { wachtOpSchijf(); close(klaar) }()
+		select {
+		case <-klaar:
+		case <-time.After(3 * time.Second):
+		}
 		begin.l.sp.Afsluiten()
 		begin.l.lspot.Stop()
 		os.Exit(3)
 	})
 	_, err := p.Run()
+	wachtOpSchijf()                                   // alles wat bewaard is staat nu echt op de schijf
 	begin.l.sp.Afsluiten()                            // mpv stoppen
 	begin.l.lspot.Stop()                              // librespot stoppen
 	fmt.Fprint(os.Stdout, "\x1b]110\x07\x1b]111\x07") // terminalkleuren terug
