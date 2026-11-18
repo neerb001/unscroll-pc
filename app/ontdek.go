@@ -33,17 +33,19 @@ var ontdekSleutels = []string{"", "disc.animal", "disc.lab", "disc.journal", "di
 type ontdekStaat struct {
 	scherm, keuze int
 	// dier van de dag
-	dagTerug int // 0 = vandaag, 1 = gisteren, ...
-	dier     *dierInfo
-	dierFout string
-	laden    bool
+	dagTerug  int // 0 = vandaag, 1 = gisteren, ...
+	dier      *dierInfo
+	dierFout  string
+	laden     bool
+	dierBoven int // gescrold in de tekst
 	// lab
 	lab       *labWereld
 	labRegels []string
 	invoer    textinput.Model
 	// natuurdagboek
-	notities  []notitie
-	schrijven bool
+	notities     []notitie
+	schrijven    bool
+	dagboekBoven int
 	// programmeren
 	hedy  *hedyStaat
 	hemel *hemelStaat
@@ -277,7 +279,7 @@ func (m *model) toetsOntdek(msg tea.KeyMsg) (tea.Cmd, bool) {
 			o.scherm = o.keuze + 1
 			switch o.scherm {
 			case ontdekDier:
-				o.dagTerug, o.laden, o.dier, o.dierFout = 0, true, nil, ""
+				o.dagTerug, o.laden, o.dier, o.dierFout, o.dierBoven = 0, true, nil, "", 0
 				return tea.Batch(haalDier(m.inst.Taal, time.Now(), 0), haalWeekDieren(m.inst.Taal)), true
 			case ontdekLab:
 				if o.lab == nil {
@@ -288,7 +290,7 @@ func (m *model) toetsOntdek(msg tea.KeyMsg) (tea.Cmd, bool) {
 				o.invoer.Prompt = ""
 				return o.invoer.Focus(), true
 			case ontdekDagboek:
-				o.notities = laadNotities()
+				o.notities, o.dagboekBoven = laadNotities(), 0
 			case ontdekHedy:
 				o.hedy.laad()
 				m.hedyLaadCode()
@@ -300,6 +302,9 @@ func (m *model) toetsOntdek(msg tea.KeyMsg) (tea.Cmd, bool) {
 		}
 		return nil, true
 	case ontdekDier:
+		if scrollToets(k, &o.dierBoven, m.hoog-10) {
+			return nil, true
+		}
 		switch k {
 		case "left", "right":
 			if k == "left" {
@@ -307,7 +312,7 @@ func (m *model) toetsOntdek(msg tea.KeyMsg) (tea.Cmd, bool) {
 			} else {
 				o.dagTerug = max(o.dagTerug-1, 0)
 			}
-			o.laden, o.dier, o.dierFout = true, nil, ""
+			o.laden, o.dier, o.dierFout, o.dierBoven = true, nil, "", 0
 			return haalDier(m.inst.Taal, time.Now().AddDate(0, 0, -o.dagTerug), o.dagTerug), true
 		case "r":
 			o.laden, o.dier, o.dierFout = true, nil, ""
@@ -394,6 +399,7 @@ func (m *model) toetsOntdek(msg tea.KeyMsg) (tea.Cmd, bool) {
 					n := notitie{time.Now(), t}
 					bewaarNotitie(n)
 					o.notities = append([]notitie{n}, o.notities...)
+					o.dagboekBoven = 0 // de nieuwe notitie staat bovenaan
 				}
 				o.schrijven = false
 				o.invoer.Blur()
@@ -402,6 +408,9 @@ func (m *model) toetsOntdek(msg tea.KeyMsg) (tea.Cmd, bool) {
 				o.invoer, cmd = o.invoer.Update(msg)
 				return cmd, true
 			}
+			return nil, true
+		}
+		if scrollToets(k, &o.dagboekBoven, m.hoog-10) {
 			return nil, true
 		}
 		switch k {
@@ -447,6 +456,7 @@ func (m model) viewOntdek(p palet) string {
 			inhoud = lipgloss.NewStyle().Bold(true).Foreground(p.acc).Render(o.dier.Titel) + "\n" +
 				dim.Render(o.dier.Omschrijving) + "\n\n" + lipgloss.NewStyle().Width(breed-6).Render(o.dier.Tekst) +
 				"\n\n" + dim.Render(m.t("disc.wiki"))
+			inhoud = venster(inhoud, &o.dierBoven, max(m.hoog-10, 4), dim.Render(m.t("scroll.more")))
 		}
 		dag := m.t("disc.today")
 		if o.dagTerug > 0 {
@@ -473,11 +483,14 @@ func (m model) viewOntdek(p palet) string {
 		if len(o.notities) == 0 && !o.schrijven {
 			regels = append(regels, dim.Render(m.t("disc.journalempty")))
 		}
-		for i, n := range o.notities {
-			if i >= max(m.hoog-14, 3) {
-				break
-			}
-			regels = append(regels, lipgloss.NewStyle().Foreground(p.acc).Render(n.Tijd.Format("Mon 2 Jan 15:04")), lipgloss.NewStyle().Width(breed-6).Render(n.Tekst), "")
+		var notities []string
+		for _, n := range o.notities {
+			notities = append(notities, lipgloss.NewStyle().Foreground(p.acc).Render(n.Tijd.Format("Mon 2 Jan 15:04")), lipgloss.NewStyle().Width(breed-6).Render(n.Tekst), "")
+		}
+		if len(notities) > 0 {
+			// alle notities, ook de oude: met ↑ ↓ erdoorheen
+			hoogte := max(m.hoog-10-len(regels), 3)
+			regels = append(regels, venster(strings.TrimRight(strings.Join(notities, "\n"), "\n"), &o.dagboekBoven, hoogte, dim.Render(m.t("scroll.more"))))
 		}
 		return kop + "\n\n" + paneel(p, m.t("disc.journal"), strings.Join(regels, "\n"), breed, true) + "\n" + dim.Render(m.t("disc.journalkeys"))
 	}

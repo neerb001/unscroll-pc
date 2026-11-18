@@ -19,6 +19,10 @@ type nieuwsItem struct {
 
 // nieuwsLijst: nieuwste bovenaan.
 var nieuwsLijst = []nieuwsItem{
+	{"v0.25.1", [2]string{
+		"Ga je verder met een eerder verhaal, dan kun je met ↑ en ↓ het hele verhaal teruglezen, vanaf het begin. Ook in je natuurdagboek, bij het dier van de dag en in het woordenboek kun je nu scrollen.",
+		"When you carry on with an earlier story, you can read the whole story again with ↑ and ↓, right from the start. You can now also scroll in your nature journal, the animal of the day and the dictionary.",
+	}},
 	{"v0.25.0", [2]string{
 		"Schaken is veel sneller geworden en de stukken zijn mooier getekend. Naast het bord zie je welk stuk wat is.",
 		"Chess is much faster now and the pieces are drawn more nicely. Next to the board you can see which piece is which.",

@@ -233,6 +233,7 @@ type woordStaat struct {
 	fout   string
 	laden  bool
 	eerder []string
+	boven  int // gescrold in de uitleg
 }
 
 type woordMsg struct {
@@ -250,6 +251,10 @@ func nieuwWoordenboek() *woordStaat {
 
 func (m *model) toetsWoord(msg tea.KeyMsg) (tea.Cmd, bool) {
 	w := m.sh.wb
+	// Home en End zijn voor het tekstveld; ↑ ↓ PgUp PgDn scrollen door een lange uitleg
+	if k := msg.String(); k != "home" && k != "end" && scrollToets(k, &w.boven, m.hoog-12) {
+		return nil, true
+	}
 	switch msg.String() {
 	case "esc":
 		w.invoer.Blur()
@@ -259,7 +264,7 @@ func (m *model) toetsWoord(msg tea.KeyMsg) (tea.Cmd, bool) {
 		if woord == "" || w.laden {
 			return nil, true
 		}
-		w.laden, w.fout, w.uitleg = true, "", nil
+		w.laden, w.fout, w.uitleg, w.boven = true, "", nil, 0
 		taal := m.inst.Taal
 		return func() tea.Msg { u, err := zoekWoord(taal, woord); return woordMsg{u, err} }, true
 	default:
@@ -289,7 +294,7 @@ func (m *model) woordBericht(msg woordMsg) {
 func (m model) viewWoord(p palet, breed int) string {
 	w := m.sh.wb
 	dim := lipgloss.NewStyle().Foreground(p.dim)
-	regels := []string{w.invoer.View(), ""}
+	var regels []string
 	switch {
 	case w.laden:
 		regels = append(regels, dim.Render(m.t("listen.loading")))
@@ -316,5 +321,6 @@ func (m model) viewWoord(p palet, breed int) string {
 			regels = append(regels, "", dim.Render(m.t("dict.earlier")+" "+strings.Join(w.eerder, ", ")))
 		}
 	}
-	return strings.Join(regels, "\n")
+	// het tekstveld blijft staan, de uitleg eronder kan scrollen
+	return w.invoer.View() + "\n\n" + venster(strings.Join(regels, "\n"), &w.boven, max(m.hoog-12, 3), dim.Render(m.t("scroll.more")))
 }

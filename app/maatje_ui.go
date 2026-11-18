@@ -92,7 +92,7 @@ func leesLog(vanaf time.Time) []logRegel {
 /* ---------------- staat ---------------- */
 
 type regel struct {
-	wie   int // 0 kind, 1 maatje, 2 melding
+	wie   int // 0 kind, 1 maatje, 2 melding, 3 verhaaltekst (van jullie samen, zonder naam ervoor)
 	tekst string
 }
 
@@ -120,6 +120,7 @@ type maatjeStaat struct {
 	kiesModus   int  // voor welke modus; -1: ouders kiezen huiswerk om terug te lezen
 	verhalen    []verhaalBestand
 	verhaalSel  int
+	weekBoven   int // gescrold in het weekoverzicht
 }
 
 func nieuwMaatjeStaat(g Geheimen, o Ouders) *maatjeStaat {
@@ -238,6 +239,9 @@ func (m *model) toetsMaatje(msg tea.KeyMsg) (tea.Cmd, bool) {
 		}
 		return nil, true
 	}
+	if s == nil && mj.week && m.ouderModus && scrollToets(k, &mj.weekBoven, m.hoog-12) {
+		return nil, true
+	}
 	if s == nil {
 		switch k {
 		case "up", "k":
@@ -246,7 +250,7 @@ func (m *model) toetsMaatje(msg tea.KeyMsg) (tea.Cmd, bool) {
 			mj.keuze = (mj.keuze + 1) % aantalModi
 		case "enter":
 			if mj.keuze != modusVraag {
-				if v := eerdereSessies(mj.keuze, 6); len(v) > 0 {
+				if v := eerdereSessies(mj.keuze, 30); len(v) > 0 {
 					mj.verhalen, mj.verhaalSel, mj.kiesVerhaal, mj.kiesModus = v, 0, true, mj.keuze
 					return nil, true
 				}
@@ -264,7 +268,7 @@ func (m *model) toetsMaatje(msg tea.KeyMsg) (tea.Cmd, bool) {
 			return nil, false
 		case "w":
 			if m.ouderModus {
-				mj.week = !mj.week
+				mj.week, mj.weekBoven = !mj.week, helemaalOnder // de nieuwste dag onderaan in beeld
 				return nil, true
 			}
 			return nil, false
@@ -510,7 +514,7 @@ func (m model) viewMaatje(p palet) string {
 		case mj.kiesModus < 0:
 			vraag, titel, eerste = "buddy.hwread", m.t("buddy.hwlist"), 0
 		}
-		regels := []string{dim.Render(m.t(vraag)), ""}
+		var lijst []string
 		for i := 1 - eerste; i <= len(mj.verhalen); i++ {
 			naam := m.t(nieuw)
 			if i > 0 {
@@ -521,11 +525,14 @@ func (m model) viewMaatje(p palet) string {
 				}
 			}
 			if i-1+eerste == mj.verhaalSel {
-				regels = append(regels, lipgloss.NewStyle().Background(p.sel).Foreground(p.acc).Bold(true).Render("▸ "+naam+" "))
+				lijst = append(lijst, lipgloss.NewStyle().Background(p.sel).Foreground(p.acc).Bold(true).Render("▸ "+naam+" "))
 			} else {
-				regels = append(regels, "  "+naam)
+				lijst = append(lijst, "  "+naam)
 			}
 		}
+		// een lange lijst (ouders zien vier weken): alleen het stuk rond de keuze
+		begin, eind := lijstVenster(len(lijst), mj.verhaalSel, max(m.hoog-12, 3))
+		regels := append([]string{dim.Render(m.t(vraag)), ""}, lijst[begin:eind]...)
 		regels = append(regels, "", dim.Render(m.t("buddy.pickkeys")))
 		return kop + "\n\n" + paneel(p, titel, strings.Join(regels, "\n"), breed, true)
 	}
@@ -564,6 +571,8 @@ func (m model) viewMaatje(p palet) string {
 			regels = append(regels, lipgloss.NewStyle().Foreground(p.acc).Width(tekstBreed).Render(m.t("buddy.you")+": "+r.tekst))
 		case 1:
 			regels = append(regels, lipgloss.NewStyle().Foreground(p.fg).Width(tekstBreed).Render(m.inst.Maatje+": "+r.tekst))
+		case 3:
+			regels = append(regels, lipgloss.NewStyle().Foreground(p.fg).Width(tekstBreed).Render(r.tekst))
 		default:
 			regels = append(regels, lipgloss.NewStyle().Foreground(p.geel).Width(tekstBreed).Render(r.tekst))
 		}
@@ -626,8 +635,6 @@ func (m model) viewWeek(p palet, breed int) string {
 			regels = append(regels, "  "+regel)
 		}
 	}
-	if len(regels) > m.hoog-10 {
-		regels = regels[len(regels)-(m.hoog-10):]
-	}
-	return strings.Join(regels, "\n") + "\n\n" + dim.Render(m.t("buddy.weeklegend"))
+	// ouders scrollen terug naar eerdere dagen; het begint bij de nieuwste
+	return venster(strings.Join(regels, "\n"), &m.mj.weekBoven, max(m.hoog-12, 3), dim.Render(m.t("scroll.more"))) + "\n\n" + dim.Render(m.t("buddy.weeklegend"))
 }

@@ -159,11 +159,9 @@ func (m *model) verderMet(v verhaalBestand, alleenLezen bool) tea.Cmd {
 	mj.kiesVerhaal = false
 	s := &sessie{id: mj.volgID, modus: v.modus, verhaal: v.pad, geteld: true, eerder: tekst, alleenLezen: alleenLezen}
 	if v.modus == modusVerhaal {
-		staart := []rune(tekst)
-		if len(staart) > 700 {
-			staart = append([]rune("… "), staart[len(staart)-700:]...)
-		}
-		s.regels = []regel{{2, m.t("buddy.sofar")}, {1, string(staart)}, {1, m.t("buddy.continue")}}
+		// het hele verhaal, niet alleen het eind: met ↑ ↓ terug naar het begin.
+		// Zonder naam ervoor, want het is van jullie samen.
+		s.regels = []regel{{2, m.t("buddy.sofar")}, {3, tekst}, {1, m.t("buddy.continue")}}
 	} else {
 		s.regels = append(leesGesprek(tekst), regel{2, m.t("buddy.hwback")})
 		if alleenLezen {
