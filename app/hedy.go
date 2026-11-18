@@ -322,6 +322,9 @@ func (m *model) toetsHedy(msg tea.KeyMsg) (tea.Cmd, bool) {
 		switch k {
 		case "enter":
 			_, _ = io.WriteString(p.stdin, h.invoer+"\n")
+			if len(h.uitvoer) == 0 { // nog niets op het scherm: Python start traag op een oude computer
+				h.uitvoer = []string{""}
+			}
 			h.uitvoer[len(h.uitvoer)-1] += h.invoer
 			h.invoer = ""
 		case "backspace":

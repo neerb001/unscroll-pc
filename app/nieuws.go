@@ -19,6 +19,10 @@ type nieuwsItem struct {
 
 // nieuwsLijst: nieuwste bovenaan.
 var nieuwsLijst = []nieuwsItem{
+	{"v0.25.2", [2]string{
+		"Programmeren werkt weer: je Hedy-programma's draaien nu meteen, vanaf de eerste opdracht. Ga naar 4 Ontdekken en kies Programmeren.",
+		"Programming works again: your Hedy programs now run straight away, from the very first exercise. Go to 4 Discover and choose Programming.",
+	}},
 	{"v0.25.1", [2]string{
 		"Ga je verder met een eerder verhaal, dan kun je met ↑ en ↓ het hele verhaal teruglezen, vanaf het begin. Ook in je natuurdagboek, bij het dier van de dag en in het woordenboek kun je nu scrollen.",
 		"When you carry on with an earlier story, you can read the whole story again with ↑ and ↓, right from the start. You can now also scroll in your nature journal, the animal of the day and the dictionary.",

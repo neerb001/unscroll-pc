@@ -28,13 +28,24 @@ python3 "$HIER/maak_inhoud.py" "$W/site" "$B/lib/hedy" "$B"
 cp "$W/site/LICENSE" "$B/HEDY-LICENSE"
 cp -r "$HIER/unscroll_hedy.py" "$HIER/schildpad" "$B/"
 
-# zelftest: een paar programma's op verschillende niveaus, in het Nederlands en Engels
+# zelftest: een paar programma's op verschillende niveaus, in het Nederlands en Engels.
+# Zoals op het apparaat: als gewone gebruiker (niet root), in een map waar die niet mag schrijven,
+# met dezelfde omgeving als de app (app/hedy.go).
+chmod -R a+rX,go-w "$B"
+chmod 755 "$W"
 toets() {  # toets NIVEAU TAAL VERWACHT CODE [INVOER]
   printf '%s\n' "$4" > "$W/p.hedy"
-  uitvoer="$(printf '%s\n' "${5:-}" | python3 -I "$B/unscroll_hedy.py" "$1" "$2" "$W/p.hedy" 2>&1 || true)"
+  chmod 644 "$W/p.hedy"
+  uitvoer="$(printf '%s\n' "${5:-}" | (cd /tmp && setpriv --reuid=nobody --regid=nogroup --clear-groups \
+    env -i PATH=/usr/bin:/bin HOME=/tmp LANG=C.UTF-8 PYTHONIOENCODING=utf-8 PYTHONUNBUFFERED=1 \
+    python3 -I "$B/unscroll_hedy.py" "$1" "$2" "$W/p.hedy") 2>&1 || true)"
   echo "$uitvoer"
   grep -q -- "$3" <<<"$uitvoer"
 }
+# het pakket mag niet beschreven kunnen worden door het kind
+if setpriv --reuid=nobody --regid=nogroup --clear-groups touch "$B/lib/hedy/data/proef" 2>/dev/null; then
+  echo "het pakket is beschrijfbaar voor een gewone gebruiker; dan test dit niet wat het apparaat doet"; exit 1
+fi
 toets 1 nl "hallo wereld" "print hallo wereld"
 toets 1 nl "Sam" "vraag hoe heet jij?
 echo hallo" "Sam"

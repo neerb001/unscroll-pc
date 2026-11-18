@@ -20,6 +20,10 @@ if "toets" in code:
     k = input()
     print("je drukte " + k)
     sys.exit(0)
+if "traag" in code:
+    naam = input()  # wacht op invoer voordat er iets op het scherm staat
+    print("gekregen: " + naam)
+    sys.exit(0)
 if "fout" in code:
     print("\x1eHEDYFOUT " + json.dumps({"tekst": "Het lijkt erop dat je een fout maakte op regel 1.", "regel": 1}))
     sys.exit(2)
@@ -115,6 +119,16 @@ func TestHedyProgrammeren(t *testing.T) {
 	m = draaiHedy(t, nm.(model), cmd)
 	if !strings.Contains(m.View(), "je drukte x") {
 		t.Fatalf("toets kwam niet aan:\n%s", m.View())
+	}
+	// Enter voordat het programma iets heeft laten zien (op een trage Eee PC duurt starten even)
+	m.od.hedy.editor.SetValue("traag")
+	nm, cmd = m.Update(tea.KeyMsg{Type: tea.KeyCtrlR})
+	m = nm.(model)
+	m = toets(m, "a")
+	nm, cmd2 := m.Update(tea.KeyMsg{Type: tea.KeyEnter})
+	m = draaiHedy(t, draaiHedy(t, nm.(model), cmd2), cmd)
+	if !strings.Contains(m.View(), "gekregen: a") {
+		t.Fatalf("invoer voor de eerste uitvoer kwam niet aan:\n%s", m.View())
 	}
 	// volgende niveau
 	m = toets(m, "esc")
