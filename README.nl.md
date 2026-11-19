@@ -39,7 +39,7 @@ Het project begon op een oude Asus EeePC, vandaar de "PC" in de naam.
 |---|---|
 | Start | Begroeting, menu, avondslot, eigen naam in blokletters |
 | Talen | Engels (standaard) en Nederlands, te kiezen bij Systeem. Nieuwe talen in `app/i18n.go` |
-| Systeem | Naam computer, eigen naam, naam en gezicht van het maatje, 5 kleurthema's, wifi, accu, volume met maximum, hulp vragen (ntfy) |
+| Systeem | Naam computer, eigen naam, naam en gezicht van het maatje, 5 kleurthema's, wifi, accu, volume met maximum, hulp vragen (ntfy), uitzetten (z) of opnieuw opstarten (r) met een tweede druk om het zeker te weten |
 | Avondslot | Aparte tijden voor school- en weekendavonden, openingstijd, wat er na het slot nog mag, pincode voor ouders, pauzeren voor 30 min, 2 uur, tot morgenochtend of tot je hem weer aanzet |
 | Updates | Nieuwe versies via GitHub-releases, met checksum-controle en terugval; de app herstart zelf op een rustig moment (avondslot of midden in de nacht, als er niets speelt), of meteen met `R` in de ouderstand; `U` in de ouderstand werkt meteen bij, zonder terminal |
 | Luisteren | Navidrome, radio met draaiknop, luisterboeken en podcasts uit Audiobookshelf met voortgang, slaaptimer |
