@@ -522,6 +522,6 @@ func (m model) viewRekenmachine(p palet) string {
 		rijen = append(rijen, strings.Join(vakken, " "), "")
 	}
 	inhoud := display + "\n\n" + strings.Join(rijen, "\n")
-	return lipgloss.NewStyle().Bold(true).Render(m.t("menu.puzzles")) + "\n\n" +
+	return lipgloss.NewStyle().Bold(true).Render(m.t(map[bool]string{true: "menu.learn", false: "menu.puzzles"}[m.tab == tabLeren])) + "\n\n" +
 		lipgloss.PlaceHorizontal(m.breed-6, lipgloss.Center, inhoud) + "\n" + dim.Render(m.t("calc.btnkeys"))
 }

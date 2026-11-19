@@ -13,7 +13,10 @@ func TestTafelsOefenen(t *testing.T) {
 	m, _ := testModel(t, Geheimen{})
 	m.dk = nieuweDenksport()
 	m.inst.Taal = "nl"
-	m = toets(m, "5")
+	m = toets(m, tabToets(tabLeren))
+	for i := 0; i < 3; i++ {
+		m = toets(m, "down")
+	}
 	m = toets(m, "enter") // Tafels oefenen
 	m = toets(m, "a")     // alles uit
 	m = toets(m, "7")     // alleen de tafel van 7
@@ -53,10 +56,11 @@ func TestRekenmachineScherm(t *testing.T) {
 	m, _ := testModel(t, Geheimen{})
 	m.dk = nieuweDenksport()
 	m.inst.Taal = "nl"
-	m = toets(m, "5")
-	m = toets(m, "down")
-	m = toets(m, "down")
-	m = toets(m, "enter")
+	m = toets(m, tabToets(tabLeren))
+	for i := 0; i < 5; i++ {
+		m = toets(m, "down")
+	}
+	m = toets(m, "enter") // rekenen met typen
 	m = toets(m, "1/3 + 1/6")
 	m = toets(m, "enter")
 	m = toets(m, "5/0")
@@ -109,7 +113,7 @@ func TestWoordenboek(t *testing.T) {
 	// via het scherm
 	m, _ := testModel(t, Geheimen{})
 	m.inst.Taal = "nl"
-	m = toets(m, "6")
+	m = toets(m, tabToets(tabSchrijfhoek))
 	m = toets(m, "down")
 	m = toets(m, "enter")
 	m = toets(m, "fiest")
@@ -124,9 +128,11 @@ func TestRekenmachineKnoppen(t *testing.T) {
 	m.dk = nieuweDenksport()
 	m.inst.Taal = "nl"
 	m.breed, m.hoog = 100, 34
-	m = toets(m, "5")
-	m = toets(m, "down")
-	m = toets(m, "enter")
+	m = toets(m, tabToets(tabLeren))
+	for i := 0; i < 4; i++ {
+		m = toets(m, "down")
+	}
+	m = toets(m, "enter") // rekenmachine met knoppen
 	// typen: 7 ÷ 2 en Enter (cursor springt naar =)
 	m = toets(m, "7/2")
 	m = toets(m, "enter")

@@ -44,7 +44,7 @@ func hedyTestModel(t *testing.T) model {
 	m, _ := testModel(t, Geheimen{})
 	m.inst.Taal = "nl"
 	m.breed, m.hoog = 110, 34
-	m = toets(m, "4")
+	m = toets(m, tabToets(tabOntdekken))
 	for i := 0; i < 3; i++ {
 		m = toets(m, "down")
 	}
@@ -141,7 +141,7 @@ func TestHedyProgrammeren(t *testing.T) {
 func TestHedyNietGeinstalleerd(t *testing.T) {
 	t.Setenv("UNSCROLL_HEDY", t.TempDir())
 	m, _ := testModel(t, Geheimen{})
-	m = toets(m, "4")
+	m = toets(m, tabToets(tabOntdekken))
 	for i := 0; i < 3; i++ {
 		m = toets(m, "down")
 	}

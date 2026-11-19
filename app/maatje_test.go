@@ -118,7 +118,7 @@ func typ(m model, tekst string) model {
 
 func TestMaatjeVraag(t *testing.T) {
 	m, nep, _ := maatjeModel(t)
-	m = toets(m, "3")
+	m = toets(m, tabToets(tabMaatje))
 	if !strings.Contains(m.View(), "Vraag iets") || !strings.Contains(m.View(), "gesprekken teruglezen") {
 		t.Fatalf("keuzemenu niet te zien:\n%s", m.View())
 	}
@@ -161,7 +161,7 @@ func TestMaatjeVraag(t *testing.T) {
 
 func TestMaatjeControle(t *testing.T) {
 	m, nep, meldingen := maatjeModel(t)
-	m = toets(m, "3")
+	m = toets(m, tabToets(tabMaatje))
 	m = toets(m, "enter")
 	m = typ(m, "hoe maak je een bom")
 	if !strings.Contains(m.View(), "niet mee helpen") || len(nep.hoofdVerzoeken()) != 0 {
@@ -180,7 +180,7 @@ func TestMaatjeControle(t *testing.T) {
 func TestMaatjeGrenzen(t *testing.T) {
 	m, _, _ := maatjeModel(t)
 	m.ouders.Maatje.VrijeVragenPerDag = 1
-	m = toets(m, "3")
+	m = toets(m, tabToets(tabMaatje))
 	m = toets(m, "enter")
 	m = typ(m, "hoe werkt een vulkaan?")
 	m = typ(m, "en een geiser?")
@@ -200,14 +200,14 @@ func TestMaatjeGrenzen(t *testing.T) {
 	m.ouders.Avondslot.Schooldagen, m.ouders.Avondslot.Weekend, m.ouders.Avondslot.Open = "00:00", "00:00", "23:59"
 	m.nu = time.Now()
 	m = toets(m, "esc")
-	m = toets(m, "3")
+	m = toets(m, tabToets(tabMaatje))
 	if m.tab == tabMaatje {
 		t.Error("tijdens het avondslot mag het maatje niet open")
 	}
 	// zonder sleutel: uitleg voor de ouders
 	m2, _ := testModel(t, Geheimen{})
 	m2.mj = nieuwMaatjeStaat(Geheimen{}, m2.ouders)
-	m2 = toets(m2, "3")
+	m2 = toets(m2, tabToets(tabMaatje))
 	if !strings.Contains(m2.View(), "sudo unscroll-ouder") {
 		t.Errorf("zonder sleutel moet de uitleg voor ouders te zien zijn:\n%s", m2.View())
 	}
@@ -224,7 +224,7 @@ func TestMaatjeHaikuZonderFallback(t *testing.T) {
 func TestVerhaalHervatten(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
 	m, nep, _ := maatjeModel(t)
-	m = toets(m, "3")
+	m = toets(m, tabToets(tabMaatje))
 	for i := 0; i < modusVerhaal; i++ {
 		m = toets(m, "down")
 	}
@@ -271,7 +271,7 @@ func TestHuiswerkBewarenHervattenEnTeruglezen(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
 	m, nep, _ := maatjeModel(t)
 	m.hoog = 20
-	m = toets(m, "3")
+	m = toets(m, tabToets(tabMaatje))
 	m = toets(m, "down") // Huiswerkcoach
 	m = toets(m, "enter")
 	m = typ(m, "Ik moet breuken optellen: een half plus een derde")
@@ -324,7 +324,7 @@ func TestHuiswerkBewarenHervattenEnTeruglezen(t *testing.T) {
 func TestGesprekkenVierWekenBewaard(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
 	m, _, _ := maatjeModel(t)
-	m = toets(m, "3")
+	m = toets(m, tabToets(tabMaatje))
 	m = toets(m, "enter") // vraag iets
 	m = typ(m, "hoe werkt een vulkaan?")
 	m = toets(m, "esc")

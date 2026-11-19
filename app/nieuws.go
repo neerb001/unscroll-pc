@@ -19,13 +19,17 @@ type nieuwsItem struct {
 
 // nieuwsLijst: nieuwste bovenaan.
 var nieuwsLijst = []nieuwsItem{
+	{"v0.26.0", [2]string{
+		"Nieuw: 3 Leren, met dictee, flitslezen en klokkijken. De tafels en de rekenmachine staan daar nu ook. De knoppen daarna schuiven een plekje op: je maatje is nu 4, Denksport 6 en Systeem 9.",
+		"New: 3 Learn, with dictation, flash reading and telling time. The times tables and the calculator are there now too. The buttons after it move up one place: the buddy is now 4, Puzzles 6 and System 9.",
+	}},
 	{"v0.25.3", [2]string{
 		"In het computerlab staat nu duidelijker wat je kunt typen: typ missie en druk op Enter om de opdracht nog eens te zien. Typ je opnieuw, dan vraagt het lab eerst of je echt alles opnieuw wilt.",
 		"The computer lab now shows more clearly what you can type: type mission and press Enter to see the mission again. If you type restart, the lab first asks whether you really want to start everything over.",
 	}},
 	{"v0.25.2", [2]string{
-		"Programmeren werkt weer: je Hedy-programma's draaien nu meteen, vanaf de eerste opdracht. Ga naar 4 Ontdekken en kies Programmeren.",
-		"Programming works again: your Hedy programs now run straight away, from the very first exercise. Go to 4 Discover and choose Programming.",
+		"Programmeren werkt weer: je Hedy-programma's draaien nu meteen, vanaf de eerste opdracht. Ga naar Ontdekken en kies Programmeren.",
+		"Programming works again: your Hedy programs now run straight away, from the very first exercise. Go to Discover and choose Programming.",
 	}},
 	{"v0.25.1", [2]string{
 		"Ga je verder met een eerder verhaal, dan kun je met ↑ en ↓ het hele verhaal teruglezen, vanaf het begin. Ook in je natuurdagboek, bij het dier van de dag en in het woordenboek kun je nu scrollen.",
@@ -40,8 +44,8 @@ var nieuwsLijst = []nieuwsItem{
 		"Search your books: in 2 Read, press / and type part of the title or the author.",
 	}},
 	{"v0.22.0", [2]string{
-		"Het schaakbord is veel groter, met stukken die je goed herkent. Naast het bord staat welk plaatje de koning, dame, toren, loper, paard en pion is. Ga naar 5 Denksport en kies Schaken.",
-		"The chess board is much bigger, with pieces that are easy to recognise. Next to the board you can see which picture is the king, queen, rook, bishop, knight and pawn. Go to 5 Puzzles and choose Chess.",
+		"Het schaakbord is veel groter, met stukken die je goed herkent. Naast het bord staat welk plaatje de koning, dame, toren, loper, paard en pion is. Ga naar Denksport en kies Schaken.",
+		"The chess board is much bigger, with pieces that are easy to recognise. Next to the board you can see which picture is the king, queen, rook, bishop, knight and pawn. Go to Puzzles and choose Chess.",
 	}},
 }
 

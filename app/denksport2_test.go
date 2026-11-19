@@ -46,10 +46,7 @@ func TestSudokuScherm(t *testing.T) {
 	m.dk = nieuweDenksport()
 	m.inst.Taal = "nl"
 	m.breed, m.hoog = 100, 34
-	m = toets(m, "5")
-	for i := 0; i < 3; i++ {
-		m = toets(m, "down")
-	}
+	m = toets(m, tabToets(tabDenksport))
 	m = toets(m, "enter") // Sudoku: kies niveau
 	m = toets(m, "enter") // makkelijk
 	s := m.dk.sd.s
@@ -109,10 +106,8 @@ func TestRaadsels(t *testing.T) {
 	m, _ := testModel(t, Geheimen{})
 	m.dk = nieuweDenksport()
 	m.inst.Taal = "nl"
-	m = toets(m, "5")
-	for i := 0; i < 4; i++ {
-		m = toets(m, "down")
-	}
+	m = toets(m, tabToets(tabDenksport))
+	m = toets(m, "down") // raadsels
 	m = toets(m, "enter")
 	eerste := m.dk.rd.huidig.Vraag
 	m = toets(m, "banaan")

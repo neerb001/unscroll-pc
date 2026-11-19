@@ -12,7 +12,7 @@ func TestTakenlijst(t *testing.T) {
 	m, _ := testModel(t, Geheimen{})
 	m.sh = nieuweSchrijfhoek()
 	m.inst.Taal = "nl"
-	m = toets(m, "6")
+	m = toets(m, tabToets(tabSchrijfhoek))
 	m = toets(m, "enter") // Takenlijst
 	if !strings.Contains(m.View(), "Nog geen taken") {
 		t.Fatalf("lege lijst:\n%s", m.View())
@@ -55,7 +55,7 @@ func TestTakenlijst(t *testing.T) {
 	if len(laadTaken()) != 1 {
 		t.Error("taken niet bewaard")
 	}
-	m = toets(m, "0")
+	m = toets(m, tabToets(tabStart))
 	if !strings.Contains(m.View(), "opa bellen") {
 		t.Errorf("open taak niet op het startscherm:\n%s", m.View())
 	}
@@ -68,7 +68,7 @@ func TestVerhalenTeruglezen(t *testing.T) {
 	m, _ := testModel(t, Geheimen{})
 	m.sh = nieuweSchrijfhoek()
 	m.inst.Taal = "nl"
-	m = toets(m, "6")
+	m = toets(m, tabToets(tabSchrijfhoek))
 	m = toets(m, "down")
 	m = toets(m, "down")
 	m = toets(m, "enter")

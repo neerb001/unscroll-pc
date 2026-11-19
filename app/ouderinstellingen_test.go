@@ -81,7 +81,7 @@ func TestOuderInstellingenScherm(t *testing.T) {
 	m.ouders, _ = laadOuders()
 	m.inst.Taal = "nl"
 	m.breed, m.hoog = 100, 40
-	m = toets(m, "8")
+	m = toets(m, tabToets(tabSysteem))
 	m = toets(m, "o")
 	m = toets(m, "4321")
 	m = toets(m, "enter")

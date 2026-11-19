@@ -51,7 +51,7 @@ func TestNuBijwerkenInDeOuderstand(t *testing.T) {
 	m.ouders, _ = laadOuders()
 	m.inst.Taal = "nl"
 	m.breed, m.hoog = 120, 40
-	m = toets(m, "8")
+	m = toets(m, tabToets(tabSysteem))
 
 	// zonder ouderstand gebeurt er niets
 	m = toets(m, "U")

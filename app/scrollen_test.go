@@ -47,7 +47,7 @@ func TestHervatVerhaalHeelTeLezen(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
 	m, _, _ := maatjeModel(t)
 	m.hoog = 20
-	m = toets(m, "3")
+	m = toets(m, tabToets(tabMaatje))
 	m = toets(m, "up") // Samen een verhaal
 	m = toets(m, "enter")
 	m = typ(m, "Er was eens een draak die bang was voor vuur")
@@ -88,7 +88,7 @@ func TestLangeGesprekkenlijstScrollt(t *testing.T) {
 		_ = os.WriteFile(filepath.Join(dir, naam), []byte(fmt.Sprintf("» vraag nummer %d\n\nantwoord\n", i)), 0o600)
 	}
 	m.ouderModus = true
-	m = toets(m, "3")
+	m = toets(m, tabToets(tabMaatje))
 	m = toets(m, "h")
 	if !strings.Contains(m.View(), "vraag nummer 0") || strings.Contains(m.View(), "vraag nummer 35") {
 		t.Fatalf("de lijst hoort bij het begin te staan:\n%s", m.View())
@@ -124,7 +124,7 @@ func TestWeekoverzichtScrollt(t *testing.T) {
 		}
 	}
 	m.ouderModus = true
-	m = toets(m, "3")
+	m = toets(m, tabToets(tabMaatje))
 	m = toets(m, "w")
 	if !strings.Contains(m.View(), "vraag 0-3") || strings.Contains(m.View(), "vraag 6-0") {
 		t.Fatalf("het overzicht hoort bij de nieuwste te beginnen:\n%s", m.View())
@@ -142,7 +142,7 @@ func TestNatuurdagboekOudeNotitiesTeLezen(t *testing.T) {
 	for i := 0; i < 15; i++ {
 		bewaarNotitie(notitie{time.Now().Add(time.Duration(i) * time.Minute), fmt.Sprintf("notitie nummer %d", i)})
 	}
-	m = toets(m, "4")
+	m = toets(m, tabToets(tabOntdekken))
 	m = toets(m, "down")
 	m = toets(m, "down")
 	m = toets(m, "enter")

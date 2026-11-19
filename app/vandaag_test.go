@@ -64,7 +64,7 @@ func TestVandaagScherm(t *testing.T) {
 	m.inst.Taal = "nl"
 	m.breed, m.hoog = 110, 34
 	m.ouders.Vandaag.Plaats, m.ouders.Vandaag.Breedtegraad, m.ouders.Vandaag.Lengtegraad = "Utrecht", 52.09, 5.12
-	m = toets(m, "7")
+	m = toets(m, tabToets(tabVandaag))
 	m.nu = time.Date(2026, 11, 12, 13, 30, 0, 0, time.Local)
 	v := m.View()
 	for _, moet := range []string{"Donderdag 12 november", "Utrecht", "4°", "regen", "Neem een regenjas mee", "muts en handschoenen",
@@ -80,7 +80,7 @@ func TestVandaagScherm(t *testing.T) {
 	srv.Close()
 	m2, _ := testModel(t, Geheimen{})
 	m2.breed, m2.hoog = 110, 34
-	m2 = toets(m2, "7")
+	m2 = toets(m2, tabToets(tabVandaag))
 	if !strings.Contains(m2.View(), "4°") {
 		t.Errorf("bewaard weer niet te zien zonder verbinding:\n%s", m2.View())
 	}

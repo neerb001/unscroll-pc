@@ -65,7 +65,7 @@ func TestHemelScherm(t *testing.T) {
 	m, _ := testModel(t, Geheimen{})
 	m.inst.Taal = "nl"
 	m.breed, m.hoog = 110, 36
-	m = toets(m, "4")
+	m = toets(m, tabToets(tabOntdekken))
 	for i := 0; i < 4; i++ {
 		m = toets(m, "down")
 	}
@@ -105,7 +105,7 @@ func TestHemelUitleg(t *testing.T) {
 	m, _ := testModel(t, Geheimen{})
 	m.inst.Taal = "nl"
 	m.breed, m.hoog = 110, 36
-	m = toets(m, "4")
+	m = toets(m, tabToets(tabOntdekken))
 	for i := 0; i < 4; i++ {
 		m = toets(m, "down")
 	}

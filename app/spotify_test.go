@@ -261,7 +261,7 @@ func TestSpotifyInLuisteren(t *testing.T) {
 	nep := &nepSpotify{}
 	m.l.spotify = testSpotify(t, nep)
 	m.ouders.Spotify.Goedgekeurd = []string{"https://open.spotify.com/album/alb1"}
-	m = toets(m, "1")
+	m = toets(m, tabToets(tabLuisteren))
 	for i := 0; i < 4; i++ {
 		m = toets(m, "tab")
 	}
@@ -284,7 +284,7 @@ func TestSpotifyZoekenEnFavorieten(t *testing.T) {
 	m.l.spotify = testSpotify(t, &nepSpotify{})
 	m.ouders.Spotify.Zoeken = true
 	m.ouders.Spotify.Geblokkeerd = []string{"foute band"}
-	m = toets(m, "1")
+	m = toets(m, tabToets(tabLuisteren))
 	for i := 0; i < 4; i++ {
 		m = toets(m, "tab")
 	}

@@ -19,6 +19,7 @@ const (
 	tabStart = iota
 	tabLuisteren
 	tabLezen
+	tabLeren
 	tabMaatje
 	tabOntdekken
 	tabDenksport
@@ -28,8 +29,8 @@ const (
 )
 
 // sleutels in de vertalingen per tabblad
-var tabSleutels = []string{"tab.start", "tab.listen", "tab.read", "", "tab.discover", "tab.puzzles", "tab.write", "tab.today", "tab.system"}
-var menuSleutels = []string{"", "menu.listen", "menu.read", "menu.buddy", "menu.discover", "menu.puzzles", "menu.write", "menu.today", "menu.system"}
+var tabSleutels = []string{"tab.start", "tab.listen", "tab.read", "tab.learn", "", "tab.discover", "tab.puzzles", "tab.write", "tab.today", "tab.system"}
+var menuSleutels = []string{"", "menu.listen", "menu.read", "menu.learn", "menu.buddy", "menu.discover", "menu.puzzles", "menu.write", "menu.today", "menu.system"}
 var straksSleutels = map[int]string{}
 
 type tickMsg time.Time
@@ -81,6 +82,7 @@ type model struct {
 	ouderPin     string // alleen zolang de ouderstand aan is, voor het wijzigen van instellingen
 	bijwerken    bool   // de ouder liet nu bijwerken (U) en dat loopt nog
 	dk           *denkStaat
+	lr           *lerenStaat
 }
 
 func nieuwModel() model {
@@ -106,6 +108,7 @@ func nieuwModel() model {
 	m.sh = nieuweSchrijfhoek()
 	m.oi = nieuweOuderInst()
 	m.dk = nieuweDenksport()
+	m.lr = nieuwLeren()
 	m.pin = textinput.New()
 	m.pin.EchoMode = textinput.EchoPassword
 	m.pin.CharLimit = 8
@@ -144,6 +147,7 @@ func (m *model) naarTab(t int) tea.Cmd {
 		t = tabStart
 	}
 	m.tab = t
+	m.tabOpen(t)
 	m.focusOp(-1)
 	m.pinOpen = false
 	if t == tabLuisteren {
@@ -267,6 +271,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case updateMsg:
 		m.updateBericht(msg)
 		return m, nil
+	case flitsMsg:
+		m.flitsBericht(msg)
+		return m, nil
 	case lijstMsg, startMsg, spelerMsg:
 		cmd := m.luisterBericht(msg)
 		return m, cmd
@@ -354,6 +361,11 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		m.vd.laden = true
 		return m, haalWeer(m.ouders)
 	}
+	if m.tab == tabLeren {
+		if cmd, ok := m.toetsLeren(msg); ok {
+			return m, cmd
+		}
+	}
 	if m.tab == tabDenksport {
 		if cmd, ok := m.toetsDenk(msg); ok {
 			return m, cmd
@@ -379,7 +391,7 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			return m, cmd
 		}
 	}
-	if len(k) == 1 && k[0] >= '0' && k[0] <= '8' {
+	if len(k) == 1 && k[0] >= '0' && k[0] <= '9' {
 		cmd := m.naarTab(int(k[0] - '0'))
 		return m, cmd
 	}
@@ -542,6 +554,8 @@ func (m model) View() string {
 		inhoud = m.viewVandaag(p)
 	case m.tab == tabSchrijfhoek:
 		inhoud = m.viewSchrijf(p)
+	case m.tab == tabLeren:
+		inhoud = m.viewLeren(p)
 	case m.tab == tabDenksport:
 		inhoud = m.viewDenk(p)
 	default:

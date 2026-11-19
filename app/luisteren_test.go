@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -311,7 +312,7 @@ func TestLuisterenMuziek(t *testing.T) {
 	defer srv.Close()
 	m, mpv := testModel(t, Geheimen{"NAVIDROME_URL": srv.URL, "NAVIDROME_GEBRUIKER": "kind", "NAVIDROME_WACHTWOORD": "geheim"})
 
-	m = toets(m, "1")
+	m = toets(m, tabToets(tabLuisteren))
 	if m.tab != tabLuisteren || !strings.Contains(m.View(), "ABBA") {
 		t.Fatalf("artiesten niet te zien:\n%s", m.View())
 	}
@@ -355,7 +356,7 @@ func TestLuisterboekVoortgang(t *testing.T) {
 	srv := nepABS(t, &gesloten)
 	defer srv.Close()
 	m, mpv := testModel(t, Geheimen{"ABS_URL": srv.URL, "ABS_TOKEN": "sleutel"})
-	m = toets(m, "1")
+	m = toets(m, tabToets(tabLuisteren))
 	m = toets(m, "tab") // luisterboeken
 	if !strings.Contains(m.View(), "Pluk van de Petteflet") || !strings.Contains(m.View(), "42%") {
 		t.Fatalf("boeken niet te zien:\n%s", m.View())
@@ -378,7 +379,7 @@ func TestLuisterboekVoortgang(t *testing.T) {
 
 func TestNietIngesteldEnAvondslot(t *testing.T) {
 	m, _ := testModel(t, Geheimen{})
-	m = toets(m, "1")
+	m = toets(m, tabToets(tabLuisteren))
 	if !strings.Contains(m.View(), "sudo unscroll-ouder") {
 		t.Errorf("zonder instellingen moet de uitleg voor ouders te zien zijn:\n%s", m.View())
 	}
@@ -409,7 +410,7 @@ func TestNietIngesteldEnAvondslot(t *testing.T) {
 
 func TestSlaaptimer(t *testing.T) {
 	m, _ := testModel(t, Geheimen{})
-	m = toets(m, "1")
+	m = toets(m, tabToets(tabLuisteren))
 	m = toets(m, "s")
 	if m.l.slaapMin != 15 || time.Until(m.l.slaapTot) < 14*time.Minute {
 		t.Errorf("slaaptimer: %d", m.l.slaapMin)
@@ -421,3 +422,6 @@ func TestSlaaptimer(t *testing.T) {
 		t.Error("na 60 minuten moet de slaaptimer weer uit gaan")
 	}
 }
+
+// tabToets: de cijfertoets van een tabblad (de nummers kunnen verschuiven als er een bijkomt).
+func tabToets(tab int) string { return strconv.Itoa(tab) }

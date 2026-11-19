@@ -38,7 +38,7 @@ func TestTypcursus(t *testing.T) {
 	m, _ := testModel(t, Geheimen{})
 	m.inst.Taal = "nl"
 	m.breed, m.hoog = 100, 34
-	m = toets(m, "6")
+	m = toets(m, tabToets(tabSchrijfhoek))
 	for i := 0; i < 3; i++ {
 		m = toets(m, "down")
 	}

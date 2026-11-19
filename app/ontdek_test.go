@@ -36,7 +36,7 @@ func TestLabMissieEnOpnieuw(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
 	m, _ := testModel(t, Geheimen{})
 	m.inst.Taal = "nl"
-	m = toets(m, "4")
+	m = toets(m, tabToets(tabOntdekken))
 	m = toets(m, "down") // computerlab
 	m = toets(m, "enter")
 	if !strings.Contains(m.View(), "typ missie") || !strings.Contains(m.View(), "typ opnieuw") {
@@ -98,7 +98,7 @@ func TestDierVanDeDag(t *testing.T) {
 	defer func() { wikiBasis, wikiAPI = oud, oudAPI }()
 	m, _ := testModel(t, Geheimen{})
 	m.inst.Taal = "nl"
-	m = toets(m, "4")
+	m = toets(m, tabToets(tabOntdekken))
 	m = toets(m, "enter")
 	if !strings.Contains(m.View(), "A hedgehog is a spiny mammal") {
 		t.Fatalf("dier niet te zien:\n%s", m.View())
@@ -123,7 +123,7 @@ func TestDierVanDeDag(t *testing.T) {
 func TestNatuurdagboek(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
 	m, _ := testModel(t, Geheimen{})
-	m = toets(m, "4")
+	m = toets(m, tabToets(tabOntdekken))
 	m = toets(m, "down")
 	m = toets(m, "down")
 	m = toets(m, "enter")

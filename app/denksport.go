@@ -29,8 +29,26 @@ const (
 	denkSchaak
 )
 
-// het menu van Denksport, in deze volgorde
-var denkMenuSleutels = []string{"tables.title", "calc.title", "calc.typed", "sudoku.title", "riddle.title", "chess.title"}
+// het menu van Denksport, in deze volgorde. De tafels en rekenmachines staan bij Leren.
+var denkMenuSleutels = []string{"sudoku.title", "riddle.title", "chess.title"}
+var denkMenuSchermen = []int{denkSudoku, denkRaadsel, denkSchaak}
+
+// openDenk opent een scherm van Denksport (ook vanuit Leren).
+func (m *model) openDenk(scherm int) tea.Cmd {
+	d := m.dk
+	d.scherm = scherm
+	switch scherm {
+	case denkRekenmachine:
+		return d.reken.Focus()
+	case denkSudoku:
+		return m.sudokuOpen()
+	case denkRaadsel:
+		return m.volgendRaadsel()
+	case denkSchaak:
+		m.schaakOpen()
+	}
+	return nil
+}
 
 // maxTafel: de tafels van 1 tot en met 12, elk van 1 × tot en met 12 ×.
 const maxTafel = 12
@@ -186,24 +204,7 @@ func (m *model) toetsDenk(msg tea.KeyMsg) (tea.Cmd, bool) {
 		case "down", "j":
 			d.keuze = (d.keuze + 1) % len(denkMenuSleutels)
 		case "enter":
-			switch d.keuze {
-			case 0:
-				d.scherm = denkTafelsKies
-			case 1:
-				d.scherm = denkKnoppen
-			case 2:
-				d.scherm = denkRekenmachine
-				return d.reken.Focus(), true
-			case 3:
-				d.scherm = denkSudoku
-				return m.sudokuOpen(), true
-			case 4:
-				d.scherm = denkRaadsel
-				return m.volgendRaadsel(), true
-			case 5:
-				d.scherm = denkSchaak
-				m.schaakOpen()
-			}
+			return m.openDenk(denkMenuSchermen[d.keuze]), true
 		default:
 			return nil, false
 		}
@@ -379,6 +380,9 @@ func (m model) viewDenk(p palet) string {
 	acc := lipgloss.NewStyle().Foreground(p.acc).Bold(true)
 	breed := min(m.breed-8, 90)
 	kop := lipgloss.NewStyle().Bold(true).Render(m.t("menu.puzzles"))
+	if m.tab == tabLeren {
+		kop = lipgloss.NewStyle().Bold(true).Render(m.t("menu.learn"))
+	}
 	switch d.scherm {
 	case denkKnoppen:
 		return m.viewRekenmachine(p)

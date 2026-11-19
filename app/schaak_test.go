@@ -45,10 +45,9 @@ func TestSchaakPuzzelOplossen(t *testing.T) {
 	m.dk = nieuweDenksport()
 	m.inst.Taal = "nl"
 	m.breed, m.hoog = 100, 34
-	m = toets(m, "5")
-	for i := 0; i < 5; i++ {
-		m = toets(m, "down")
-	}
+	m = toets(m, tabToets(tabDenksport))
+	m = toets(m, "down")
+	m = toets(m, "down")
 	m = toets(m, "enter") // schaken
 	m = toets(m, "enter") // puzzels
 	m = toets(m, "enter") // net begonnen
