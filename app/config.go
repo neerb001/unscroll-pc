@@ -95,11 +95,8 @@ type Ouders struct {
 	Maatje MaatjeGrenzen `yaml:"maatje"`
 
 	// EerstOefenen: elke dag eerst een aantal sommen goed, dan gaat de rest van de computer open.
-	EerstOefenen struct {
-		Sommen int `yaml:"sommen"` // 0: uit
-		Tafel  int `yaml:"tafel"`  // 1 tot en met 12, of 0: de tafels 1 tot en met 10 door elkaar
-	} `yaml:"eerst_oefenen"`
-	Radio []Zender `yaml:"radio"`
+	EerstOefenen eerstOefenen `yaml:"eerst_oefenen"`
+	Radio        []Zender     `yaml:"radio"`
 
 	// Vandaag: de plek voor het weer (sudo unscroll-ouder zoekt de coördinaten op bij een plaatsnaam)
 	Vandaag struct {
@@ -190,4 +187,13 @@ func pinHash(pin string) string {
 
 func (o Ouders) pinKlopt(pin string) bool {
 	return o.PinSHA256 != "" && strings.EqualFold(o.PinSHA256, pinHash(pin))
+}
+
+// eerstOefenen: elke dag eerst een aantal sommen goed, dan gaat de rest van de computer open.
+type eerstOefenen struct {
+	Sommen int `yaml:"sommen"` // 0: uit
+	Tafel  int `yaml:"tafel"`  // 1 tot en met 12, of 0: de tafels 1 tot en met 10 door elkaar
+	// ElkeMinuten: zoveel minuten nadat de computer openging, komt er een nieuwe ronde.
+	// 0: alleen de eerste keer van de dag.
+	ElkeMinuten int `yaml:"elke_minuten"`
 }

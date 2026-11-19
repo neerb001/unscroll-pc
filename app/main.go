@@ -146,7 +146,7 @@ func (m *model) zeg(s string) { m.melding = s; m.meldingTot = time.Now().Add(4 *
 func (m *model) naarTab(t int) tea.Cmd {
 	if t != tabStart && t != tabSysteem && m.poortDicht() {
 		m.zeg(m.t("gate.first"))
-		t = tabStart
+		m.poort.vanTab, t = t, tabStart // na de sommen gaat het daarheen
 	}
 	if m.dicht() && t != tabStart && t != tabSysteem && !magTijdensSlot(m.ouders, t) {
 		m.zeg(m.t("lock.only"))
@@ -222,8 +222,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.dicht() && m.tab != tabSysteem && !magTijdensSlot(m.ouders, m.tab) {
 			m.tab = tabStart
 		}
-		if m.tab != tabSysteem && m.tab != tabStart && m.poortDicht() { // na de ouderstand: weer eerst oefenen
-			m.tab = tabStart
+		if m.tab != tabSysteem && m.tab != tabStart && m.poortDicht() { // nieuwe ronde, of na de ouderstand
+			m.poort.vanTab, m.tab = m.tab, tabStart // na de sommen terug naar waar het kind was
 		}
 		if m.nieuw = nieuweVersieKlaar(); m.nieuw != "" && m.rustigMoment() {
 			return m, m.herstart()

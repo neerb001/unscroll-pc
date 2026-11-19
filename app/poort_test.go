@@ -132,3 +132,49 @@ func TestEerstOefenenInstellen(t *testing.T) {
 		t.Error("99 sommen hoort te veel te zijn")
 	}
 }
+
+// Elke 45 minuten een nieuwe ronde; daarna terug naar waar het kind was.
+func TestEerstOefenenElkeZoveelMinuten(t *testing.T) {
+	m := poortModel(t)
+	m.ouders.EerstOefenen.ElkeMinuten = 45
+	rond := func() {
+		for m.poortDicht() {
+			m = toets(m, fmt.Sprint(m.poort.som.uitkomst()))
+			m = toets(m, "enter")
+		}
+	}
+	m.poortNieuweSom()
+	rond()
+	open := m.nu
+	m = toets(m, tabToets(tabLeren))
+	if m.tab != tabLeren {
+		t.Fatal("na de eerste ronde hoort alles open te zijn")
+	}
+	m.nu = open.Add(44 * time.Minute)
+	if m.poortDicht() {
+		t.Fatal("na 44 minuten hoort het nog open te zijn")
+	}
+	// na 45 minuten: bij de volgende tik weer de sommen, met de teller op 0
+	m.nu = open.Add(45 * time.Minute)
+	nm, _ := m.Update(tickMsg(m.nu))
+	m = nm.(model)
+	if m.tab != tabStart || !m.poortDicht() || !strings.Contains(m.View(), "0 van de 5 goed") {
+		t.Fatalf("na 45 minuten hoort een nieuwe ronde te komen:\n%s", m.View())
+	}
+	// na de ronde terug naar Leren, en weer 45 minuten open
+	m.poortNieuweSom()
+	rond()
+	if m.tab != tabLeren {
+		t.Errorf("na de ronde hoort het kind terug te zijn bij Leren, niet bij tabblad %d", m.tab)
+	}
+	m.nu = m.nu.Add(30 * time.Minute)
+	if m.poortDicht() {
+		t.Error("na een nieuwe ronde begint de tijd opnieuw")
+	}
+	// 0 minuten: alleen de eerste keer van de dag
+	m.ouders.EerstOefenen.ElkeMinuten = 0
+	m.nu = m.nu.Add(2 * time.Hour) // nog voor het avondslot
+	if m.poortDicht() {
+		t.Error("met 0 minuten hoort het maar één keer per dag te zijn")
+	}
+}

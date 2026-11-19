@@ -166,8 +166,10 @@ if [[ -n "$HEDY_URL" && -n "$HEDY_SUM_URL" ]] && haal "$HEDY_SUM_URL" "$TMP/hedy
 fi
 
 # Debian packages the app uses: Python for Hedy, Stockfish for chess, a font with chess symbols,
-# gtypist for its typing lessons, and espeak-ng to read dictation words aloud.
-for pakket in python3 python3-regex stockfish fonts-dejavu-core gtypist espeak-ng; do
+# gtypist for its typing lessons, espeak-ng to read dictation words aloud, and xwayland:
+# cage refuses to start without it ("Cannot find Xwayland binary"), and then the app falls
+# back to the plain text console.
+for pakket in python3 python3-regex stockfish fonts-dejavu-core gtypist espeak-ng xwayland; do
   dpkg -s "$pakket" >/dev/null 2>&1 && continue
   DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends "$pakket" >/dev/null 2>&1 \
     || { apt-get update -q >/dev/null 2>&1 && DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends "$pakket" >/dev/null 2>&1; } \

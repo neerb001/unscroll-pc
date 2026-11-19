@@ -18,13 +18,31 @@ import (
 // aantal sommen goed moet hebben (uit een tafel naar keuze) voordat de rest van de computer
 // opengaat. Alleen goede antwoorden tellen; de voortgang staat groot in beeld.
 //
-// Eén keer per dag, en bewaard, zodat een herstart niets kost. Niet tijdens het avondslot
+// Eén keer per dag, of (als ouders dat instellen) elke zoveel minuten opnieuw, zodat het kind
+// blijft oefenen. Na een ronde gaat het kind terug naar waar het was. Bewaard, zodat een
+// herstart niets kost. Niet tijdens het avondslot
 // (dan mag alleen nog lezen en luisteren, en dat moet zonder sommen kunnen). Ouders kunnen er
 // altijd langs met o en de pincode.
 
 type poortVoortgang struct {
-	Datum string `json:"datum"`
-	Goed  int    `json:"goed"`
+	Datum     string    `json:"datum"`
+	Goed      int       `json:"goed"`       // goede sommen in deze ronde
+	OpenSinds time.Time `json:"open_sinds"` // wanneer de laatste ronde klaar was
+}
+
+// verlopen: de vorige ronde is klaar, maar het is tijd voor een nieuwe.
+func (v poortVoortgang) verlopen(e eerstOefenen, nu time.Time) bool {
+	return e.ElkeMinuten > 0 && v.Goed >= e.Sommen && !v.OpenSinds.IsZero() &&
+		nu.Sub(v.OpenSinds) >= time.Duration(e.ElkeMinuten)*time.Minute
+}
+
+// stand: de voortgang van de ronde die nu loopt (een nieuwe ronde begint bij 0).
+func (m *model) poortStand() poortVoortgang {
+	v := laadPoort(m.nu)
+	if v.verlopen(m.ouders.EerstOefenen, m.nu) {
+		v.Goed = 0
+	}
+	return v
 }
 
 func poortPad() string { return filepath.Join(filepath.Dir(instellingenPad()), "eerst-oefenen.json") }
@@ -50,6 +68,7 @@ type poortStaat struct {
 	som      tafelSom
 	antwoord string
 	terug    string // wat er net gebeurde: goed, of het goede antwoord
+	vanTab   int    // waar het kind was toen een nieuwe ronde begon: daar gaat het daarna heen
 	goed     bool
 	klaar    time.Time // net klaar: even het feestje laten zien
 }
@@ -60,7 +79,7 @@ func (m *model) poortDicht() bool {
 	if e.Sommen <= 0 || m.ouderModus || m.dicht() {
 		return false
 	}
-	return laadPoort(m.nu).Goed < e.Sommen
+	return m.poortStand().Goed < e.Sommen
 }
 
 func (m *model) poortNieuweSom() {
@@ -101,7 +120,7 @@ func (m *model) toetsPoort(msg tea.KeyMsg) tea.Cmd {
 			return nil
 		}
 		n, _ := strconv.Atoi(pt.antwoord)
-		v := laadPoort(m.nu)
+		v := m.poortStand()
 		tv := laadTafels() // telt ook mee bij de tafels zelf
 		if n == pt.som.uitkomst() {
 			v.Goed++
@@ -115,7 +134,15 @@ func (m *model) toetsPoort(msg tea.KeyMsg) tea.Cmd {
 		tv.bewaar()
 		if v.Goed >= m.ouders.EerstOefenen.Sommen {
 			pt.klaar = time.Now()
+			v.OpenSinds = m.nu
+			v.bewaar()
 			m.zegLang(m.t("gate.open"))
+			m.poortNieuweSom()
+			if terug := pt.vanTab; terug != tabStart && terug != tabSysteem {
+				pt.vanTab = tabStart
+				return m.naarTab(terug) // terug naar waar het kind was
+			}
+			return nil
 		}
 		m.poortNieuweSom()
 	}
@@ -141,7 +168,7 @@ func (m model) viewPoort(p palet) string {
 		mm.poortNieuweSom()
 	}
 	e := m.ouders.EerstOefenen
-	goed := laadPoort(m.nu).Goed
+	goed := m.poortStand().Goed
 	dim := lipgloss.NewStyle().Foreground(p.dim)
 	wat := m.t("tables.one", fmt.Sprint(e.Tafel))
 	if e.Tafel < 1 || e.Tafel > maxTafel {

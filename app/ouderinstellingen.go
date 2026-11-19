@@ -66,6 +66,7 @@ var instellingen = []instelling{
 	{sleutel: "maatje.beurten_per_verhaalsessie", label: "pset.stturns", soort: instGetal, min: 0, max: 200, stap: 5},
 	{sleutel: "eerst_oefenen.sommen", label: "pset.gatesums", soort: instGetal, min: 0, max: 30, stap: 1},
 	{sleutel: "eerst_oefenen.tafel", label: "pset.gatetable", soort: instGetal, min: 0, max: 12, stap: 1},
+	{sleutel: "eerst_oefenen.elke_minuten", label: "pset.gateevery", soort: instGetal, min: 0, max: 240, stap: 5},
 	{sleutel: "vandaag.plaats", label: "pset.place", soort: instTekst},
 	{sleutel: "vandaag.breedtegraad", soort: instKomma, verborgen: true},
 	{sleutel: "vandaag.lengtegraad", soort: instKomma, verborgen: true},
@@ -327,6 +328,7 @@ func (m *model) huidigeWaarde(sleutel string) string {
 		"spotify.zoeken": o.Spotify.Zoeken, "spotify.expliciet_mag": o.Spotify.ExplicietMag,
 		"spotify.goedgekeurd":  len(o.Spotify.Goedgekeurd),
 		"eerst_oefenen.sommen": o.EerstOefenen.Sommen, "eerst_oefenen.tafel": o.EerstOefenen.Tafel,
+		"eerst_oefenen.elke_minuten": o.EerstOefenen.ElkeMinuten,
 	}
 	w, ok := waarden[sleutel]
 	if !ok {

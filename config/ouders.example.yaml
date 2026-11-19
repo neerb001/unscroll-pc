@@ -22,6 +22,7 @@ max_volume: 70
 eerst_oefenen:
   sommen: 0                # 0: off, for example 5
   tafel: 7                 # 1 to 12, or 0 for tables 1 to 10 mixed
+  elke_minuten: 0          # a new round this many minutes after the last one (0: once a day), e.g. 45
 
 # Weather on the Today page. sudo unscroll-ouder looks up the coordinates for a place name.
 # Without a place, the weather of De Bilt (centre of the Netherlands) is shown.
