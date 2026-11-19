@@ -19,6 +19,10 @@ type nieuwsItem struct {
 
 // nieuwsLijst: nieuwste bovenaan.
 var nieuwsLijst = []nieuwsItem{
+	{"v0.32.0", [2]string{
+		"De kaarten bij Topografie zijn nu ook duidelijk als de computer in de eenvoudige tekststand draait: blauwe zee, zwart land en het gevraagde land in het geel.",
+		"The maps in Geography are now clear in the simple text mode too: blue sea, black land and the asked country in yellow.",
+	}},
 	{"v0.31.0", [2]string{
 		"De kaarten bij Topografie gebruiken nu het hele scherm en zoomen in op wat gevraagd wordt. Met Tab zie je de hele kaart.",
 		"The maps in Geography now use the whole screen and zoom in on what is asked. Tab shows the whole map.",

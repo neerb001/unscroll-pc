@@ -7,15 +7,27 @@
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 export WLR_RENDERER="${WLR_RENDERER:-pixman}"   # old video chips: software rendering is the most reliable
 
+# What cage and foot say goes to a log, so the parent diagnostics (d) can show why the kiosk
+# did not start. Kept short: the last 200 lines.
+LOG="$HOME/.cache/unscroll/kiosk.log"
+mkdir -p "$(dirname "$LOG")"
+
 mislukt=0
 while true; do
   if [[ $mislukt -lt 3 ]]; then
     start=$(date +%s)
-    TERM=foot cage -s -- foot --config "$HOME/.config/foot/foot.ini" /usr/local/bin/unscroll
+    echo "--- $(date '+%F %T') kiosk start" >> "$LOG"
+    TERM=foot cage -s -- foot --config "$HOME/.config/foot/foot.ini" /usr/local/bin/unscroll 2>> "$LOG"
+    status=$?
+    echo "--- $(date '+%F %T') kiosk stopped (exit $status, after $(( $(date +%s) - start )) s)" >> "$LOG"
     if (( $(date +%s) - start < 10 )); then mislukt=$((mislukt + 1)); else mislukt=0; fi
   else
-    # fallback: straight on the Linux console
+    # fallback: straight on the Linux console. When the app stops there (for example to
+    # restart after an update), the kiosk gets a new chance instead of staying off forever.
+    echo "--- $(date '+%F %T') text console" >> "$LOG"
     TERM=linux /usr/local/bin/unscroll
+    mislukt=0
   fi
+  tail -n 200 "$LOG" > "$LOG.tmp" 2>/dev/null && mv -f "$LOG.tmp" "$LOG"
   sleep 1
 done

@@ -345,8 +345,9 @@ func topoTekst(kaart, code string, stad, namen bool, b, h int, p palet, taal str
 
 	// per teken: de puntjes van één laag, in de kleur van die laag
 	type teken struct {
-		r     rune
-		kleur string
+		r      rune
+		kleur  string
+		achter string // achtergrond (alleen op de tekstconsole)
 	}
 	const (
 		zeeKleur    = topoZee
@@ -356,6 +357,7 @@ func topoTekst(kaart, code string, stad, namen bool, b, h int, p palet, taal str
 		doelKleur   = topoDoel
 		stadKleur   = "#ffd43b"
 		naamKleur   = "#ffd43b"
+		landKleur   = "#101010" // alleen op de tekstconsole: zwart land
 	)
 	bits := [4][2]int{{0x01, 0x08}, {0x02, 0x10}, {0x04, 0x20}, {0x40, 0x80}}
 	vak := make([][]teken, h)
@@ -388,20 +390,60 @@ func topoTekst(kaart, code string, stad, namen bool, b, h int, p palet, taal str
 			t := teken{r: ' '}
 			switch {
 			case nD != 0:
-				t = teken{rune(0x2800 + (nD | nG)), doelKleur}
+				t = teken{rune(0x2800 + (nD | nG)), doelKleur, ""}
 			case nG != 0:
-				t = teken{rune(0x2800 + nG), grensKleur}
+				t = teken{rune(0x2800 + nG), grensKleur, ""}
 			case nR != 0:
-				t = teken{rune(0x2800 + nR), rivierKleur}
+				t = teken{rune(0x2800 + nR), rivierKleur, ""}
 			case nGr != 0:
-				t = teken{rune(0x2800 + nGr), grijsKleur}
+				t = teken{rune(0x2800 + nGr), grijsKleur, ""}
 			case nZ != 0:
-				t = teken{rune(0x2800 + nZ), zeeKleur}
+				t = teken{rune(0x2800 + nZ), zeeKleur, ""}
 			}
-			if alleenLetters() && t.r != ' ' { // de Linux-console kent geen braille
-				t.r = map[string]rune{zeeKleur: '~', doelKleur: '#'}[t.kleur]
-				if t.r == 0 {
-					t.r = '.'
+			if alleenLetters() {
+				// De Linux-console kent geen braille, wel halve blokjes: een teken wordt twee
+				// vlakjes boven elkaar, elk in de kleur van wat daar ligt (zee, land, grens...).
+				soort := func(dy0 int) string {
+					var d, g, gr, r, z int
+					for dy := dy0; dy < dy0+2; dy++ {
+						for dx := 0; dx < 2; dx++ {
+							x, y := cx*2+dx, cy*4+dy
+							zee := !land[y][x] || water[y][x]
+							switch {
+							case doel[y][x]:
+								d++
+							case grens[y][x]:
+								g++
+							case rivier[y][x] && !zee:
+								r++
+							case grijsGrens[y][x]:
+								gr++
+							case zee:
+								z++
+							}
+						}
+					}
+					switch {
+					case d > 0:
+						return doelKleur
+					case g > 0:
+						return grensKleur
+					case r > 0:
+						return rivierKleur
+					case gr > 0:
+						return grijsKleur
+					case z >= 2:
+						return zeeKleur
+					}
+					return landKleur
+				}
+				// alleen de 8 basiskleuren werken op de console overal als achtergrond
+				console := map[string]string{zeeKleur: "#000080", landKleur: "#000000", grensKleur: "#c0c0c0",
+					grijsKleur: "#c0c0c0", rivierKleur: "#008080", doelKleur: "#808000"}
+				boven, onder := console[soort(0)], console[soort(2)]
+				t = teken{'▀', boven, onder}
+				if boven == onder {
+					t = teken{' ', "", onder}
 				}
 			}
 			vak[cy][cx] = t
@@ -410,7 +452,10 @@ func topoTekst(kaart, code string, stad, namen bool, b, h int, p palet, taal str
 	zetTekst := func(x, y int, tekst, kleur string) {
 		for i, r := range []rune(tekst) {
 			if y >= 0 && y < h && x+i >= 0 && x+i < b {
-				vak[y][x+i] = teken{r, kleur}
+				if r == '●' && alleenLetters() {
+					r = '*' // niet elk consolelettertype heeft een stip
+				}
+				vak[y][x+i] = teken{r, kleur, ""}
 			}
 		}
 	}
@@ -476,7 +521,7 @@ func topoTekst(kaart, code string, stad, namen bool, b, h int, p palet, taal str
 		var r kleurRegel
 		for x := 0; x < b; x++ {
 			t := vak[y][x]
-			r.zet(t.kleur, "", t.kleur == doelKleur || t.kleur == stadKleur, string(t.r))
+			r.zet(t.kleur, t.achter, t.kleur == doelKleur || t.kleur == stadKleur, string(t.r))
 		}
 		regels = append(regels, r.klaar())
 	}

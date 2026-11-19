@@ -144,6 +144,11 @@ func (m *model) diagnoseStart() tea.Cmd {
 			}
 		})
 		test(func() { // scherm: hoeveel tekens er passen (handig bij vragen over de opmaak)
+			if os.Getenv("TERM") == "linux" {
+				// op de kale tekstconsole: het venster (cage met foot) startte niet; zeg waarom
+				zet("screen", diagLet, t("diag.console", breed, hoog, kioskMelding()))
+				return
+			}
 			zet("screen", diagGoed, t("diag.screensize", breed, hoog, os.Getenv("TERM")))
 		})
 		test(func() { // weer
@@ -396,4 +401,26 @@ func (m model) viewDiagnose(p palet) string {
 		titel, toetsen = m.t("diag.report"), m.t("diag.reportkeys")
 	}
 	return kop + "\n\n" + paneel(p, titel, strings.Join(regels, "\n"), breed, true) + "\n" + dim.Render(toetsen)
+}
+
+// kioskMelding: de laatste regels die cage en foot schreven (zie unscroll-sessie).
+func kioskMelding() string {
+	dir, err := os.UserHomeDir()
+	if err != nil {
+		return "?"
+	}
+	data, err := os.ReadFile(filepath.Join(dir, ".cache", "unscroll", "kiosk.log"))
+	if err != nil {
+		return "-"
+	}
+	var laatste []string
+	for _, r := range strings.Split(strings.TrimSpace(string(data)), "\n") {
+		if r = strings.TrimSpace(r); r != "" && !strings.HasPrefix(r, "--- ") {
+			laatste = append(laatste, r)
+		}
+	}
+	if len(laatste) == 0 {
+		return "-"
+	}
+	return strings.Join(laatste[max(len(laatste)-2, 0):], " / ")
 }
