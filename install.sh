@@ -107,8 +107,9 @@ chown "$KIND:$KIND" "/home/$KIND/.bash_profile"
 
 echo "==> Parent settings and updating in the app (fixed commands as root, PIN checked by the app itself)"
 # Parent settings and "update now" in the app: the app (running as the child) may run exactly these
-# two commands as root. Both check the parent PIN themselves first. Checked with visudo first.
-SUDO_REGEL="$KIND ALL=(root) NOPASSWD: /usr/local/bin/unscroll --ouder-zet, /usr/local/bin/unscroll --ouder-update"
+# commands as root: the two parent ones check the PIN themselves first; shutting down and
+# restarting (z and r in System) the child may do. Checked with visudo first.
+SUDO_REGEL="$KIND ALL=(root) NOPASSWD: /usr/local/bin/unscroll --ouder-zet, /usr/local/bin/unscroll --ouder-update, /usr/bin/systemctl poweroff, /usr/bin/systemctl reboot"
 if [[ "$(cat /etc/sudoers.d/unscroll 2>/dev/null)" != "$SUDO_REGEL" ]]; then
   SUDO_TMP="$(mktemp)"
   printf '%s\n' "$SUDO_REGEL" > "$SUDO_TMP"

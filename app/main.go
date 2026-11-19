@@ -81,9 +81,12 @@ type model struct {
 	oi           *ouderInstStaat
 	ouderPin     string // alleen zolang de ouderstand aan is, voor het wijzigen van instellingen
 	bijwerken    bool   // de ouder liet nu bijwerken (U) en dat loopt nog
-	dk           *denkStaat
-	lr           *lerenStaat
-	poort        *poortStaat // eerst oefenen, dan de computer
+
+	afsluiten         string // "poweroff" of "reboot": gevraagd, wacht op een tweede druk
+	afsluitenGevraagd time.Time
+	dk                *denkStaat
+	lr                *lerenStaat
+	poort             *poortStaat // eerst oefenen, dan de computer
 }
 
 func nieuwModel() model {
@@ -280,6 +283,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case updateMsg:
 		m.updateBericht(msg)
 		return m, nil
+	case afsluitMsg:
+		m.afsluitBericht(msg)
+		return m, nil
 	case flitsMsg:
 		m.flitsBericht(msg)
 		return m, nil
@@ -410,6 +416,7 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return m, cmd
 	}
 	if k == "esc" {
+		m.afsluiten = ""
 		cmd := m.naarTab(tabStart)
 		return m, cmd
 	}
@@ -445,7 +452,18 @@ func draaiKeuze(lijst []string, huidig string, d int) string {
 }
 
 func (m model) toetsSysteem(k string) (tea.Model, tea.Cmd) {
+	if m.afsluiten != "" && k != "z" && k != "r" {
+		m.afsluiten = "" // een andere toets: toch niet uitzetten
+		m.zeg(m.t("sys.offcancel"))
+		if k == "esc" {
+			return m, nil
+		}
+	}
 	switch k {
+	case "z":
+		return m, m.vraagAfsluiten(afsluitUit)
+	case "r":
+		return m, m.vraagAfsluiten(afsluitOpnieuw)
 	case "tab", "down":
 		m.focusOp((m.focus + 1) % aantalVelden)
 	case "shift+tab", "up":
@@ -770,6 +788,7 @@ func (m model) viewSysteem(p palet) string {
 		kol(m.t("sys.version")) + versie + m.versieExtra(dim),
 		"",
 		m.t("sys.actions"),
+		m.t("sys.power"),
 		m.t("sys.parent"),
 	}, "\n")
 	if m.pinOpen {

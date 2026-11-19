@@ -19,6 +19,10 @@ type nieuwsItem struct {
 
 // nieuwsLijst: nieuwste bovenaan.
 var nieuwsLijst = []nieuwsItem{
+	{"v0.34.0", [2]string{
+		"Je kunt de computer nu zelf uitzetten of opnieuw opstarten: ga naar 9 Systeem en druk twee keer op z (uitzetten) of r (opnieuw opstarten).",
+		"You can now shut down or restart the computer yourself: go to 9 System and press z (shut down) or r (restart) twice.",
+	}},
 	{"v0.32.0", [2]string{
 		"De kaarten bij Topografie zijn nu ook duidelijk als de computer in de eenvoudige tekststand draait: blauwe zee, zwart land en het gevraagde land in het geel.",
 		"The maps in Geography are now clear in the simple text mode too: blue sea, black land and the asked country in yellow.",

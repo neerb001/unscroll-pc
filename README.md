@@ -40,7 +40,7 @@ The project started on an old Asus Eee PC, hence the "PC" in the name.
 |---|---|
 | Start | Greeting, menu, quiet time, the computer's own name in block letters |
 | Languages | English (default) and Dutch, selectable under System. Add languages in `app/i18n.go` |
-| System | Computer name, own name, buddy name and face, 5 colour themes, wifi, battery, volume with a maximum, ask for help (ntfy) |
+| System | Computer name, own name, buddy name and face, 5 colour themes, wifi, battery, volume with a maximum, ask for help (ntfy), shut down (z) or restart (r) with a second press to confirm |
 | Quiet time | Separate times for school nights and weekends, opening time, what stays open, parent PIN, pause for 30 min, 2 hours, until morning or until switched back on |
 | Updates | New versions from GitHub releases, with checksum verification and fallback; the app restarts itself at a quiet moment (quiet time or the middle of the night, nothing playing), or straight away with `R` in parent mode; `U` in parent mode updates right away, without a terminal |
 | Listen | Navidrome, radio dial, audiobooks and podcasts from Audiobookshelf with progress, sleep timer |
