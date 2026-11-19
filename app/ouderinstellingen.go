@@ -325,7 +325,7 @@ func (m *model) huidigeWaarde(sleutel string) string {
 		"maatje.beurten_per_huiswerksessie": mj.BeurtenPerHuiswerk, "maatje.verhaal_sessies_per_dag": mj.VerhaalSessiesPerDag,
 		"maatje.beurten_per_verhaalsessie": mj.BeurtenPerVerhaal, "vandaag.plaats": o.plaatsNaam(),
 		"spotify.zoeken": o.Spotify.Zoeken, "spotify.expliciet_mag": o.Spotify.ExplicietMag,
-		"spotify.goedgekeurd": len(o.Spotify.Goedgekeurd),
+		"spotify.goedgekeurd":  len(o.Spotify.Goedgekeurd),
 		"eerst_oefenen.sommen": o.EerstOefenen.Sommen, "eerst_oefenen.tafel": o.EerstOefenen.Tafel,
 	}
 	w, ok := waarden[sleutel]
