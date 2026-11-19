@@ -76,6 +76,7 @@ func TestLezen(t *testing.T) {
 	m, _ := testModel(t, Geheimen{"ABS_URL": srv.URL, "ABS_TOKEN": "x"})
 	m.l = nieuwLuister(Geheimen{"ABS_URL": srv.URL, "ABS_TOKEN": "x"})
 	m = toets(m, tabToets(tabLezen))
+	m = toets(m, "tab") // naar de e-books
 	v := m.View()
 	if !strings.Contains(v, "Pluk van de Petteflet") || strings.Contains(v, "Alleen audio") || !strings.Contains(v, "25%") {
 		t.Fatalf("boekenlijst:\n%s", v)
@@ -102,6 +103,7 @@ func TestLezen(t *testing.T) {
 	m.ls = &leesStaat{}
 	m = toets(m, tabToets(tabLuisteren))
 	m = toets(m, tabToets(tabLezen))
+	m = toets(m, "tab") // naar de e-books
 	m = toets(m, "enter")
 	if m.ls.boek == nil || m.ls.boek.alineaVanRegel(m.ls.boek.bovenste) != plek {
 		t.Fatalf("plek niet onthouden of offline niet te lezen:\n%s", m.View())
@@ -134,6 +136,7 @@ func TestLezenZoeken(t *testing.T) {
 	m.l = nieuwLuister(Geheimen{"ABS_URL": srv.URL, "ABS_TOKEN": "x"})
 	m.inst.Taal = "nl"
 	m = toets(m, tabToets(tabLezen))
+	m = toets(m, "tab") // naar de e-books
 	typ := func(m model, s string) model {
 		for _, r := range s {
 			m = toets(m, string(r))

@@ -211,11 +211,13 @@ func htmlTekst(data []byte) []alinea {
 /* ---------------- staat ---------------- */
 
 type leesStaat struct {
-	lijst   lijst
-	geladen bool
-	boek    *openBoek
-	zoeken  bool            // typt in het zoekveld
-	zoek    textinput.Model // zoeken met /
+	plank    int   // 0 korte verhalen, 1 e-books
+	verhalen lijst // de korte verhalen (komen met de app mee)
+	lijst    lijst
+	geladen  bool
+	boek     *openBoek
+	zoeken   bool            // typt in het zoekveld
+	zoek     textinput.Model // zoeken met /
 }
 
 type openBoek struct {
@@ -248,8 +250,9 @@ func boekenMap() string {
 
 // De plek per boek (welke alinea bovenaan stond) en de lijst voor als er geen wifi is.
 type leesGeheugen struct {
-	Plek   map[string]int `json:"plek"`
-	Boeken []leesBoekInfo `json:"boeken"`
+	Plek   map[string]int  `json:"plek"`
+	Uit    map[string]bool `json:"uit,omitempty"` // korte verhalen die tot het eind gelezen zijn
+	Boeken []leesBoekInfo  `json:"boeken"`
 }
 
 type leesBoekInfo struct{ ID, Titel, Sub string }
@@ -277,6 +280,9 @@ func (g leesGeheugen) bewaar() {
 
 func (m *model) lezenOpen() tea.Cmd {
 	ls := m.ls
+	if len(ls.verhalen.items) == 0 {
+		ls.verhalen = m.verhalenLijst()
+	}
 	if ls.geladen || ls.lijst.laden {
 		return nil
 	}
@@ -309,6 +315,23 @@ func (m *model) lezenOpen() tea.Cmd {
 		}
 		return eboekenMsg{items, err}
 	}
+}
+
+// leesLijst: de lijst van de plank die open is.
+func (m *model) leesLijst() *lijst {
+	if m.ls.plank == 0 {
+		return &m.ls.verhalen
+	}
+	return &m.ls.lijst
+}
+
+// openLees opent een kort verhaal (meteen, het zit in de app) of een e-book.
+func (m *model) openLees(it item) tea.Cmd {
+	if v, ok := zoekVerhaal(it.id); ok {
+		return func() tea.Msg { return boekMsg{id: v.id, titel: v.titel, alineas: m.verhaalAlineas(v)} }
+	}
+	m.ls.lijst.laden = true
+	return m.openEboek(it)
 }
 
 func (m *model) openEboek(it item) tea.Cmd {
@@ -345,6 +368,7 @@ func (m *model) lezenBericht(msg tea.Msg) tea.Cmd {
 		}
 	case boekMsg:
 		ls.lijst.laden = false
+		ls.verhalen.laden = false
 		if msg.err != nil {
 			m.zeg(m.t("listen.err", msg.err.Error()))
 			return nil
@@ -410,9 +434,15 @@ func (m *model) bewaarPlek(forceer bool) tea.Cmd {
 	}
 	g := laadLeesGeheugen()
 	g.Plek[b.id] = b.alineaVanRegel(b.bovenste)
+	if isVerhaal(b.id) && b.bovenste+m.leesHoogte() >= len(b.regels) { // de laatste bladzijde gezien
+		if g.Uit == nil {
+			g.Uit = map[string]bool{}
+		}
+		g.Uit[b.id] = true
+	}
 	g.bewaar()
 	abs := m.l.abs
-	if abs == nil || (!forceer && time.Since(b.gesynct) < time.Minute) {
+	if abs == nil || isVerhaal(b.id) || (!forceer && time.Since(b.gesynct) < time.Minute) {
 		return nil
 	}
 	b.gesynct = time.Now()
@@ -440,13 +470,14 @@ func (m *model) toetsLezen(msg tea.KeyMsg) (tea.Cmd, bool) {
 			cmd := m.bewaarPlek(true)
 			ls.boek = nil
 			ls.geladen = false // percentages verversen
+			ls.verhalen = m.verhalenLijst()
 			return tea.Batch(cmd, m.lezenOpen()), true
 		default:
 			return nil, false
 		}
 		return m.bewaarPlek(false), true
 	}
-	lj := &ls.lijst
+	lj := m.leesLijst()
 	if ls.zoeken {
 		switch k {
 		case "esc":
@@ -455,8 +486,7 @@ func (m *model) toetsLezen(msg tea.KeyMsg) (tea.Cmd, bool) {
 			it, ok := lj.gekozen()
 			m.stopLeesZoeken()
 			if ok {
-				lj.laden = true
-				return m.openEboek(it), true
+				return m.openLees(it), true
 			}
 		case "up":
 			lj.sel = max(lj.sel-1, 0)
@@ -490,9 +520,10 @@ func (m *model) toetsLezen(msg tea.KeyMsg) (tea.Cmd, bool) {
 		lj.sel = min(lj.sel+1, max(len(lj.zichtbaar())-1, 0))
 	case "enter":
 		if it, ok := lj.gekozen(); ok {
-			lj.laden = true
-			return m.openEboek(it), true
+			return m.openLees(it), true
 		}
+	case "tab":
+		ls.plank = 1 - ls.plank
 	case "r":
 		ls.geladen = false
 		return m.lezenOpen(), true
@@ -507,7 +538,8 @@ func (m *model) stopLeesZoeken() {
 	ls := m.ls
 	ls.zoeken = false
 	ls.zoek.Blur()
-	ls.lijst.filter, ls.lijst.sel = "", 0
+	lj := m.leesLijst()
+	lj.filter, lj.sel = "", 0
 }
 
 /* ---------------- weergave ---------------- */
@@ -537,7 +569,7 @@ func (m model) viewLezen(p palet) string {
 		midden := lipgloss.PlaceHorizontal(m.breed-4, lipgloss.Center, tekst)
 		return lipgloss.PlaceHorizontal(m.breed-4, lipgloss.Center, kop) + "\n\n" + midden + "\n\n" + lipgloss.PlaceHorizontal(m.breed-4, lipgloss.Center, voet)
 	}
-	lj := &ls.lijst
+	lj := m.leesLijst()
 	var inhoud string
 	switch {
 	case lj.laden:
@@ -551,9 +583,21 @@ func (m model) viewLezen(p palet) string {
 		inhoud = m.viewRegels(p, lj, m.breed-14, max(m.hoog-10, 3))
 	}
 	toetsen := m.t("read.listkeys")
+	if ls.plank == 0 {
+		toetsen = m.t("read.storykeys")
+	}
 	if ls.zoeken {
 		toetsen = m.t("read.searchkeys")
 	}
+	// twee planken: de open plank licht op, Tab wisselt
+	planken := []string{m.t("read.stories"), m.t("read.books")}
+	for i := range planken {
+		if i == ls.plank {
+			planken[i] = lipgloss.NewStyle().Foreground(p.acc).Bold(true).Underline(true).Render(planken[i])
+		} else {
+			planken[i] = dim.Render(planken[i])
+		}
+	}
 	return lipgloss.NewStyle().Bold(true).Render(m.t("menu.read")) + "\n\n" +
-		paneel(p, m.t("read.books"), inhoud, m.breed-8, true) + "\n" + dim.Render(toetsen)
+		paneel(p, strings.Join(planken, dim.Render("   ·   ")), inhoud, m.breed-8, true) + "\n" + dim.Render(toetsen)
 }

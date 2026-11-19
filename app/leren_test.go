@@ -110,7 +110,7 @@ func TestLerenTabblad(t *testing.T) {
 		t.Fatalf("3 hoort Leren te openen:\n%s", m.View())
 	}
 	// tafels via Leren, en met esc weer terug in het menu van Leren
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 5; i++ {
 		m = toets(m, "down")
 	}
 	m = toets(m, "enter")

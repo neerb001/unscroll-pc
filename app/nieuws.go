@@ -19,6 +19,10 @@ type nieuwsItem struct {
 
 // nieuwsLijst: nieuwste bovenaan.
 var nieuwsLijst = []nieuwsItem{
+	{"v0.27.0", [2]string{
+		"Nieuw bij 2 Lezen: tien korte verhalen, elk zo'n vijf minuten lezen. Met Tab ga je naar je e-books. En bij 3 Leren: topografie van Europa en Nederland, en Engelse woordjes.",
+		"New in 2 Read: ten short stories, about five minutes each. Tab takes you to your e-books. And in 3 Learn: geography of Europe and the Netherlands, and English words.",
+	}},
 	{"v0.26.0", [2]string{
 		"Nieuw: 3 Leren, met dictee, flitslezen en klokkijken. De tafels en de rekenmachine staan daar nu ook. De knoppen daarna schuiven een plekje op: je maatje is nu 4, Denksport 6 en Systeem 9.",
 		"New: 3 Learn, with dictation, flash reading and telling time. The times tables and the calculator are there now too. The buttons after it move up one place: the buddy is now 4, Puzzles 6 and System 9.",

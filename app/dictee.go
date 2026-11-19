@@ -168,7 +168,10 @@ func soortVan(w dicteeWoord) string {
 
 // spreek leest een tekst voor met espeak-ng (offline, licht genoeg voor een netbook).
 // Een variabele zodat de tests hem kunnen vervangen. Geeft false als er geen stem is.
-var spreek = func(tekst string) bool {
+var spreek = func(tekst string) bool { return spreekStem("nl", tekst) }
+
+// spreekStem leest voor met een stem van espeak-ng ("nl", "en-gb").
+func spreekStem(stem, tekst string) bool {
 	spreekMu.Lock()
 	defer spreekMu.Unlock()
 	if spreekProc != nil && spreekProc.Process != nil {
@@ -178,7 +181,7 @@ var spreek = func(tekst string) bool {
 	if err != nil {
 		return false
 	}
-	cmd := exec.Command(pad, "-v", "nl", "-s", "125", "-g", "6", tekst)
+	cmd := exec.Command(pad, "-v", stem, "-s", "125", "-g", "6", tekst)
 	cmd.Stdout, cmd.Stderr = nil, nil
 	if err := cmd.Start(); err != nil {
 		return false

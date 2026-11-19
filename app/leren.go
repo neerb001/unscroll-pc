@@ -17,6 +17,8 @@ const (
 	lerenDictee
 	lerenFlits
 	lerenKlok
+	lerenTopo
+	lerenEngels
 	lerenDenk // een scherm van Denksport (tafels, rekenmachine), maar dan onder Leren
 )
 
@@ -30,6 +32,8 @@ var lerenItems = []lerenItem{
 	{"learn.dictation", lerenDictee, 0},
 	{"learn.flash", lerenFlits, 0},
 	{"learn.clock", lerenKlok, 0},
+	{"learn.topo", lerenTopo, 0},
+	{"learn.english", lerenEngels, 0},
 	{"tables.title", lerenDenk, denkTafelsKies},
 	{"calc.title", lerenDenk, denkKnoppen},
 	{"calc.typed", lerenDenk, denkRekenmachine},
@@ -43,10 +47,12 @@ type lerenStaat struct {
 	dictee        *dicteeStaat
 	flits         *flitsStaat
 	klok          *klokStaat
+	topo          *topoStaat
+	engels        *engelsStaat
 }
 
 func nieuwLeren() *lerenStaat {
-	return &lerenStaat{dictee: nieuwDictee(), flits: nieuwFlitsen(), klok: nieuweKlok()}
+	return &lerenStaat{dictee: nieuwDictee(), flits: nieuwFlitsen(), klok: nieuweKlok(), topo: nieuweTopo(), engels: nieuwEngels()}
 }
 
 // lerenOpen: bij het openen van Leren of Denksport niet in een scherm van de ander blijven hangen.
@@ -77,6 +83,10 @@ func (m *model) toetsLeren(msg tea.KeyMsg) (tea.Cmd, bool) {
 		return m.toetsFlits(msg)
 	case lerenKlok:
 		return m.toetsKlok(msg)
+	case lerenTopo:
+		return m.toetsTopo(msg)
+	case lerenEngels:
+		return m.toetsEngels(msg)
 	case lerenDenk:
 		cmd, ok := m.toetsDenk(msg)
 		if m.dk.scherm == denkMenu { // esc in een Denksport-scherm: terug naar het menu van Leren
@@ -97,6 +107,10 @@ func (m *model) toetsLeren(msg tea.KeyMsg) (tea.Cmd, bool) {
 			l.dictee.scherm = dicteeKiezen
 		case lerenFlits:
 			l.flits.scherm = flitsKiezen
+		case lerenTopo:
+			l.topo.bezig = false
+		case lerenEngels:
+			l.engels.scherm = engelsKiezen
 		case lerenKlok:
 			l.klok.terug = nil
 			l.klok.nieuweTijd()
@@ -121,6 +135,10 @@ func (m model) viewLeren(p palet) string {
 		return m.viewFlits(p, kop, breed)
 	case lerenKlok:
 		return m.viewKlok(p, kop, breed)
+	case lerenTopo:
+		return m.viewTopo(p, kop, max(min(m.breed-8, 110), 60))
+	case lerenEngels:
+		return m.viewEngels(p, kop, breed)
 	case lerenDenk:
 		return m.viewDenk(p)
 	}
