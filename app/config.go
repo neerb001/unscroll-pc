@@ -93,7 +93,13 @@ type Ouders struct {
 		Topic string `yaml:"topic"`
 	} `yaml:"ntfy"`
 	Maatje MaatjeGrenzen `yaml:"maatje"`
-	Radio  []Zender      `yaml:"radio"`
+
+	// EerstOefenen: elke dag eerst een aantal sommen goed, dan gaat de rest van de computer open.
+	EerstOefenen struct {
+		Sommen int `yaml:"sommen"` // 0: uit
+		Tafel  int `yaml:"tafel"`  // 1 tot en met 12, of 0: de tafels 1 tot en met 10 door elkaar
+	} `yaml:"eerst_oefenen"`
+	Radio []Zender `yaml:"radio"`
 
 	// Vandaag: de plek voor het weer (sudo unscroll-ouder zoekt de coördinaten op bij een plaatsnaam)
 	Vandaag struct {

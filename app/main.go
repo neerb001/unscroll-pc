@@ -83,6 +83,7 @@ type model struct {
 	bijwerken    bool   // de ouder liet nu bijwerken (U) en dat loopt nog
 	dk           *denkStaat
 	lr           *lerenStaat
+	poort        *poortStaat // eerst oefenen, dan de computer
 }
 
 func nieuwModel() model {
@@ -109,6 +110,7 @@ func nieuwModel() model {
 	m.oi = nieuweOuderInst()
 	m.dk = nieuweDenksport()
 	m.lr = nieuwLeren()
+	m.poort = &poortStaat{}
 	m.pin = textinput.New()
 	m.pin.EchoMode = textinput.EchoPassword
 	m.pin.CharLimit = 8
@@ -142,6 +144,10 @@ func (m model) dicht() bool { return isDicht(m.ouders, m.nu) && m.nu.After(m.ont
 func (m *model) zeg(s string) { m.melding = s; m.meldingTot = time.Now().Add(4 * time.Second) }
 
 func (m *model) naarTab(t int) tea.Cmd {
+	if t != tabStart && t != tabSysteem && m.poortDicht() {
+		m.zeg(m.t("gate.first"))
+		t = tabStart
+	}
 	if m.dicht() && t != tabStart && t != tabSysteem && !magTijdensSlot(m.ouders, t) {
 		m.zeg(m.t("lock.only"))
 		t = tabStart
@@ -214,6 +220,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.zeg(m.t("msg.parentauto"))
 		}
 		if m.dicht() && m.tab != tabSysteem && !magTijdensSlot(m.ouders, m.tab) {
+			m.tab = tabStart
+		}
+		if m.tab != tabSysteem && m.tab != tabStart && m.poortDicht() { // na de ouderstand: weer eerst oefenen
 			m.tab = tabStart
 		}
 		if m.nieuw = nieuweVersieKlaar(); m.nieuw != "" && m.rustigMoment() {
@@ -318,6 +327,11 @@ func (m model) toets(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			return m, cmd
 		}
 		return m, nil
+	}
+
+	// eerst oefenen: dan gaan alle toetsen naar de sommen (behalve bij Systeem, voor de ouders)
+	if m.tab != tabSysteem && m.poortDicht() {
+		return m, m.toetsPoort(msg)
 	}
 
 	// typen in een tekstveld bij Systeem
@@ -532,6 +546,8 @@ func (m model) View() string {
 
 	var inhoud string
 	switch {
+	case m.tab != tabSysteem && m.poortDicht():
+		inhoud = m.viewPoort(p)
 	case m.dicht() && m.tab == tabStart:
 		inhoud = m.viewSlot(p)
 	case m.tab == tabStart:

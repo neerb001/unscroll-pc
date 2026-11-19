@@ -64,6 +64,8 @@ var instellingen = []instelling{
 	{sleutel: "maatje.beurten_per_huiswerksessie", label: "pset.hwturns", soort: instGetal, min: 0, max: 200, stap: 5},
 	{sleutel: "maatje.verhaal_sessies_per_dag", label: "pset.stories", soort: instGetal, min: 0, max: 20, stap: 1},
 	{sleutel: "maatje.beurten_per_verhaalsessie", label: "pset.stturns", soort: instGetal, min: 0, max: 200, stap: 5},
+	{sleutel: "eerst_oefenen.sommen", label: "pset.gatesums", soort: instGetal, min: 0, max: 30, stap: 1},
+	{sleutel: "eerst_oefenen.tafel", label: "pset.gatetable", soort: instGetal, min: 0, max: 12, stap: 1},
 	{sleutel: "vandaag.plaats", label: "pset.place", soort: instTekst},
 	{sleutel: "vandaag.breedtegraad", soort: instKomma, verborgen: true},
 	{sleutel: "vandaag.lengtegraad", soort: instKomma, verborgen: true},

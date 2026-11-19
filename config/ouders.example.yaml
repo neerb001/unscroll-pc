@@ -16,6 +16,13 @@ pin_sha256: ""
 
 max_volume: 70
 
+# First practise, then the computer: every day the child first gets this many sums right
+# (only right answers count) before anything else opens. Not during quiet time.
+# Also in the app: parent mode (o + PIN), then i.
+eerst_oefenen:
+  sommen: 0                # 0: off, for example 5
+  tafel: 7                 # 1 to 12, or 0 for tables 1 to 10 mixed
+
 # Weather on the Today page. sudo unscroll-ouder looks up the coordinates for a place name.
 # Without a place, the weather of De Bilt (centre of the Netherlands) is shown.
 vandaag:
