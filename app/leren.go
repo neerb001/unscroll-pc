@@ -19,6 +19,7 @@ const (
 	lerenKlok
 	lerenTopo
 	lerenEngels
+	lerenGeschiedenis
 	lerenDenk // een scherm van Denksport (tafels, rekenmachine), maar dan onder Leren
 )
 
@@ -34,6 +35,7 @@ var lerenItems = []lerenItem{
 	{"learn.clock", lerenKlok, 0},
 	{"learn.topo", lerenTopo, 0},
 	{"learn.english", lerenEngels, 0},
+	{"learn.history", lerenGeschiedenis, 0},
 	{"tables.title", lerenDenk, denkTafelsKies},
 	{"calc.title", lerenDenk, denkKnoppen},
 	{"calc.typed", lerenDenk, denkRekenmachine},
@@ -49,10 +51,11 @@ type lerenStaat struct {
 	klok          *klokStaat
 	topo          *topoStaat
 	engels        *engelsStaat
+	gesch         *geschStaat
 }
 
 func nieuwLeren() *lerenStaat {
-	return &lerenStaat{dictee: nieuwDictee(), flits: nieuwFlitsen(), klok: nieuweKlok(), topo: nieuweTopo(), engels: nieuwEngels()}
+	return &lerenStaat{dictee: nieuwDictee(), flits: nieuwFlitsen(), klok: nieuweKlok(), topo: nieuweTopo(), engels: nieuwEngels(), gesch: nieuweGeschiedenis()}
 }
 
 // lerenOpen: bij het openen van Leren of Denksport niet in een scherm van de ander blijven hangen.
@@ -87,6 +90,8 @@ func (m *model) toetsLeren(msg tea.KeyMsg) (tea.Cmd, bool) {
 		return m.toetsTopo(msg)
 	case lerenEngels:
 		return m.toetsEngels(msg)
+	case lerenGeschiedenis:
+		return m.toetsGeschiedenis(msg)
 	case lerenDenk:
 		cmd, ok := m.toetsDenk(msg)
 		if m.dk.scherm == denkMenu { // esc in een Denksport-scherm: terug naar het menu van Leren
@@ -111,6 +116,8 @@ func (m *model) toetsLeren(msg tea.KeyMsg) (tea.Cmd, bool) {
 			l.topo.bezig = false
 		case lerenEngels:
 			l.engels.scherm = engelsKiezen
+		case lerenGeschiedenis:
+			l.gesch.bezig = false
 		case lerenKlok:
 			l.klok.terug = nil
 			l.klok.nieuweTijd()
@@ -139,6 +146,8 @@ func (m model) viewLeren(p palet) string {
 		return m.viewTopo(p, kop, max(min(m.breed-8, 110), 60))
 	case lerenEngels:
 		return m.viewEngels(p, kop, breed)
+	case lerenGeschiedenis:
+		return m.viewGeschiedenis(p, kop, breed)
 	case lerenDenk:
 		return m.viewDenk(p)
 	}

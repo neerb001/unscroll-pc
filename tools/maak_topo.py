@@ -4,8 +4,9 @@
 Gebruik:  python3 -I tools/maak_topo.py NE_MAP app/topo
 NE_MAP bevat de geojson-bestanden van https://github.com/nvkelso/natural-earth-vector (map geojson):
 ne_50m_admin_0_countries, ne_50m_populated_places_simple, ne_10m_admin_0_countries,
-ne_10m_admin_1_states_provinces, ne_10m_rivers_lake_centerlines, ne_10m_lakes.
-Schrijft europa.json en nederland.json.
+ne_10m_admin_1_states_provinces, ne_10m_rivers_lake_centerlines, ne_10m_lakes,
+ne_110m_admin_0_countries, ne_50m_rivers_lake_centerlines.
+Schrijft europa.json, nederland.json en wereld.json.
 
 Een kaart heeft een kader, een achtergrond (alleen omtrek) en dingen om te leren: vlakken
 (landen, provincies, eilanden), punten (steden, zeeën) en lijnen (rivieren). De lijnen worden
@@ -246,7 +247,110 @@ def nederland(d):
     return {"kader": k, "breedte": 52, "achtergrond": achtergrond, "lijnen": lijnen, "items": items}
 
 
+# ---------------- Wereld (groep 8) ----------------
+
+W_KADER = [-180.0, -57.0, 180.0, 83.0]
+WERELDDEEL = {"Africa": ("Afrika", "Africa"), "Asia": ("Azië", "Asia"), "Europe": ("Europa", "Europe"),
+              "North America": ("Noord-Amerika", "North America"), "South America": ("Zuid-Amerika", "South America"),
+              "Oceania": ("Oceanië", "Oceania")}
+WERELDDEEL_OOK = {"Oceania": ["australie", "australia"], "North America": ["amerika"], "South America": ["latijns-amerika"]}
+# landen die in groep 8 terugkomen: code, hoofdstad (nl, en), lengte, breedte
+W_LANDEN = {
+    "USA": ("Washington", "Washington", -77.04, 38.90), "CAN": ("Ottawa", "Ottawa", -75.70, 45.42),
+    "MEX": ("Mexico-Stad", "Mexico City", -99.13, 19.43), "BRA": ("Brasilia", "Brasília", -47.88, -15.79),
+    "ARG": ("Buenos Aires", "Buenos Aires", -58.38, -34.60), "CHL": ("Santiago", "Santiago", -70.67, -33.45),
+    "PER": ("Lima", "Lima", -77.04, -12.05), "COL": ("Bogota", "Bogotá", -74.07, 4.71),
+    "VEN": ("Caracas", "Caracas", -66.90, 10.49), "SUR": ("Paramaribo", "Paramaribo", -55.20, 5.85),
+    "CUB": ("Havana", "Havana", -82.37, 23.11), "EGY": ("Caïro", "Cairo", 31.24, 30.04),
+    "MAR": ("Rabat", "Rabat", -6.84, 34.02), "DZA": ("Algiers", "Algiers", 3.06, 36.75),
+    "NGA": ("Abuja", "Abuja", 7.49, 9.08), "ZAF": ("Pretoria", "Pretoria", 28.19, -25.75),
+    "KEN": ("Nairobi", "Nairobi", 36.82, -1.29), "ETH": ("Addis Abeba", "Addis Ababa", 38.75, 9.03),
+    "COD": ("Kinshasa", "Kinshasa", 15.31, -4.32), "MDG": ("Antananarivo", "Antananarivo", 47.52, -18.88),
+    "RUS": ("Moskou", "Moscow", 37.62, 55.76), "CHN": ("Peking", "Beijing", 116.40, 39.90),
+    "IND": ("New Delhi", "New Delhi", 77.21, 28.61), "JPN": ("Tokio", "Tokyo", 139.69, 35.69),
+    "IDN": ("Jakarta", "Jakarta", 106.85, -6.21), "AUS": ("Canberra", "Canberra", 149.13, -35.28),
+    "NZL": ("Wellington", "Wellington", 174.78, -41.29), "SAU": ("Riyad", "Riyadh", 46.68, 24.71),
+    "IRN": ("Teheran", "Tehran", 51.39, 35.69), "IRQ": ("Bagdad", "Baghdad", 44.37, 33.31),
+    "TUR": ("Ankara", "Ankara", 32.85, 39.93), "PAK": ("Islamabad", "Islamabad", 73.05, 33.68),
+    "AFG": ("Kabul", "Kabul", 69.21, 34.56), "THA": ("Bangkok", "Bangkok", 100.50, 13.76),
+    "VNM": ("Hanoi", "Hanoi", 105.85, 21.03), "PHL": ("Manilla", "Manila", 120.98, 14.60),
+    "KOR": ("Seoul", "Seoul", 126.98, 37.57), "MNG": ("Ulaanbaatar", "Ulaanbaatar", 106.91, 47.89),
+    "KAZ": ("Astana", "Astana", 71.45, 51.17), "GRL": ("Nuuk", "Nuuk", -51.72, 64.18),
+    "GBR": ("Londen", "London", -0.13, 51.51), "FRA": ("Parijs", "Paris", 2.35, 48.86),
+    "DEU": ("Berlijn", "Berlin", 13.40, 52.52), "ESP": ("Madrid", "Madrid", -3.70, 40.42),
+    "ITA": ("Rome", "Rome", 12.50, 41.90), "NOR": ("Oslo", "Oslo", 10.75, 59.91),
+}
+W_LAND_OOK = {"USA": ["amerika", "vs", "verenigde staten van amerika", "usa"], "COD": ["congo", "dr congo"],
+              "GBR": ["groot-brittannie", "engeland", "vk", "uk"], "KOR": ["korea"], "SAU": ["saudi-arabie"]}
+W_NAAM = {"CHN": "China", "USA": "Verenigde Staten", "COD": "Congo"}  # zoals op school, niet de officiële naam
+W_STAD_OOK = {"CHN": ["beijing"], "JPN": ["tokyo"], "COL": ["bogotá"], "BRA": ["brasília"], "PHL": ["manila"],
+              "EGY": ["cairo", "kairo"], "SAU": ["riyadh"], "MEX": ["mexico city", "mexico"], "ETH": ["addis ababa"],
+              "USA": ["washington dc", "washington d.c."], "IRN": ["tehran"], "IRQ": ["baghdad"], "CUB": ["havana", "havanna"]}
+W_NATUUR = {  # punten midden in de zee, op het gebergte of in de woestijn
+    "Grote Oceaan": ("Pacific Ocean", -140, 5, ["stille oceaan", "pacific"]),
+    "Atlantische Oceaan": ("Atlantic Ocean", -35, 20, ["atlantic"]),
+    "Indische Oceaan": ("Indian Ocean", 78, -22, ["indian ocean"]),
+    "Noordelijke IJszee": ("Arctic Ocean", 0, 80, ["arctic ocean"]),
+    "Zuidelijke Oceaan": ("Southern Ocean", 20, -55, ["southern ocean"]),
+    "Middellandse Zee": ("Mediterranean Sea", 18, 34.5, ["mediterranean"]),
+    "Caribische Zee": ("Caribbean Sea", -75, 15, ["caribbean"]),
+    "Rode Zee": ("Red Sea", 38.5, 20, ["red sea"]),
+    "Himalaya": ("Himalayas", 84, 28.5, ["himalayas"]),
+    "Andes": ("Andes", -69, -20, []),
+    "Rocky Mountains": ("Rocky Mountains", -110, 44, ["rockies"]),
+    "Sahara": ("Sahara", 10, 23, []),
+}
+W_RIVIER = {"Nijl": ("Nile", {"Nile", "El Bahr el Abyad", "Victoria Nile", "Albert Nile", "Bahr el Jebel", "Rosetta Branch"}),
+            "Amazone": ("Amazon", {"Amazonas", "Ucayali"}),
+            "Mississippi": ("Mississippi", {"Mississippi"}),
+            "Jangtsekiang": ("Yangtze", {"Yangtze", "Chang Jiang", "Jinsha", "Tongtian"}),
+            "Congo": ("Congo", {"Congo", "Lualaba"}), "Mekong": ("Mekong", {"Mekong", "Lancang"}),
+            "Donau": ("Danube", {"Danube", "Donau"})}
+W_RIVIER_OOK = {"Jangtsekiang": ["jangtse", "yangtze"], "Amazone": ["amazon"], "Nijl": ["nile"]}
+
+
+def wereld(d):
+    k = W_KADER
+    achtergrond, items = [], []
+    delen = {}
+    for f in lees(d, "ne_110m_admin_0_countries"):
+        p = f["properties"]
+        code = p["ADM0_A3"]
+        r = vlak(ringen_van(f["geometry"]), k, 0.4, 0)
+        if not r:
+            continue
+        deel = p["CONTINENT"]
+        if code == "RUS":
+            deel = "Asia"  # het grootste stuk; Europa staat op de eigen kaart
+        if deel in WERELDDEEL:
+            delen.setdefault(deel, []).extend(r)
+        if code in W_LANDEN:
+            snl, sen, lon, lat = W_LANDEN[code]
+            items.append({"code": "land:" + code, "groep": "land", "nl": W_NAAM.get(code, p["NAME_NL"]), "en": p["NAME_EN"],
+                          "ook": W_LAND_OOK.get(code, []) + [p["NAME_NL"]], "vlak": r,
+                          "stad": {"nl": snl, "en": sen, "ook": W_STAD_OOK.get(code, []), "punt": [lon, lat]}})
+        else:
+            achtergrond.extend(r)
+    for deel, r in delen.items():
+        nl, en = WERELDDEEL[deel]
+        items.append({"code": "deel:" + deel, "groep": "werelddeel", "nl": nl, "en": en,
+                      "ook": WERELDDEEL_OOK.get(deel, []), "vlak": r})
+    rivieren = {}
+    for f in lees(d, "ne_50m_rivers_lake_centerlines"):
+        naam = f["properties"].get("name")
+        for nl, (en, namen) in W_RIVIER.items():
+            if naam in namen:
+                rivieren.setdefault(nl, []).extend(lijn(lijnen_van(f["geometry"]), k, 0.3))
+    for nl, l in rivieren.items():
+        items.append({"code": "rivier:" + nl, "groep": "natuur", "nl": nl, "en": W_RIVIER[nl][0],
+                      "ook": W_RIVIER_OOK.get(nl, []), "lijn": l})
+    for nl, (en, lon, lat, ook) in W_NATUUR.items():
+        items.append({"code": "natuur:" + nl, "groep": "natuur", "nl": nl, "en": en, "ook": ook, "punt": [lon, lat]})
+    return {"kader": k, "breedte": 0, "achtergrond": achtergrond, "lijnen": [], "items": items}
+
+
 d, uit = sys.argv[1], sys.argv[2]
 os.makedirs(uit, exist_ok=True)
 schrijf(os.path.join(uit, "europa.json"), europa(d))
 schrijf(os.path.join(uit, "nederland.json"), nederland(d))
+schrijf(os.path.join(uit, "wereld.json"), wereld(d))

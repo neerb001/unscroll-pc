@@ -14,8 +14,9 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-// Topografie: Europa (landen en hoofdsteden, groep 7) en Nederland (provincies en hun
-// hoofdsteden, steden, rivieren, wateren en Waddeneilanden, groep 6 en 7). Een kaart getekend
+// Topografie: Europa (landen en hoofdsteden, groep 7), Nederland (provincies en hun
+// hoofdsteden, steden, rivieren, wateren en Waddeneilanden, groep 6 en 7) en de wereld
+// (werelddelen, landen en hoofdsteden, oceanen, zeeën, gebergten en rivieren, groep 8). Een kaart getekend
 // met braillepuntjes waarop één ding oplicht: een land of provincie ingekleurd, een stad als
 // stip, een rivier als lijn. Eerst rondkijken, dan overhoren; de leermotor laat terugkomen wat
 // lastig is.
@@ -85,6 +86,11 @@ var topoOefeningen = []topoOefening{
 	{"topo.nl.capitals", "nederland", "provincie", "stad"},
 	{"topo.nl.cities", "nederland", "stad", "naam"},
 	{"topo.nl.water", "nederland", "water", "naam"},
+	{"topo.w.look", "wereld", "", "kijk"},
+	{"topo.w.continents", "wereld", "werelddeel", "naam"},
+	{"topo.w.countries", "wereld", "land", "naam"},
+	{"topo.w.capitals", "wereld", "land", "stad"},
+	{"topo.w.nature", "wereld", "natuur", "naam"},
 }
 
 func (o topoOefening) set() string { return "topo:" + o.kaart + ":" + o.groep + ":" + o.vraag }
@@ -136,12 +142,24 @@ func topoGoed(antwoord string, opties ...string) bool {
 
 /* ---------------- tekenen ---------------- */
 
-// topoMaat: hoeveel tekens breed een kaart van h regels hoog is (zodat hij niet uitgerekt wordt).
-func topoMaat(kaart string, h int) int {
+// topoVerhouding: breedte gedeeld door hoogte van de kaart.
+func topoVerhouding(kaart string) float64 {
 	k := topoKaartVan(kaart)
 	cosL := math.Cos((k.Kader[1] + k.Kader[3]) / 2 * math.Pi / 180)
-	verhouding := (k.Kader[2] - k.Kader[0]) * cosL / (k.Kader[3] - k.Kader[1])
-	return int(math.Ceil(float64(h*4) * verhouding / 2))
+	return (k.Kader[2] - k.Kader[0]) * cosL / (k.Kader[3] - k.Kader[1])
+}
+
+// topoMaat: hoeveel tekens breed een kaart van h regels hoog is (zodat hij niet uitgerekt wordt).
+func topoMaat(kaart string, h int) int {
+	return int(math.Ceil(float64(h*4) * topoVerhouding(kaart) / 2))
+}
+
+// topoPassend: breedte en hoogte voor een kaart die in b × h tekens moet passen.
+func topoPassend(kaart string, b, h int) (int, int) {
+	if w := topoMaat(kaart, h); w <= b {
+		return w, h
+	}
+	return b, max(int(math.Ceil(float64(b*2)/(4*topoVerhouding(kaart)))), 6)
 }
 
 var (
@@ -451,6 +469,10 @@ func (m model) topoVraag(o topoOefening, d *topoDing) string {
 	switch {
 	case d.Groep == "land":
 		return m.t("topo.whichcountry")
+	case d.Groep == "werelddeel":
+		return m.t("topo.whichcontinent")
+	case d.Groep == "natuur" && len(d.Lijn) == 0:
+		return m.t("topo.whichnature")
 	case d.Groep == "provincie":
 		return m.t("topo.whichprovince")
 	case d.Groep == "stad":
@@ -480,7 +502,7 @@ func (m model) viewTopo(p palet, kop string, breed int) string {
 				regels = append(regels, lipgloss.NewStyle().Bold(true).Render(m.t("topo.map."+o.kaart)))
 				vorige = o.kaart
 			}
-			naam := fmt.Sprintf("%-26s", m.t(o.sleutel))
+			naam := fmt.Sprintf("%-38s", m.t(o.sleutel))
 			extra := dim.Render("  " + m.t("topo.look.d"))
 			if o.vraag != "kijk" {
 				var codes []string
@@ -500,8 +522,7 @@ func (m model) viewTopo(p palet, kop string, breed int) string {
 	}
 	o := t.oefening()
 	// kaart links, tekst rechts
-	h := max(m.hoog-11, 8)
-	b := min(topoMaat(o.kaart, h), breed-36)
+	b, h := topoPassend(o.kaart, breed-36, max(m.hoog-11, 8))
 	breedRechts := max(breed-b-10, 20)
 	tekst := lipgloss.NewStyle().Width(breedRechts)
 	var ding *topoDing
@@ -524,7 +545,7 @@ func (m model) viewTopo(p palet, kop string, breed int) string {
 		}
 	default:
 		ding = t.ronde[t.nr]
-		rechts = append(rechts, dim.Render(m.t("dictee.count", t.nr+1, len(t.ronde))), "",
+		rechts = append(rechts, dim.Render(m.t("learn.count", t.nr+1, len(t.ronde))), "",
 			lipgloss.NewStyle().Bold(true).Width(breedRechts).Render(m.topoVraag(o, ding)), "", t.invoer.View(), "")
 		if t.uitslag != "" {
 			kleur := p.groen
