@@ -109,3 +109,15 @@ func TestOuderInstellingenScherm(t *testing.T) {
 		t.Error("na de ouderstand hoort de pincode weg te zijn")
 	}
 }
+
+// Elke instelling op het scherm heeft een waarde (nooit <nil> of leeg), ook als ouders.yaml
+// hem nog niet heeft.
+func TestElkeInstellingHeeftEenWaarde(t *testing.T) {
+	m, _ := testModel(t, Geheimen{})
+	m.ouders = standaardOuders()
+	for _, i := range zichtbareInstellingen() {
+		if w := m.huidigeWaarde(i.sleutel); w == "" || w == "<nil>" {
+			t.Errorf("%s heeft geen waarde op het scherm: %q", i.sleutel, w)
+		}
+	}
+}

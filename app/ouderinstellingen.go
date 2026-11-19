@@ -326,8 +326,13 @@ func (m *model) huidigeWaarde(sleutel string) string {
 		"maatje.beurten_per_verhaalsessie": mj.BeurtenPerVerhaal, "vandaag.plaats": o.plaatsNaam(),
 		"spotify.zoeken": o.Spotify.Zoeken, "spotify.expliciet_mag": o.Spotify.ExplicietMag,
 		"spotify.goedgekeurd": len(o.Spotify.Goedgekeurd),
+		"eerst_oefenen.sommen": o.EerstOefenen.Sommen, "eerst_oefenen.tafel": o.EerstOefenen.Tafel,
 	}
-	return fmt.Sprint(waarden[sleutel])
+	w, ok := waarden[sleutel]
+	if !ok {
+		return "" // een nieuwe instelling die hier nog ontbreekt: liever leeg dan <nil>
+	}
+	return fmt.Sprint(w)
 }
 
 func (m *model) toetsOuderInst(msg tea.KeyMsg) (tea.Cmd, bool) {
