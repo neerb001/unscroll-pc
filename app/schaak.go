@@ -782,6 +782,9 @@ func (m model) schaakMaat() (h int, vol bool) {
 
 // volScherm: het schaakbord mag de lege regels boven en onder gebruiken als het daardoor groter kan.
 func (m model) volScherm() bool {
+	if m.tab == tabLeren && m.lr != nil && m.lr.scherm == lerenTopo && m.lr.topo.bezig {
+		return true // de kaart gebruikt elke regel
+	}
 	if m.tab != tabDenksport || m.dk == nil || m.dk.scherm != denkSchaak {
 		return false
 	}

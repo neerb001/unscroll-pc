@@ -156,6 +156,57 @@ func topoMaat(kaart string, h int) int {
 	return int(math.Ceil(float64(h*4) * topoVerhouding(kaart) / 2))
 }
 
+// topoZoom: een uitsnede rond een ding, met de buurt eromheen, die precies b × h tekens vult.
+// Zo heeft een provincie of een klein land veel meer puntjes dan op de hele kaart.
+func topoZoom(kaart string, d *topoDing, b, h int) [4]float64 {
+	k := topoKaartVan(kaart)
+	minX, minY, maxX, maxY := math.Inf(1), math.Inf(1), math.Inf(-1), math.Inf(-1)
+	neem := func(pt [2]float64) {
+		minX, maxX = math.Min(minX, pt[0]), math.Max(maxX, pt[0])
+		minY, maxY = math.Min(minY, pt[1]), math.Max(maxY, pt[1])
+	}
+	for _, r := range d.Vlak {
+		for _, pt := range r {
+			neem(pt)
+		}
+	}
+	for _, l := range d.Lijn {
+		for _, pt := range l {
+			neem(pt)
+		}
+	}
+	if d.Punt != nil {
+		neem(*d.Punt)
+	}
+	if d.Stad != nil {
+		neem(d.Stad.Punt)
+	}
+	if math.IsInf(minX, 1) {
+		return k.Kader
+	}
+	// hoe ver je minstens uitzoomt, zodat de buurt herkenbaar blijft (in graden breedte)
+	minBreedte := map[string]float64{"nederland": 1.1, "europa": 10, "wereld": 40}[kaart]
+	cx, cy := (minX+maxX)/2, (minY+maxY)/2
+	cosL := math.Cos(cy * math.Pi / 180)
+	r := float64(b*2) / float64(h*4) // breedte gedeeld door hoogte, in puntjes
+	lat := math.Max(minBreedte, math.Max((maxY-minY)*2.2, (maxX-minX)*cosL*2.2/r))
+	lon := lat * r / cosL
+	heelLon, heelLat := k.Kader[2]-k.Kader[0], k.Kader[3]-k.Kader[1]
+	if lat >= heelLat && lon >= heelLon {
+		return k.Kader
+	}
+	// binnen de kaart blijven: liever opschuiven dan buiten de gegevens kijken
+	schuif := func(c, half, lo, hi float64) float64 {
+		if 2*half >= hi-lo {
+			return (lo + hi) / 2
+		}
+		return math.Min(math.Max(c, lo+half), hi-half)
+	}
+	cx = schuif(cx, lon/2, k.Kader[0], k.Kader[2])
+	cy = schuif(cy, lat/2, k.Kader[1], k.Kader[3])
+	return [4]float64{cx - lon/2, cy - lat/2, cx + lon/2, cy + lat/2}
+}
+
 // topoPassend: breedte en hoogte voor een kaart die in b × h tekens moet passen.
 func topoPassend(kaart string, b, h int) (int, int) {
 	if w := topoMaat(kaart, h); w <= b {
@@ -169,6 +220,12 @@ var (
 	topoCache   = map[string]string{}
 )
 
+// de kleuren van de kaart: zee en het ding dat gevraagd wordt
+const (
+	topoZee  = "#2f6db5"
+	topoDoel = "#ff8c1a"
+)
+
 // isWater: meren en zeeën die als vlak op de kaart staan (het IJsselmeer).
 func (d *topoDing) isWater() bool { return strings.HasPrefix(d.Code, "water:") }
 
@@ -177,8 +234,8 @@ func (d *topoDing) isWater() bool { return strings.HasPrefix(d.Code, "water:") }
 // wordt fel ingekleurd. Met namen zet hij bij rondkijken de namen op de kaart. Met braille-
 // puntjes: 2 bij 4 per teken, zodat kusten en grenzen fijn genoeg zijn.
 // Onthouden per tekening: tekenen is werk voor een netbook.
-func topoTekst(kaart, code string, stad, namen bool, b, h int, p palet, taal string) string {
-	sleutel := fmt.Sprintf("%s|%s|%v|%v|%d|%d|%s|%s|%v", kaart, code, stad, namen, b, h, p.acc, taal, alleenLetters())
+func topoTekst(kaart, code string, stad, namen bool, b, h int, p palet, taal string, kader [4]float64) string {
+	sleutel := fmt.Sprintf("%s|%s|%v|%v|%d|%d|%s|%s|%v|%.3f", kaart, code, stad, namen, b, h, p.acc, taal, alleenLetters(), kader)
 	topoCacheMu.Lock()
 	if s, ok := topoCache[sleutel]; ok {
 		topoCacheMu.Unlock()
@@ -187,7 +244,7 @@ func topoTekst(kaart, code string, stad, namen bool, b, h int, p palet, taal str
 	topoCacheMu.Unlock()
 
 	k := topoKaartVan(kaart)
-	lonMin, latMin, lonMax, latMax := k.Kader[0], k.Kader[1], k.Kader[2], k.Kader[3]
+	lonMin, latMin, lonMax, latMax := kader[0], kader[1], kader[2], kader[3]
 	cosL := math.Cos((latMin + latMax) / 2 * math.Pi / 180) // een graad lengte is korter dan een graad breedte
 	W, H := b*2, h*4
 	schaal := math.Min(float64(W)/((lonMax-lonMin)*cosL), float64(H)/(latMax-latMin))
@@ -292,11 +349,11 @@ func topoTekst(kaart, code string, stad, namen bool, b, h int, p palet, taal str
 		kleur string
 	}
 	const (
-		zeeKleur    = "#2f6db5"
+		zeeKleur    = topoZee
 		grensKleur  = "#e8e8e8"
 		grijsKleur  = "#6b6b6b"
 		rivierKleur = "#5aa9ff"
-		doelKleur   = "#ff8c1a"
+		doelKleur   = topoDoel
 		stadKleur   = "#ffd43b"
 		naamKleur   = "#ffd43b"
 	)
@@ -381,6 +438,9 @@ func topoTekst(kaart, code string, stad, namen bool, b, h int, p palet, taal str
 				x, y = naar(l[len(l)/2])
 			default:
 				return
+			}
+			if x < 0 || y < 0 || x >= float64(W) || y >= float64(H) {
+				return // buiten beeld (ingezoomd)
 			}
 			naam := d.naam(taal)
 			cx, cy := int(x/2)-len([]rune(naam))/2, int(y/4)
@@ -510,6 +570,7 @@ func middenVan(r [][2]float64) [2]float64 {
 
 type topoStaat struct {
 	bezig      bool // false: kiezen wat je oefent
+	heel       bool // de hele kaart in plaats van ingezoomd (Tab wisselt)
 	keuze      int  // in topoOefeningen
 	kijk       int  // bij rondkijken: welk ding
 	ronde      []*topoDing
@@ -604,6 +665,10 @@ func (m *model) toetsTopo(msg tea.KeyMsg) (tea.Cmd, bool) {
 		default:
 			return nil, false
 		}
+		return nil, true
+	}
+	if k == "tab" { // ingezoomd of de hele kaart
+		t.heel = !t.heel
 		return nil, true
 	}
 	o := t.oefening()
@@ -719,46 +784,57 @@ func (m model) viewTopo(p palet, kop string, breed int) string {
 		return kop + "\n\n" + paneel(p, m.t("learn.topo"), strings.Join(regels, "\n"), breed, true) + "\n" + dim.Render(m.t("dictee.pickkeys"))
 	}
 	o := t.oefening()
-	// kaart links, tekst rechts
-	b, h := topoPassend(o.kaart, breed-34, max(m.hoog-9, 8)) // zo groot als het scherm toelaat
-	breedRechts := max(breed-b-10, 20)
-	tekst := lipgloss.NewStyle().Width(breedRechts)
 	var ding *topoDing
-	var rechts []string
 	switch {
 	case o.vraag == "kijk":
 		alle := o.dingen()
 		ding = alle[t.kijk%len(alle)]
-		rechts = append(rechts, acc.Render(ding.naam(taal)))
-		if ding.Stad != nil {
-			rechts = append(rechts, "", m.t("topo.capital")+" "+lipgloss.NewStyle().Foreground(p.geel).Render(ding.Stad.naam(taal)))
+	case !t.rondeKlaar:
+		ding = t.ronde[t.nr]
+	}
+	// de hele breedte en hoogte: een regel voor de vraag, een voor het antwoord, een voor de toetsen
+	W, H := m.breed-4, max(m.hoog-4, 8)
+	var kaart string
+	if ding != nil && !t.heel {
+		kader := topoZoom(o.kaart, ding, W, H)
+		kaart = topoTekst(o.kaart, ding.Code, o.vraag != "naam", o.vraag == "kijk", W, H, p, taal, kader)
+	} else {
+		b, h := topoPassend(o.kaart, W, H)
+		code := ""
+		if ding != nil {
+			code = ding.Code
 		}
-		rechts = append(rechts, "", dim.Render(fmt.Sprintf("%d/%d", t.kijk+1, len(alle))))
+		kaart = lipgloss.PlaceHorizontal(W, lipgloss.Center,
+			topoTekst(o.kaart, code, o.vraag != "naam", o.vraag == "kijk", b, h, p, taal, topoKaartVan(o.kaart).Kader))
+		kaart = lipgloss.PlaceVertical(H, lipgloss.Top, kaart)
+	}
+	kop = acc.Render(m.t("learn.topo")) + dim.Render(" · "+m.t("topo.map."+o.kaart)) + "   "
+	onder := ""
+	switch {
+	case o.vraag == "kijk":
+		kop += lipgloss.NewStyle().Foreground(lipgloss.Color(topoDoel)).Bold(true).Render(ding.naam(taal))
+		if ding.Stad != nil {
+			kop += "   " + m.t("topo.capital") + " " + lipgloss.NewStyle().Foreground(p.geel).Render(ding.Stad.naam(taal))
+		}
+		kop += dim.Render(fmt.Sprintf("   %d/%d", t.kijk+1, len(o.dingen())))
 	case t.rondeKlaar:
-		rechts = append(rechts, acc.Render(m.t("dictee.done")), "")
+		kop += acc.Render(m.t("dictee.done"))
 		if len(t.lastig) == 0 {
-			rechts = append(rechts, m.t("dictee.allright"))
+			onder = m.t("dictee.allright")
 		} else {
-			rechts = append(rechts, m.t("dictee.tricky"), tekst.Render(strings.Join(t.lastig, ", ")))
+			onder = m.t("dictee.tricky") + " " + strings.Join(t.lastig, ", ")
 		}
 	default:
-		ding = t.ronde[t.nr]
-		rechts = append(rechts, dim.Render(m.t("learn.count", t.nr+1, len(t.ronde))), "",
-			lipgloss.NewStyle().Bold(true).Width(breedRechts).Render(m.topoVraag(o, ding)), "", t.invoer.View(), "")
+		kop += dim.Render(m.t("learn.count", t.nr+1, len(t.ronde))+"   ") + lipgloss.NewStyle().Bold(true).Render(m.topoVraag(o, ding))
+		onder = t.invoer.View()
 		if t.uitslag != "" {
 			kleur := p.groen
 			if !t.goed {
 				kleur = p.geel
 			}
-			rechts = append(rechts, tekst.Foreground(kleur).Render(t.uitslag))
+			onder += "   " + lipgloss.NewStyle().Foreground(kleur).Render(t.uitslag)
 		}
 	}
-	code := ""
-	if ding != nil {
-		code = ding.Code
-	}
-	kaart := topoTekst(o.kaart, code, o.vraag != "naam", o.vraag == "kijk", b, h, p, taal)
-	inhoud := lipgloss.JoinHorizontal(lipgloss.Top, kaart, "   ", strings.Join(rechts, "\n"))
 	toetsen := m.t("topo.keys")
 	switch {
 	case o.vraag == "kijk":
@@ -768,5 +844,12 @@ func (m model) viewTopo(p palet, kop string, breed int) string {
 	case t.klaar:
 		toetsen = m.t("topo.nextkeys")
 	}
-	return paneel(p, m.t("learn.topo")+dim.Render("  ·  "+m.t("topo.map."+o.kaart)), inhoud, breed, true) + "\n" + dim.Render(toetsen) // geen kopregel: de kaart krijgt die ruimte
+	zoom := m.t("topo.zoomout")
+	if t.heel {
+		zoom = m.t("topo.zoomin")
+	}
+	if !t.rondeKlaar {
+		toetsen = zoom + " · " + toetsen
+	}
+	return kop + "\n" + kaart + "\n" + onder + "\n" + dim.Render(toetsen)
 }

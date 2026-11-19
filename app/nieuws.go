@@ -19,6 +19,10 @@ type nieuwsItem struct {
 
 // nieuwsLijst: nieuwste bovenaan.
 var nieuwsLijst = []nieuwsItem{
+	{"v0.31.0", [2]string{
+		"De kaarten bij Topografie gebruiken nu het hele scherm en zoomen in op wat gevraagd wordt. Met Tab zie je de hele kaart.",
+		"The maps in Geography now use the whole screen and zoom in on what is asked. Tab shows the whole map.",
+	}},
 	{"v0.29.0", [2]string{
 		"De kaarten bij Topografie zijn nu veel duidelijker: blauwe zee, witte grenzen en bij rondkijken de namen op de kaart. En bij de tafels: ga met de pijltjes naar een tafel en druk op Enter.",
 		"The maps in Geography are much clearer now: blue sea, white borders and the names on the map when you look around. And in the times tables: go to a table with the arrows and press Enter.",

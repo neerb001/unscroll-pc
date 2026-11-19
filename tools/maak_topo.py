@@ -207,7 +207,7 @@ def nederland(d):
     for f in lees(d, "ne_10m_admin_0_countries"):
         p = f["properties"]
         if p["ADM0_A3"] in ("BEL", "DEU", "FRA", "LUX"):
-            grijs.extend(vlak(ringen_van(f["geometry"]), k, 0.02, 0.5))
+            grijs.extend(vlak(ringen_van(f["geometry"]), k, 0.02, 2.5))  # ruim: ook ingezoomd breed genoeg
         if p["ADM0_A3"] == "NLD":
             # de Waddeneilanden: de losse stukken land boven de kust
             for ring in ringen_van(f["geometry"]):

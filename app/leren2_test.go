@@ -15,15 +15,25 @@ func TestTopoKaarten(t *testing.T) {
 		}
 		h := 18
 		b := topoMaat(o.kaart, h)
-		leeg := topoTekst(o.kaart, "", false, false, b, h, rood, "nl")
+		heel := topoKaartVan(o.kaart).Kader
+		leeg := topoTekst(o.kaart, "", false, false, b, h, rood, "nl", heel)
 		for _, d := range dingen {
 			if d.NL == "" || (o.vraag == "stad" && (d.Stad == nil || d.Stad.NL == "")) {
 				t.Errorf("%s: naam of hoofdstad ontbreekt", d.Code)
 				continue
 			}
 			// op het scherm van de Eee PC moet alles te zien zijn, ook Luxemburg en Vlieland
-			if topoTekst(o.kaart, d.Code, false, false, b, h, rood, "nl") == leeg {
+			if topoTekst(o.kaart, d.Code, false, false, b, h, rood, "nl", heel) == leeg {
 				t.Errorf("%s (%s) is niet te zien op de kaart", d.NL, d.Code)
+			}
+			// ingezoomd op het scherm van de Eee PC: het ding staat in beeld
+			z := topoZoom(o.kaart, d, 108, 25)
+			if z[2]-z[0] <= 0 || z[3]-z[1] <= 0 {
+				t.Fatalf("%s: lege uitsnede %v", d.Code, z)
+			}
+			zLeeg := topoTekst(o.kaart, "", false, false, 108, 25, rood, "nl", z)
+			if topoTekst(o.kaart, d.Code, false, false, 108, 25, rood, "nl", z) == zLeeg {
+				t.Errorf("%s (%s) is ingezoomd niet te zien", d.NL, d.Code)
 			}
 		}
 	}
