@@ -56,6 +56,18 @@ if [[ "$(cat /etc/sudoers.d/unscroll 2>/dev/null)" != "$SUDO_REGEL" ]]; then
   rm -f "$SUDO_TMP"
 fi
 
+# Debian packages the app uses (checked on every run, also when the app is already up to date,
+# so a package added in a new release arrives without waiting for the next one): Python for Hedy, Stockfish for chess, a font with chess symbols,
+# gtypist for its typing lessons, espeak-ng to read dictation words aloud, and xwayland:
+# cage refuses to start without it ("Cannot find Xwayland binary"), and then the app falls
+# back to the plain text console.
+for pakket in python3 python3-regex stockfish fonts-dejavu-core gtypist espeak-ng xwayland; do
+  dpkg -s "$pakket" >/dev/null 2>&1 && continue
+  DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends "$pakket" >/dev/null 2>&1 \
+    || { apt-get update -q >/dev/null 2>&1 && DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends "$pakket" >/dev/null 2>&1; } \
+    || echo "Could not install $pakket (no internet?)"
+done
+
 [[ "${1:-}" == "--nu" ]] || sleep $((RANDOM % 60))
 
 case "$(uname -m)" in
@@ -165,16 +177,6 @@ if [[ -n "$HEDY_URL" && -n "$HEDY_SUM_URL" ]] && haal "$HEDY_SUM_URL" "$TMP/hedy
   fi
 fi
 
-# Debian packages the app uses: Python for Hedy, Stockfish for chess, a font with chess symbols,
-# gtypist for its typing lessons, espeak-ng to read dictation words aloud, and xwayland:
-# cage refuses to start without it ("Cannot find Xwayland binary"), and then the app falls
-# back to the plain text console.
-for pakket in python3 python3-regex stockfish fonts-dejavu-core gtypist espeak-ng xwayland; do
-  dpkg -s "$pakket" >/dev/null 2>&1 && continue
-  DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends "$pakket" >/dev/null 2>&1 \
-    || { apt-get update -q >/dev/null 2>&1 && DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends "$pakket" >/dev/null 2>&1; } \
-    || echo "Could not install $pakket (no internet?)"
-done
 
 # keep only the three most recent versions
 find /opt/unscroll/releases -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' | sort -rn | tail -n +4 | cut -d' ' -f2- | xargs -r rm -rf
