@@ -79,6 +79,7 @@ type model struct {
 	sh           *schrijfStaat
 	oi           *ouderInstStaat
 	ouderPin     string // alleen zolang de ouderstand aan is, voor het wijzigen van instellingen
+	bijwerken    bool   // de ouder liet nu bijwerken (U) en dat loopt nog
 	dk           *denkStaat
 }
 
@@ -263,6 +264,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case maatjeMsg:
 		cmd := m.maatjeBericht(msg)
 		return m, cmd
+	case updateMsg:
+		m.updateBericht(msg)
+		return m, nil
 	case lijstMsg, startMsg, spelerMsg:
 		cmd := m.luisterBericht(msg)
 		return m, cmd
@@ -489,6 +493,10 @@ func (m model) toetsSysteem(k string) (tea.Model, tea.Cmd) {
 	case "Q":
 		if m.ouderModus {
 			return m, tea.Sequence(m.stopHuidig(true), tea.Quit)
+		}
+	case "U":
+		if m.ouderModus {
+			return m, m.nuBijwerken()
 		}
 	case "R":
 		if m.ouderModus {
@@ -750,7 +758,10 @@ func (m model) viewSysteem(p palet) string {
 			m.t("sys.p.after", jn(a.LezenMag), jn(a.LuisterboekMag)) + "\n" +
 			lipgloss.NewStyle().Foreground(p.acc).Render(m.pauzeTekst()) + "\n" +
 			dim.Render(m.t("sys.p.edit")) + "\n" + m.t("sys.p.keys")
-		if m.nieuw != "" {
+		switch {
+		case m.bijwerken:
+			apparaat += "\n" + lipgloss.NewStyle().Foreground(p.acc).Render(m.t("sys.p.updating"))
+		case m.nieuw != "":
 			apparaat += "\n" + lipgloss.NewStyle().Foreground(p.acc).Render(m.t("sys.p.restart", m.nieuw))
 		}
 	}
@@ -852,6 +863,13 @@ func main() {
 			}
 			if err := spotifyInloggen(os.Args[2], os.Stdin, os.Stdout); err != nil {
 				fmt.Fprintln(os.Stderr, "Spotify login failed:", err)
+				os.Exit(1)
+			}
+			return
+		case "--ouder-update":
+			// als root, via sudo: na controle van de pincode nu bijwerken (zie bijwerken.go)
+			if err := ouderUpdate(os.Stdin, os.Stdout); err != nil {
+				fmt.Fprintln(os.Stderr, "unscroll:", err)
 				os.Exit(1)
 			}
 			return

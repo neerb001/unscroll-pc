@@ -19,6 +19,10 @@ REPO=""; GITHUB_TOKEN=""; KANAAL="stable"
 [[ -f /etc/unscroll/geheimen.env ]] && . /etc/unscroll/geheimen.env
 [[ -n "$REPO" && "$REPO" != "OWNER/REPO" ]] || { echo "No REPO set in $CONF"; exit 0; }
 
+# One update at a time: the timer and "update now" from the parent mode can coincide.
+exec 9>/run/unscroll-update.lock
+flock -w 900 9 || { echo "Another update is still running"; exit 0; }
+
 # Repair: older installers created ~/.config of the child as root, so the app could
 # not save its settings there. Cheap to check on every run.
 KIND="${KIND:-kind}"
@@ -40,9 +44,9 @@ zet_conf /etc/systemd/logind.conf.d/unscroll.conf "$(printf '[Login]\nHandleLidS
 zet_conf /etc/NetworkManager/conf.d/unscroll-wifi.conf "$(printf '[connection]\nwifi.powersave = 2')" \
   systemctl reload NetworkManager
 
-# Parent settings in the app: the app (running as the child) may run exactly one command as root,
-# which checks the parent PIN itself before it changes ouders.yaml. Checked with visudo first.
-SUDO_REGEL="$KIND ALL=(root) NOPASSWD: /usr/local/bin/unscroll --ouder-zet"
+# Parent settings and "update now" (U) in the app: the app (running as the child) may run exactly
+# these two commands as root. Both check the parent PIN themselves first. Checked with visudo first.
+SUDO_REGEL="$KIND ALL=(root) NOPASSWD: /usr/local/bin/unscroll --ouder-zet, /usr/local/bin/unscroll --ouder-update"
 if [[ "$(cat /etc/sudoers.d/unscroll 2>/dev/null)" != "$SUDO_REGEL" ]]; then
   SUDO_TMP="$(mktemp)"
   printf '%s\n' "$SUDO_REGEL" > "$SUDO_TMP"

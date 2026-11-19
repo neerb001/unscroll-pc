@@ -31,6 +31,48 @@ func TestLabAlleMissies(t *testing.T) {
 	}
 }
 
+// Missie en opnieuw zijn woorden die je typt; opnieuw vraagt eerst of je het zeker weet.
+func TestLabMissieEnOpnieuw(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+	m, _ := testModel(t, Geheimen{})
+	m.inst.Taal = "nl"
+	m = toets(m, "4")
+	m = toets(m, "down") // computerlab
+	m = toets(m, "enter")
+	if !strings.Contains(m.View(), "typ missie") || !strings.Contains(m.View(), "typ opnieuw") {
+		t.Fatalf("de uitleg zegt niet dat je het woord moet typen:\n%s", m.View())
+	}
+	for _, s := range []string{"pwd", "ls"} {
+		m = typ(m, s)
+	}
+	gedaan := m.od.lab.Missie
+	if gedaan == 0 {
+		t.Fatal("de eerste missies zouden gedaan moeten zijn")
+	}
+	m = typ(m, "missie")
+	if !strings.Contains(strings.Join(m.od.labRegels, "\n"), m.od.lab.missieTekst("nl")) {
+		t.Error("missie laat de opdracht niet nog eens zien")
+	}
+	m = typ(m, "opnieuw")
+	if m.od.lab.Missie != gedaan || !strings.Contains(m.View(), "Weet je het zeker") {
+		t.Fatalf("opnieuw wist meteen alles, zonder te vragen:\n%s", m.View())
+	}
+	m = typ(m, "ls") // iets anders: dan gaat het niet door
+	m = typ(m, "opnieuw")
+	if m.od.lab.Missie != gedaan {
+		t.Fatal("na een andere opdracht hoort opnieuw weer eerst te vragen")
+	}
+	m = typ(m, "opnieuw")
+	if m.od.lab.Missie != 0 {
+		t.Errorf("twee keer opnieuw begint niet opnieuw: missie %d", m.od.lab.Missie)
+	}
+	// in het Engels heten ze mission en restart
+	m.inst.Taal = "en"
+	if !strings.Contains(m.View(), "type mission") || !strings.Contains(m.View(), "type restart") {
+		t.Errorf("Engelse uitleg:\n%s", m.View())
+	}
+}
+
 func TestDierVanDeDag(t *testing.T) {
 	// het ophalen van de week loopt op de achtergrond door na de test: die map ruimen we zelf
 	// op, zonder te klagen als er nog net een bestand bij komt

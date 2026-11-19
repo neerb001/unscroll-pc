@@ -19,6 +19,10 @@ type nieuwsItem struct {
 
 // nieuwsLijst: nieuwste bovenaan.
 var nieuwsLijst = []nieuwsItem{
+	{"v0.25.3", [2]string{
+		"In het computerlab staat nu duidelijker wat je kunt typen: typ missie en druk op Enter om de opdracht nog eens te zien. Typ je opnieuw, dan vraagt het lab eerst of je echt alles opnieuw wilt.",
+		"The computer lab now shows more clearly what you can type: type mission and press Enter to see the mission again. If you type restart, the lab first asks whether you really want to start everything over.",
+	}},
 	{"v0.25.2", [2]string{
 		"Programmeren werkt weer: je Hedy-programma's draaien nu meteen, vanaf de eerste opdracht. Ga naar 4 Ontdekken en kies Programmeren.",
 		"Programming works again: your Hedy programs now run straight away, from the very first exercise. Go to 4 Discover and choose Programming.",

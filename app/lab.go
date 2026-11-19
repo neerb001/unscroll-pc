@@ -202,7 +202,7 @@ func (w *labWereld) voerUit(regel, taal string) (string, bool) {
 	switch cmd {
 	case "help":
 		uit = t("Opdrachten: pwd, ls, cd, cat, mkdir, touch, echo, mv, rm, clear, missie, opnieuw",
-			"Commands: pwd, ls, cd, cat, mkdir, touch, echo, mv, rm, clear, missie (mission), opnieuw (start over)")
+			"Commands: pwd, ls, cd, cat, mkdir, touch, echo, mv, rm, clear, mission, restart")
 	case "pwd":
 		uit = w.Cwd
 	case "ls":
@@ -298,7 +298,7 @@ func (w *labWereld) missieTekst(taal string) string {
 		if taal == "nl" {
 			return "Alle missies gedaan! Je kunt vrij rondkijken, of opnieuw beginnen met opnieuw."
 		}
-		return "All missions done! Look around freely, or start over with opnieuw."
+		return "All missions done! Look around freely, or start over with restart."
 	}
 	m := labMissies[w.Missie]
 	if taal == "nl" {

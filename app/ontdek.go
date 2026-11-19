@@ -39,9 +39,10 @@ type ontdekStaat struct {
 	laden     bool
 	dierBoven int // gescrold in de tekst
 	// lab
-	lab       *labWereld
-	labRegels []string
-	invoer    textinput.Model
+	lab        *labWereld
+	labRegels  []string
+	labOpnieuw bool // "opnieuw" is één keer getypt: nog een keer om het zeker te doen
+	invoer     textinput.Model
 	// natuurdagboek
 	notities     []notitie
 	schrijven    bool
@@ -328,15 +329,24 @@ func (m *model) toetsOntdek(msg tea.KeyMsg) (tea.Cmd, bool) {
 			o.scherm = ontdekMenu
 			o.invoer.Blur()
 			o.lab.bewaar()
+			o.labOpnieuw = false
 			return nil, true
 		case "enter":
 			regel := strings.TrimSpace(o.invoer.Value())
 			o.invoer.SetValue("")
 			o.labRegels = append(o.labRegels, m.labPrompt()+regel)
+			bevestigd := o.labOpnieuw
+			o.labOpnieuw = false
 			switch regel {
 			case "clear":
 				o.labRegels = nil
 			case "opnieuw", "restart":
+				// alles weg is veel: eerst vragen of het echt de bedoeling is
+				if !bevestigd {
+					o.labOpnieuw = true
+					o.labRegels = append(o.labRegels, m.t("disc.labrestartask"))
+					break
+				}
 				o.lab = nieuweLabWereld()
 				o.labRegels = []string{m.t("disc.labwelcome"), "", "▸ " + o.lab.missieTekst(m.inst.Taal)}
 			default:
