@@ -203,3 +203,43 @@ func TestTafelVanZevenMetEenCijfer(t *testing.T) {
 		t.Errorf("je hoort te zien welke tafel je oefent:\n%s", m.View())
 	}
 }
+
+// Wat je verwacht: met de pijl naar de tafel van 7 en Enter. Niets hoeft eerst aangevinkt.
+func TestTafelKiezenMetPijlEnEnter(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+	m, _ := testModel(t, Geheimen{})
+	m.dk = nieuweDenksport()
+	m.inst.Taal = "nl"
+	m = toets(m, tabToets(tabLeren))
+	for i := 0; i < 6; i++ {
+		m = toets(m, "down")
+	}
+	m = toets(m, "enter")
+	for i := 0; i < 6; i++ {
+		m = toets(m, "down") // naar de tafel van 7
+	}
+	m = toets(m, "enter")
+	if m.dk.scherm != denkTafels {
+		t.Fatalf("Enter hoort meteen te beginnen:\n%s", m.View())
+	}
+	for _, s := range m.dk.vragen {
+		if s.b != 7 {
+			t.Fatalf("som buiten de tafel van 7: %s", s.tekst())
+		}
+	}
+	// meer tafels tegelijk: 3 en 4 aanvinken met spatie, Enter op een van beide
+	m = toets(m, "esc")
+	m.dk.gekozen = [maxTafel + 1]bool{}
+	m.dk.kiesSel = 2
+	m = toets(m, " ")
+	m = toets(m, "down")
+	m = toets(m, " ")
+	m = toets(m, "enter")
+	tafels := map[int]bool{}
+	for _, s := range m.dk.vragen {
+		tafels[s.b] = true
+	}
+	if len(tafels) != 2 || !tafels[3] || !tafels[4] {
+		t.Errorf("aangevinkte tafels 3 en 4 samen: %v", tafels)
+	}
+}

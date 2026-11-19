@@ -8,7 +8,8 @@ ne_10m_admin_1_states_provinces, ne_10m_rivers_lake_centerlines, ne_10m_lakes,
 ne_110m_admin_0_countries, ne_50m_rivers_lake_centerlines.
 Schrijft europa.json, nederland.json en wereld.json.
 
-Een kaart heeft een kader, een achtergrond (alleen omtrek) en dingen om te leren: vlakken
+Een kaart heeft een kader, land dat ingekleurd wordt maar niet gevraagd (achtergrond), land
+eromheen dat grijs blijft (grijs) en dingen om te leren: vlakken
 (landen, provincies, eilanden), punten (steden, zeeën) en lijnen (rivieren). De lijnen worden
 vereenvoudigd en afgerond, zodat het bestand klein blijft en een netbook hem snel tekent.
 Steden, zeeën en eilanden die niet (goed) in Natural Earth staan, staan hieronder met coördinaten.
@@ -142,7 +143,7 @@ def europa(d):
         if p.get("adm0cap") == 1 and p["adm0_a3"] not in steden:
             steden[p["adm0_a3"]] = (p["name"], p["longitude"], p["latitude"])
     steden.setdefault("KOS", ("Pristina", 21.17, 42.67))
-    achtergrond, items = [], []
+    achtergrond, grijs, items = [], [], []
     for f in lees(d, "ne_50m_admin_0_countries"):
         p = f["properties"]
         code = p["ADM0_A3"]
@@ -150,7 +151,10 @@ def europa(d):
         if not r:
             continue
         europees = p["CONTINENT"] == "Europe" or code in EU_EXTRA
-        if not europees or code in EU_NIET:
+        if not europees:
+            grijs.extend(r)
+            continue
+        if code in EU_NIET:
             achtergrond.extend(r)
             continue
         naam, lon, lat = steden[code]
@@ -158,7 +162,7 @@ def europa(d):
                       "vlak": r, "stad": {"nl": EU_STAD_NL[code], "en": EU_STAD_EN.get(code, naam),
                                           "ook": EU_STAD_OOK.get(code, []), "punt": [round(lon, 3), round(lat, 3)]}})
     items.sort(key=lambda i: i["nl"])
-    return {"kader": EU_KADER, "breedte": 52, "achtergrond": achtergrond, "lijnen": [], "items": items}
+    return {"kader": EU_KADER, "achtergrond": achtergrond, "grijs": grijs, "lijnen": [], "items": items}
 
 
 # ---------------- Nederland ----------------
@@ -199,11 +203,11 @@ EILANDEN = {"Texel": (53.07, 4.80), "Vlieland": (53.27, 5.03), "Terschelling": (
 
 def nederland(d):
     k = NL_KADER
-    achtergrond, items, lijnen = [], [], []
+    grijs, items, lijnen = [], [], []
     for f in lees(d, "ne_10m_admin_0_countries"):
         p = f["properties"]
         if p["ADM0_A3"] in ("BEL", "DEU", "FRA", "LUX"):
-            achtergrond.extend(vlak(ringen_van(f["geometry"]), k, 0.02, 0.5))
+            grijs.extend(vlak(ringen_van(f["geometry"]), k, 0.02, 0.5))
         if p["ADM0_A3"] == "NLD":
             # de Waddeneilanden: de losse stukken land boven de kust
             for ring in ringen_van(f["geometry"]):
@@ -240,11 +244,10 @@ def nederland(d):
     for f in lees(d, "ne_10m_lakes"):
         if f["properties"].get("name") == "IJsselmeer":
             r = vlak(ringen_van(f["geometry"]), k, 0.01)
-            achtergrond.extend(r)
             items.append({"code": "water:IJsselmeer", "groep": "water", "nl": "IJsselmeer", "en": "IJsselmeer", "vlak": r})
     for naam, (en, lat, lon) in WATER_PUNT.items():
         items.append({"code": "water:" + naam, "groep": "water", "nl": naam, "en": en, "punt": [lon, lat]})
-    return {"kader": k, "breedte": 52, "achtergrond": achtergrond, "lijnen": lijnen, "items": items}
+    return {"kader": k, "achtergrond": [], "grijs": grijs, "lijnen": lijnen, "items": items}
 
 
 # ---------------- Wereld (groep 8) ----------------
@@ -346,7 +349,7 @@ def wereld(d):
                       "ook": W_RIVIER_OOK.get(nl, []), "lijn": l})
     for nl, (en, lon, lat, ook) in W_NATUUR.items():
         items.append({"code": "natuur:" + nl, "groep": "natuur", "nl": nl, "en": en, "ook": ook, "punt": [lon, lat]})
-    return {"kader": k, "breedte": 0, "achtergrond": achtergrond, "lijnen": [], "items": items}
+    return {"kader": k, "achtergrond": achtergrond, "grijs": [], "lijnen": [r for i in items if "lijn" in i for r in i["lijn"]], "items": items}
 
 
 d, uit = sys.argv[1], sys.argv[2]

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -47,7 +48,8 @@ type topoDing struct {
 
 type topoKaart struct {
 	Kader       [4]float64     `json:"kader"`
-	Achtergrond [][][2]float64 `json:"achtergrond"`
+	Achtergrond [][][2]float64 `json:"achtergrond"` // land dat meedoet op de kaart, maar niet gevraagd wordt
+	Grijs       [][][2]float64 `json:"grijs"`       // land eromheen (buiten Europa, buurlanden van Nederland)
 	Lijnen      [][][2]float64 `json:"lijnen"`
 	Items       []topoDing     `json:"items"`
 }
@@ -167,10 +169,16 @@ var (
 	topoCache   = map[string]string{}
 )
 
-// topoTekst tekent een kaart van b × h tekens met één ding dat oplicht (code, of niets), en
-// bij stad ook een stip op de hoofdstad. Onthouden per tekening: tekenen is werk voor een netbook.
-func topoTekst(kaart, code string, stad bool, b, h int, p palet) string {
-	sleutel := fmt.Sprintf("%s|%s|%v|%d|%d|%s|%v", kaart, code, stad, b, h, p.acc, alleenLetters())
+// isWater: meren en zeeën die als vlak op de kaart staan (het IJsselmeer).
+func (d *topoDing) isWater() bool { return strings.HasPrefix(d.Code, "water:") }
+
+// topoTekst tekent een kaart van b × h tekens, zoals een atlas in de terminal: de zee blauw
+// ingekleurd, het land donker met heldere grenzen, rivieren blauw, en het ding dat gevraagd
+// wordt fel ingekleurd. Met namen zet hij bij rondkijken de namen op de kaart. Met braille-
+// puntjes: 2 bij 4 per teken, zodat kusten en grenzen fijn genoeg zijn.
+// Onthouden per tekening: tekenen is werk voor een netbook.
+func topoTekst(kaart, code string, stad, namen bool, b, h int, p palet, taal string) string {
+	sleutel := fmt.Sprintf("%s|%s|%v|%v|%d|%d|%s|%s|%v", kaart, code, stad, namen, b, h, p.acc, taal, alleenLetters())
 	topoCacheMu.Lock()
 	if s, ok := topoCache[sleutel]; ok {
 		topoCacheMu.Unlock()
@@ -181,112 +189,236 @@ func topoTekst(kaart, code string, stad bool, b, h int, p palet) string {
 	k := topoKaartVan(kaart)
 	lonMin, latMin, lonMax, latMax := k.Kader[0], k.Kader[1], k.Kader[2], k.Kader[3]
 	cosL := math.Cos((latMin + latMax) / 2 * math.Pi / 180) // een graad lengte is korter dan een graad breedte
-	schaal := math.Min(float64(b*2)/((lonMax-lonMin)*cosL), float64(h*4)/(latMax-latMin))
+	W, H := b*2, h*4
+	schaal := math.Min(float64(W)/((lonMax-lonMin)*cosL), float64(H)/(latMax-latMin))
 	naar := func(pt [2]float64) (float64, float64) {
 		return (pt[0] - lonMin) * cosL * schaal, (latMax - pt[1]) * schaal
 	}
-	rand, water, vul := nieuwBrailleVlak(b, h), nieuwBrailleVlak(b, h), nieuwBrailleVlak(b, h)
-	omtrek := func(v *brailleVlak, r [][2]float64) {
-		for j := 1; j < len(r); j++ {
-			x0, y0 := naar(r[j-1])
-			x1, y1 := naar(r[j])
-			v.lijn(x0, y0, x1, y1)
+	naarRing := func(r [][2]float64) [][2]float64 {
+		uit := make([][2]float64, len(r))
+		for i, pt := range r {
+			x, y := naar(pt)
+			uit[i] = [2]float64{x, y}
 		}
+		return uit
+	}
+	nieuw := func() [][]bool {
+		v := make([][]bool, H)
+		for y := range v {
+			v[y] = make([]bool, W)
+		}
+		return v
+	}
+	land, water, grens, grijsGrens, rivier, doel := nieuw(), nieuw(), nieuw(), nieuw(), nieuw(), nieuw()
+	vul := func(v [][]bool, r [][2]float64) { vulRing(v, naarRing(r)) }
+	lijn := func(v [][]bool, r [][2]float64, dicht bool) { tekenLijn(v, naarRing(r), dicht) }
+
+	for _, r := range k.Grijs {
+		vul(land, r)
+		lijn(grijsGrens, r, true)
 	}
 	for _, r := range k.Achtergrond {
-		omtrek(rand, r)
+		vul(land, r)
+		lijn(grens, r, true)
 	}
-	var doel *topoDing
+	var gekozen *topoDing
 	for i := range k.Items {
 		d := &k.Items[i]
 		if d.Code == code {
-			doel = d
+			gekozen = d
+		}
+		if d.Groep == "werelddeel" {
+			continue // werelddelen liggen over de landen heen: alleen inkleuren als ze gevraagd worden
 		}
 		for _, r := range d.Vlak {
-			omtrek(rand, r)
+			if d.isWater() {
+				vul(water, r)
+			} else {
+				vul(land, r)
+			}
+			lijn(grens, r, true)
 		}
 	}
-	for _, l := range k.Lijnen { // rivieren, lichtjes
-		omtrek(water, l)
+	for _, l := range k.Lijnen {
+		lijn(rivier, l, false)
 	}
-	puntX, puntY := -1, -1
-	if doel != nil {
-		// een vlak inkleuren: elk puntje waarvan het midden erin ligt
-		var ringen [][][2]float64
-		for _, r := range doel.Vlak {
-			var rr [][2]float64
-			for _, pt := range r {
-				x, y := naar(pt)
-				rr = append(rr, [2]float64{x, y})
-			}
-			ringen = append(ringen, rr)
+	doelX, doelY := -1, -1
+	if gekozen != nil {
+		for _, r := range gekozen.Vlak {
+			vul(doel, r)
 		}
 		gevuld := 0
-		if len(ringen) > 0 {
-			for y := 0; y < h*4; y++ {
-				for x := 0; x < b*2; x++ {
-					if binnen(float64(x)+0.5, float64(y)+0.5, ringen) {
-						vul.zet(x, y)
-						gevuld++
-					}
+		for y := range doel {
+			for x := range doel[y] {
+				if doel[y][x] {
+					gevuld++
 				}
 			}
 		}
-		if len(doel.Vlak) > 0 && gevuld < 4 { // heel klein (Luxemburg, Schiermonnikoog): omtrek en een stip
+		if gevuld < 6 && len(gekozen.Vlak) > 0 { // heel klein (Luxemburg, Schiermonnikoog): een stip erbij
 			var sx, sy, n float64
-			for _, r := range doel.Vlak {
-				omtrek(vul, r)
+			for _, r := range gekozen.Vlak {
 				for _, pt := range r {
 					sx, sy, n = sx+pt[0], sy+pt[1], n+1
 				}
 			}
 			x, y := naar([2]float64{sx / n, sy / n})
-			puntX, puntY = int(x/2), int(y/4)
+			doelX, doelY = int(x/2), int(y/4)
 		}
-		for _, l := range doel.Lijn { // een rivier: dik
-			for _, d := range [][2]float64{{0, 0}, {0.7, 0}, {0, 0.7}} {
-				for j := 1; j < len(l); j++ {
-					x0, y0 := naar(l[j-1])
-					x1, y1 := naar(l[j])
-					vul.lijn(x0+d[0], y0+d[1], x1+d[0], y1+d[1])
+		for _, l := range gekozen.Lijn { // een rivier: dik
+			for _, d := range [][2]float64{{0, 0}, {1, 0}, {0, 1}, {1, 1}} {
+				rr := naarRing(l)
+				for i := range rr {
+					rr[i][0] += d[0]
+					rr[i][1] += d[1]
 				}
+				tekenLijn(doel, rr, false)
 			}
 		}
-		if doel.Punt != nil {
-			x, y := naar(*doel.Punt)
-			puntX, puntY = int(x/2), int(y/4)
+		if gekozen.Punt != nil {
+			x, y := naar(*gekozen.Punt)
+			doelX, doelY = int(x/2), int(y/4)
 		}
 	}
 	stadX, stadY := -1, -1
-	if stad && doel != nil && doel.Stad != nil {
-		x, y := naar(doel.Stad.Punt)
+	if stad && gekozen != nil && gekozen.Stad != nil {
+		x, y := naar(gekozen.Stad.Punt)
 		stadX, stadY = int(x/2), int(y/4)
 	}
-	randT, waterT, vulT := rand.tekens(), water.tekens(), vul.tekens()
-	stijlRand := lipgloss.NewStyle().Foreground(p.lijn)
-	stijlWater := lipgloss.NewStyle().Foreground(p.dim)
-	stijlDoel := lipgloss.NewStyle().Foreground(p.acc).Bold(true)
-	stijlStad := lipgloss.NewStyle().Foreground(p.geel).Bold(true)
-	var regels []string
-	for y := 0; y < h; y++ {
-		var s strings.Builder
-		for x := 0; x < b; x++ {
+
+	// per teken: de puntjes van één laag, in de kleur van die laag
+	type teken struct {
+		r     rune
+		kleur string
+	}
+	const (
+		zeeKleur    = "#2f6db5"
+		grensKleur  = "#e8e8e8"
+		grijsKleur  = "#6b6b6b"
+		rivierKleur = "#5aa9ff"
+		doelKleur   = "#ff8c1a"
+		stadKleur   = "#ffd43b"
+		naamKleur   = "#ffd43b"
+	)
+	bits := [4][2]int{{0x01, 0x08}, {0x02, 0x10}, {0x04, 0x20}, {0x40, 0x80}}
+	vak := make([][]teken, h)
+	for cy := 0; cy < h; cy++ {
+		vak[cy] = make([]teken, b)
+		for cx := 0; cx < b; cx++ {
+			var nD, nG, nGr, nR, nZ int
+			for dy := 0; dy < 4; dy++ {
+				for dx := 0; dx < 2; dx++ {
+					x, y := cx*2+dx, cy*4+dy
+					bit := bits[dy][dx]
+					zee := !land[y][x] || water[y][x]
+					if doel[y][x] {
+						nD |= bit
+					}
+					if grens[y][x] {
+						nG |= bit
+					}
+					if grijsGrens[y][x] {
+						nGr |= bit
+					}
+					if rivier[y][x] && !zee {
+						nR |= bit
+					}
+					if zee {
+						nZ |= bit
+					}
+				}
+			}
+			t := teken{r: ' '}
 			switch {
-			case x == puntX && y == puntY:
-				s.WriteString(stijlDoel.Render("●"))
-			case x == stadX && y == stadY:
-				s.WriteString(stijlStad.Render("●"))
-			case vulT[y][x] != ' ':
-				s.WriteString(stijlDoel.Render(string(vulT[y][x])))
-			case waterT[y][x] != ' ':
-				s.WriteString(stijlWater.Render(string(waterT[y][x])))
-			case randT[y][x] != ' ':
-				s.WriteString(stijlRand.Render(string(randT[y][x])))
-			default:
-				s.WriteString(" ")
+			case nD != 0:
+				t = teken{rune(0x2800 + (nD | nG)), doelKleur}
+			case nG != 0:
+				t = teken{rune(0x2800 + nG), grensKleur}
+			case nR != 0:
+				t = teken{rune(0x2800 + nR), rivierKleur}
+			case nGr != 0:
+				t = teken{rune(0x2800 + nGr), grijsKleur}
+			case nZ != 0:
+				t = teken{rune(0x2800 + nZ), zeeKleur}
+			}
+			if alleenLetters() && t.r != ' ' { // de Linux-console kent geen braille
+				t.r = map[string]rune{zeeKleur: '~', doelKleur: '#'}[t.kleur]
+				if t.r == 0 {
+					t.r = '.'
+				}
+			}
+			vak[cy][cx] = t
+		}
+	}
+	zetTekst := func(x, y int, tekst, kleur string) {
+		for i, r := range []rune(tekst) {
+			if y >= 0 && y < h && x+i >= 0 && x+i < b {
+				vak[y][x+i] = teken{r, kleur}
 			}
 		}
-		regels = append(regels, s.String())
+	}
+	if doelX >= 0 {
+		zetTekst(doelX, doelY, "●", doelKleur)
+	}
+	if stadX >= 0 {
+		zetTekst(stadX, stadY, "●", stadKleur)
+	}
+	if namen {
+		// namen op de kaart, zoals in een atlas: eerst het gekozen ding, dan de rest als er plek is
+		bezet := make([][]bool, h)
+		for y := range bezet {
+			bezet[y] = make([]bool, b)
+		}
+		zetNaam := func(d *topoDing, kleur string) {
+			var x, y float64
+			switch {
+			case d.Punt != nil:
+				x, y = naar(*d.Punt)
+			case len(d.Vlak) > 0:
+				x, y = naar(middenVan(grootsteRing(d.Vlak)))
+			case len(d.Lijn) > 0:
+				l := d.Lijn[0]
+				x, y = naar(l[len(l)/2])
+			default:
+				return
+			}
+			naam := d.naam(taal)
+			cx, cy := int(x/2)-len([]rune(naam))/2, int(y/4)
+			if d.Punt != nil {
+				cx, cy = int(x/2)+1, int(y/4) // naast de stip
+			}
+			cx = max(min(cx, b-len([]rune(naam))), 0)
+			if cy < 0 || cy >= h {
+				return
+			}
+			for i := -1; i <= len([]rune(naam)); i++ {
+				if cx+i >= 0 && cx+i < b && bezet[cy][cx+i] {
+					return // past niet: liever geen naam dan namen door elkaar
+				}
+			}
+			zetTekst(cx, cy, naam, kleur)
+			for i := range []rune(naam) {
+				bezet[cy][cx+i] = true
+			}
+		}
+		if gekozen != nil {
+			zetNaam(gekozen, doelKleur)
+		}
+		for i := range k.Items {
+			d := &k.Items[i]
+			if d != gekozen && gekozen != nil && d.Groep == gekozen.Groep && d.Punt == nil {
+				zetNaam(d, naamKleur)
+			}
+		}
+	}
+	var regels []string
+	for y := 0; y < h; y++ {
+		var r kleurRegel
+		for x := 0; x < b; x++ {
+			t := vak[y][x]
+			r.zet(t.kleur, "", t.kleur == doelKleur || t.kleur == stadKleur, string(t.r))
+		}
+		regels = append(regels, r.klaar())
 	}
 	uit := strings.Join(regels, "\n")
 	topoCacheMu.Lock()
@@ -295,17 +427,83 @@ func topoTekst(kaart, code string, stad bool, b, h int, p palet) string {
 	return uit
 }
 
-// binnen: ligt het punt in een van de ringen? (even-oneven-regel)
-func binnen(x, y float64, ringen [][][2]float64) bool {
-	in := false
-	for _, r := range ringen {
+// vulRing kleurt de puntjes waarvan het midden in de ring ligt (per regel de snijpunten).
+func vulRing(v [][]bool, r [][2]float64) {
+	if len(r) < 3 {
+		return
+	}
+	minY, maxY := r[0][1], r[0][1]
+	for _, pt := range r {
+		minY, maxY = math.Min(minY, pt[1]), math.Max(maxY, pt[1])
+	}
+	var xs []float64
+	for y := max(int(minY), 0); y <= min(int(maxY)+1, len(v)-1); y++ {
+		fy := float64(y) + 0.5
+		xs = xs[:0]
 		for i, j := 0, len(r)-1; i < len(r); j, i = i, i+1 {
-			if (r[i][1] > y) != (r[j][1] > y) && x < (r[j][0]-r[i][0])*(y-r[i][1])/(r[j][1]-r[i][1])+r[i][0] {
-				in = !in
+			if (r[i][1] > fy) != (r[j][1] > fy) {
+				xs = append(xs, r[i][0]+(fy-r[i][1])*(r[j][0]-r[i][0])/(r[j][1]-r[i][1]))
+			}
+		}
+		sort.Float64s(xs)
+		for k := 0; k+1 < len(xs); k += 2 {
+			for x := max(int(math.Ceil(xs[k]-0.5)), 0); x < min(int(math.Ceil(xs[k+1]-0.5)), len(v[y])); x++ {
+				v[y][x] = true
 			}
 		}
 	}
-	return in
+}
+
+// tekenLijn zet de puntjes langs een lijn (of de rand van een ring, als dicht).
+func tekenLijn(v [][]bool, r [][2]float64, dicht bool) {
+	zet := func(x, y int) {
+		if y >= 0 && y < len(v) && x >= 0 && x < len(v[y]) {
+			v[y][x] = true
+		}
+	}
+	stuk := func(a, b [2]float64) {
+		n := int(math.Max(math.Abs(b[0]-a[0]), math.Abs(b[1]-a[1]))) + 1
+		for i := 0; i <= n; i++ {
+			t := float64(i) / float64(n)
+			zet(int(a[0]+(b[0]-a[0])*t), int(a[1]+(b[1]-a[1])*t))
+		}
+	}
+	for i := 1; i < len(r); i++ {
+		stuk(r[i-1], r[i])
+	}
+	if dicht && len(r) > 2 {
+		stuk(r[len(r)-1], r[0])
+	}
+}
+
+func grootsteRing(rr [][][2]float64) [][2]float64 {
+	var beste [][2]float64
+	opp := -1.0
+	for _, r := range rr {
+		a := 0.0
+		for i, j := 0, len(r)-1; i < len(r); j, i = i, i+1 {
+			a += r[j][0]*r[i][1] - r[i][0]*r[j][1]
+		}
+		if math.Abs(a) > opp {
+			opp, beste = math.Abs(a), r
+		}
+	}
+	return beste
+}
+
+// middenVan: het zwaartepunt van een ring (een goede plek voor de naam).
+func middenVan(r [][2]float64) [2]float64 {
+	var a, cx, cy float64
+	for i, j := 0, len(r)-1; i < len(r); j, i = i, i+1 {
+		f := r[j][0]*r[i][1] - r[i][0]*r[j][1]
+		a += f
+		cx += (r[j][0] + r[i][0]) * f
+		cy += (r[j][1] + r[i][1]) * f
+	}
+	if a == 0 {
+		return r[0]
+	}
+	return [2]float64{cx / (3 * a), cy / (3 * a)}
 }
 
 /* ---------------- oefenen ---------------- */
@@ -522,7 +720,7 @@ func (m model) viewTopo(p palet, kop string, breed int) string {
 	}
 	o := t.oefening()
 	// kaart links, tekst rechts
-	b, h := topoPassend(o.kaart, breed-36, max(m.hoog-11, 8))
+	b, h := topoPassend(o.kaart, breed-34, max(m.hoog-9, 8)) // zo groot als het scherm toelaat
 	breedRechts := max(breed-b-10, 20)
 	tekst := lipgloss.NewStyle().Width(breedRechts)
 	var ding *topoDing
@@ -559,7 +757,7 @@ func (m model) viewTopo(p palet, kop string, breed int) string {
 	if ding != nil {
 		code = ding.Code
 	}
-	kaart := topoTekst(o.kaart, code, o.vraag != "naam", b, h, p)
+	kaart := topoTekst(o.kaart, code, o.vraag != "naam", o.vraag == "kijk", b, h, p, taal)
 	inhoud := lipgloss.JoinHorizontal(lipgloss.Top, kaart, "   ", strings.Join(rechts, "\n"))
 	toetsen := m.t("topo.keys")
 	switch {
@@ -570,5 +768,5 @@ func (m model) viewTopo(p palet, kop string, breed int) string {
 	case t.klaar:
 		toetsen = m.t("topo.nextkeys")
 	}
-	return kop + "\n\n" + paneel(p, m.t("learn.topo"), inhoud, breed, true) + "\n" + dim.Render(toetsen)
+	return paneel(p, m.t("learn.topo")+dim.Render("  ·  "+m.t("topo.map."+o.kaart)), inhoud, breed, true) + "\n" + dim.Render(toetsen) // geen kopregel: de kaart krijgt die ruimte
 }

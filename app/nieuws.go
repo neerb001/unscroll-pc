@@ -19,6 +19,10 @@ type nieuwsItem struct {
 
 // nieuwsLijst: nieuwste bovenaan.
 var nieuwsLijst = []nieuwsItem{
+	{"v0.29.0", [2]string{
+		"De kaarten bij Topografie zijn nu veel duidelijker: blauwe zee, witte grenzen en bij rondkijken de namen op de kaart. En bij de tafels: ga met de pijltjes naar een tafel en druk op Enter.",
+		"The maps in Geography are much clearer now: blue sea, white borders and the names on the map when you look around. And in the times tables: go to a table with the arrows and press Enter.",
+	}},
 	{"v0.28.0", [2]string{
 		"Nieuw bij 3 Leren: Geschiedenis, met een tijdlijn van de tien tijdvakken. En bij Topografie kun je nu ook de hele wereld oefenen.",
 		"New in 3 Learn: History, with a timeline of the ten eras. And in Geography you can now practise the whole world too.",

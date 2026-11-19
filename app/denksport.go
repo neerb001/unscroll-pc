@@ -143,10 +143,8 @@ func nieuweDenksport() *denkStaat {
 			d.gekozen[t] = true
 		}
 	}
-	if len(v.Gekozen) == 0 {
-		for t := 1; t <= maxTafel; t++ {
-			d.gekozen[t] = true
-		}
+	if len(v.Gekozen) > 0 && v.Gekozen[0] >= 1 && v.Gekozen[0] <= maxTafel {
+		d.kiesSel = v.Gekozen[0] - 1 // de pijl staat op de tafel van de vorige keer
 	}
 	d.delen = v.Delen
 	return d
@@ -245,6 +243,19 @@ func (m *model) toetsDenk(msg tea.KeyMsg) (tea.Cmd, bool) {
 		case "o":
 			d.scherm = denkOverzicht
 		case "enter":
+			// Enter oefent de tafel waar de pijl op staat. Alleen als je er met spatie meer
+			// hebt aangevinkt (en deze is er één van), oefen je ze allemaal samen.
+			aan := 0
+			for t := 1; t <= maxTafel; t++ {
+				if d.gekozen[t] {
+					aan++
+				}
+			}
+			if d.kiesSel < maxTafel && !(aan >= 2 && d.gekozen[d.kiesSel+1]) {
+				for t := 1; t <= maxTafel; t++ {
+					d.gekozen[t] = t == d.kiesSel+1
+				}
+			}
 			v := laadTafels()
 			v.Gekozen, v.Delen = nil, d.delen
 			for t := 1; t <= maxTafel; t++ {
