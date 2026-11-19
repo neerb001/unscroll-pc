@@ -176,3 +176,30 @@ func TestRekenmachineKnoppen(t *testing.T) {
 		t.Errorf("geheugen: %+v", m.dk.rm)
 	}
 }
+
+// Zoals Sam het doet: tafels openen (alles staat nog aan) en op 7 drukken. Dan alleen de
+// tafel van 7, met de 7 achteraan zoals op school.
+func TestTafelVanZevenMetEenCijfer(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+	m, _ := testModel(t, Geheimen{})
+	m.dk = nieuweDenksport()
+	m.inst.Taal = "nl"
+	m = toets(m, tabToets(tabLeren))
+	for i := 0; i < 6; i++ {
+		m = toets(m, "down")
+	}
+	m = toets(m, "enter")
+	m = toets(m, "7")
+	m = toets(m, "enter")
+	for ronde := 0; ronde < 20; ronde++ {
+		for _, s := range m.dk.vragen {
+			if s.b != 7 {
+				t.Fatalf("som buiten de tafel van 7: %s", s.tekst())
+			}
+		}
+		m.dk.maakRonde()
+	}
+	if !strings.Contains(m.View(), "tafel van 7") {
+		t.Errorf("je hoort te zien welke tafel je oefent:\n%s", m.View())
+	}
+}

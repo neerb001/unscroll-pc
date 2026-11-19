@@ -166,10 +166,8 @@ func (d *denkStaat) maakRonde() {
 				soorten = append(soorten, true)
 			}
 			for _, deel := range soorten {
+				// zoals op school: de tafel van 7 is 1 × 7, 2 × 7, ... 12 × 7 (de tafel achteraan)
 				s := tafelSom{a: n, b: t, delen: deel}
-				if !deel && rand.Intn(2) == 0 {
-					s.a, s.b = t, n
-				}
 				gewicht := 4 - min(v.Reeks[s.sleutel()], 3) // 4 keer zo vaak als hij hem nog niet kent
 				for i := 0; i < gewicht; i++ {
 					pot = append(pot, s)
@@ -192,6 +190,20 @@ func (d *denkStaat) maakRonde() {
 }
 
 /* ---------------- toetsen ---------------- */
+
+// welkeTafels: "tafel van 7" of "tafels van 6, 7, 8", zodat je ziet wat je oefent.
+func (m model) welkeTafels() string {
+	var n []string
+	for t := 1; t <= maxTafel; t++ {
+		if m.dk.gekozen[t] {
+			n = append(n, fmt.Sprint(t))
+		}
+	}
+	if len(n) == 1 {
+		return m.t("tables.one", n[0])
+	}
+	return m.t("tables.more", strings.Join(n, ", "))
+}
 
 func (m *model) toetsDenk(msg tea.KeyMsg) (tea.Cmd, bool) {
 	d := m.dk
@@ -250,8 +262,11 @@ func (m *model) toetsDenk(msg tea.KeyMsg) (tea.Cmd, bool) {
 		case "esc":
 			d.scherm = denkMenu
 		default:
-			if len(k) == 1 && k[0] >= '1' && k[0] <= '9' { // cijfer: die tafel aan of uit
-				d.gekozen[k[0]-'0'] = !d.gekozen[k[0]-'0']
+			if len(k) == 1 && k[0] >= '1' && k[0] <= '9' { // cijfer: alleen die tafel
+				for t := 1; t <= maxTafel; t++ {
+					d.gekozen[t] = t == int(k[0]-'0')
+				}
+				d.kiesSel = int(k[0]-'0') - 1
 				return nil, true
 			}
 			return nil, false
@@ -448,7 +463,7 @@ func (m model) viewDenk(p palet) string {
 		s := d.vragen[d.nr]
 		groot := lipgloss.NewStyle().Bold(true).Foreground(p.fg).Render(s.tekst()+" = ") + acc.Render(d.antwoord+"▌")
 		var regels []string
-		regels = append(regels, dim.Render(m.t("tables.count", d.nr+1, len(d.vragen))), "", "    "+groot, "")
+		regels = append(regels, dim.Render(m.t("tables.count", d.nr+1, len(d.vragen))+" · "+m.welkeTafels()), "", "    "+groot, "")
 		if d.terugblik != "" {
 			kleur := p.groen
 			if !d.goed {
