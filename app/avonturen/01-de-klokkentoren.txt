@@ -1,0 +1,159 @@
+titel: Het geheim van de klokkentoren
+over: Een nacht op schoolkamp in een oud schoolgebouw. Midden in de nacht hoor je een vreemd getik.
+
+# start
+Het is de laatste nacht van het schoolkamp. Groep 7 slaapt in het oude schoolgebouw van het dorp, in de gymzaal, op luchtbedden. Iedereen slaapt al. Behalve jij.
+
+Want boven je hoofd, ergens hoog in het gebouw, tikt iets. Tik. Tik. Tik. Langzaam en zwaar, als een reusachtige klok.
+
+Maar de klok in de toren van deze school staat al jaren stil. Dat vertelde de meester vanmiddag nog. Hij staat op kwart voor drie, al sinds niemand meer weet wanneer.
+
+Naast je ligt je vriendin Lotte. Ze snurkt zachtjes.
+> Maak Lotte wakker -> lotte
+> Ga alleen kijken -> gang
+> Trek je slaapzak over je hoofd en ga slapen -> slapen
+
+# slapen
+Je trekt de slaapzak over je hoofd. Tik. Tik. Tik. Je telt de tikken, zoals schaapjes. Bij tweehonderdzeven val je in slaap.
+
+De volgende ochtend vraagt Lotte of jij ook dat getik hoorde. 'Welk getik?' zeg je. Maar je weet het best.
+
+Op weg naar huis kijk je nog één keer om naar de toren. Achter het kleine raampje bovenin beweegt iets.
+== einde: Je slaapt, maar je blijft je afvragen wat het was.
+
+# lotte
+Je port Lotte in haar zij. 'Wat?' mompelt ze. 'Is het al ochtend?'
+
+'Luister,' fluister je.
+
+Tik. Tik. Tik.
+
+Lotte gaat rechtop zitten. Opeens is ze klaarwakker. 'De klok,' zegt ze. 'Die staat toch stil?'
+
+Ze graait in haar tas en haalt een zaklamp tevoorschijn. 'Altijd handig op kamp,' zegt ze trots.
+> Ga samen kijken -> gang [+zaklamp]
+
+# gang
+Je sluipt de gymzaal uit, de lange gang in. De vloer kraakt bij elke stap. Aan de muren hangen oude klassenfoto's, sommige nog in zwart-wit. Kinderen met korte broeken en vlechten kijken je aan.
+
+Aan het eind van de gang zijn twee deuren. Op de ene staat 'Lerarenkamer'. De andere is smal en oud, met een ijzeren klink. Daarachter begint een wenteltrap naar boven. Het getik komt van boven.
+> Ga de wenteltrap op -> trap
+> Kijk eerst in de lerarenkamer -> lerarenkamer
+
+# lerarenkamer
+De lerarenkamer ruikt naar koffie en oude boeken. Op tafel liggen stapels nagekeken schriften. In de hoek staat een kast met glazen deurtjes. Daarin hangen sleutels aan haakjes, elk met een labeltje.
+
+Er is één ouderwetse, grote sleutel. Op het labeltje staat in sierlijke letters: Toren.
+> Neem de torensleutel mee -> gang2 [+sleutel]
+> Laat alles liggen en ga terug -> gang2
+
+# gang2
+Je staat weer in de gang, voor de smalle deur met de ijzeren klink. Boven je tikt het nog steeds. Tik. Tik. Tik.
+> Ga de wenteltrap op -> trap
+
+# trap
+De wenteltrap is steil en smal. Het is pikdonker.
+> Doe de zaklamp aan en klim verder -> trap-licht ?zaklamp
+> Klim op de tast verder in het donker -> donker !zaklamp
+
+# donker
+Je klimt op de tast verder. Je handen glijden langs de koude muur. Opeens grijp je in iets zachts en plakkerigs. Een spinnenweb!
+
+Je schrikt zo dat je uitglijdt. Je ploft drie treden naar beneden, precies op je billen. Met veel lawaai.
+
+Beneden gaat een deur open. Een lichtstraal valt de trap op. 'Wie is daar?' roept de meester. Hij klinkt niet blij.
+> Geef je over -> betrapt
+
+# betrapt
+De meester staat onderaan de trap in zijn pyjama, met een zaklamp en een kussen onder zijn arm. Er staan kleine eendjes op zijn pyjama.
+
+'En wat doen wij hier om half drie 's nachts?' vraagt hij.
+
+Je legt het uit, van het getik en de klok. De meester luistert. Tik. Tik. Tik. Hij fronst. 'Morgen,' zegt hij. 'Bij daglicht. Nu naar bed.'
+
+De volgende ochtend is het getik weg, en de toren blijft op slot. Maar iedereen in de klas praat over de meester met de eendjespyjama.
+== einde: Betrapt door de meester (en zijn eendjespyjama).
+
+# trap-licht
+De zaklamp verlicht de trap. Grote spinnenwebben hangen tussen de muren. Je duikt eronderdoor.
+
+Bovenaan is een houten deur. Erop zit een oud koperen slot. Ernaast, in het hout gekrast, staan woorden: Alleen wie de tijd kent, mag erin.
+> Open het slot met de torensleutel -> slot ?sleutel
+> Bekijk het slot beter -> slot2 !sleutel
+
+# slot2
+Het slot heeft geen sleutelgat. Het heeft drie draaiwieltjes met cijfers, zoals bij een fietsslot. Er moeten dus drie cijfers op.
+
+Alleen wie de tijd kent... Welke tijd? Je denkt aan wat de meester vanmiddag vertelde over de klok in deze toren.
+? Welke drie cijfers draai je in? -> 245 -> slot | fout-code
+
+# fout-code
+Je draait de wieltjes. Klik, klik, klik. Je trekt aan het slot. Niets. Het zit nog steeds dicht.
+
+Denk aan de klok in de toren. Op welke tijd staat die al jaren stil? Kwart voor drie is... hoeveel uur en hoeveel minuten?
+? Probeer het nog eens: welke drie cijfers? -> 245 -> slot | fout-code
+> Geef het op en ga terug naar bed -> slapen
+
+# slot
+Klik. Het slot springt open. De deur kraakt als je hem openduwt.
+
+Je staat in de klokkenkamer. Midden in de kamer staat het binnenwerk van de torenklok: enorme tandwielen, groter dan wagenwielen, roestig en stil. De wijzers aan de buitenkant staan nog steeds op kwart voor drie.
+
+Maar het tikt wel. Tik. Tik. Tik. Het geluid komt uit de hoek, achter een oud gordijn.
+> Trek het gordijn open -> gordijn
+> Bekijk eerst de tandwielen -> tandwielen
+
+# tandwielen
+Je schijnt met de zaklamp op de tandwielen. Op het grootste tandwiel is iets gegraveerd, half onder het roest. Je wrijft het schoon met je mouw.
+
+Gemaakt door Jan Hofstede, klokkenmaker. Wie mij weer laat lopen, vindt wat ik bewaard heb.
+
+Onder de tekst zit een klein luikje in de vloer, met een cijferslot. Er staat bij: Het jaar dat de Tachtigjarige Oorlog eindigde.
+? Welk jaartal draai je in? -> 1648 -> luikje | fout-jaar
+> Laat het luikje en kijk achter het gordijn -> gordijn
+
+# fout-jaar
+Klik. Het luikje blijft dicht.
+
+De Tachtigjarige Oorlog... die begon in 1568 en duurde, nou ja, ongeveer tachtig jaar. Hij eindigde met de Vrede van Münster.
+? Welk jaartal probeer je nu? -> 1648 -> luikje | fout-jaar
+> Kijk eerst achter het gordijn -> gordijn
+
+# luikje
+Het luikje springt open. Daaronder ligt een blikken trommel, bruin van ouderdom. Je wrikt het deksel los.
+
+In de trommel zit een stapel brieven, een oude foto en een klein zakhorloge. Op de foto staat een klas van lang geleden, voor deze zelfde school. Achterop staat: Groep 7, 1926. Aan de kinderen die dit vinden.
+
+De bovenste brief begint zo: Lieve kinderen van later. Wij zijn de kinderen van nu. Dit is hoe ons leven was...
+
+Lotte kijkt over je schouder mee. 'Een tijdcapsule,' fluistert ze. 'Van honderd jaar geleden.'
+> Lees verder bij het licht van de zaklamp -> schat
+
+# schat
+Jullie lezen tot de zaklamp bijna leeg is. Over de school met kachels in de klas. Over sommen op een lei. Over een meester die Hofstede heette, de zoon van de klokkenmaker.
+
+De volgende ochtend laten jullie alles aan de meester zien. Hij is zo stil dat het even lijkt alsof hij gaat huilen. Dan belt hij de burgemeester.
+
+Een maand later staat de tijdcapsule in een vitrine in het dorpshuis. Ernaast een bordje met jullie namen erop. En de klok in de toren? Die wordt gerepareerd. Hij loopt weer.
+
+O ja, en het getik? Dat zoeken jullie nog steeds uit.
+== einde: Je vond de tijdcapsule van 1926!
+
+# gordijn
+Je trekt het gordijn opzij. Daar staat een kooi. En in de kooi rent een hamster in een piepend rad. Tik. Tik. Tik.
+
+Op de kooi hangt een briefje: Hamster Kees van groep 5. Logeert in de toren, want in de klas is het te druk. Elke dag water geven! Groetjes, juf Annemiek.
+
+Lotte proest het uit. 'Het spook van de klokkentoren,' giert ze, 'is een hamster.'
+
+Kees stopt even met rennen en kijkt jullie aan met zijn zwarte kraaloogjes. Dan rent hij verder. Tik. Tik. Tik.
+> Geef Kees wat water en ga terug naar bed -> hamster
+> Kijk nog even rond in de klokkenkamer -> tandwielen
+
+# hamster
+Je vult het waterflesje van Kees bij. Hij drinkt er gulzig van.
+
+Terug in de gymzaal kun je eindelijk slapen. Tik. Tik. Tik. Het klinkt nu helemaal niet eng meer. Eigenlijk is het best gezellig.
+
+De volgende ochtend vertel je aan de hele klas over het spook van de klokkentoren. Niemand gelooft je. Tot juf Annemiek binnenkomt en vraagt wie er vannacht zo lief was om Kees water te geven.
+== einde: Het spook van de klokkentoren is hamster Kees.
