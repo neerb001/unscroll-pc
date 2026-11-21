@@ -1,0 +1,127 @@
+titel: Speurtocht door Nederland
+over: In de oude koffer van je overgrootmoeder zit een brief met aanwijzingen. Ze leiden je dwars door Nederland.
+
+# start
+% ........................
+% ....nnnnnnnnnnnnnnnn....
+% ....nyyyyyyyyyyyyyyn....
+% ....nnnnnnnnnnnnnnnn....
+% ....nnnnnnnnnnnnnnnn....
+% ....nnnnnnnnnnnnnnnn....
+% ....nnnnnnnyynnnnnnn....
+% ....nnnnnnnyynnnnnnn....
+% ....nnnnnnnnnnnnnnnn....
+% ....nnnnnnnnnnnnnnnn....
+% ....nnnnnnnnnnnnnnnn....
+Op zolder bij oma staat een oude bruine koffer. 'Die was van mijn moeder,' zegt oma. 'Jouw overgrootmoeder, Anna. Ik heb hem nooit opengemaakt. Ik kon de sleutel niet vinden.'
+
+Jij vindt de sleutel binnen vijf minuten, in een sok in de la van het nachtkastje. In de koffer liggen oude kleren, een fotoalbum, en een brief. Op de envelop staat: Voor wie van avontuur houdt.
+
+In de brief staat:
+
+Lief kind van later. Ik heb iets verstopt, op een plek die alleen jij kunt vinden. Volg mijn aanwijzingen. De eerste: begin in de stad met het grootste treinstation van het land, midden in Nederland.
+> Ga met de trein op pad -> station
+> Leg de brief weg en ga met oma theedrinken -> thee
+
+# thee
+Je legt de brief terug in de koffer. Avontuur is leuk, maar thee met oma en een stuk appeltaart is ook leuk.
+
+Oma vertelt verhalen over haar moeder Anna. Hoe ze op schaatsen over de bevroren sloten naar school ging. Hoe ze in de oorlog brood smokkelde. Hoe ze altijd zei: 'Wie zoekt, die vindt.'
+
+Misschien ga je volgend weekend zoeken. Misschien.
+== einde: Thee met oma. De schat wacht nog even.
+
+# station
+Je staat op het grootste treinstation van Nederland. Overal lopen mensen met koffers. Op een groot scherm zie je de kaart van Nederland, met een stip waar jij nu bent.
+kaart: nederland stad:Utrecht
+? In welke stad ben je? -> utrecht -> utrecht | station-fout
+
+# station-fout
+Je kijkt nog eens naar de kaart. De stip staat precies in het midden van Nederland, in de provincie met dezelfde naam als de stad.
+> Kijk nog eens naar de kaart -> station
+
+# utrecht
+Utrecht! In de brief staat de tweede aanwijzing:
+
+Ga naar het noorden, naar de provincie waar ze hun eigen taal spreken en waar ze in een strenge winter een schaatstocht langs elf steden rijden.
+
+Op het bord zie je: Trein naar Leeuwarden, vertrek 10:47. De reis duurt 1 uur en 25 minuten.
+? Hoe laat kom je aan? (bijvoorbeeld 11:30) -> 12:12/12.12/1212 -> trein | trein-fout
+
+# trein-fout
+Tel het in stukjes. Van 10:47 naar 11:47 is 1 uur. Dan nog 25 minuten erbij: van 11:47 is 13 minuten naar 12:00. Dan heb je nog 12 minuten over.
+> Reken het nog eens uit -> utrecht
+
+# trein
+Om 12:12 stap je uit. Je kijkt op de kaart in het station. Welke provincie is dit?
+kaart: nederland prov:Friesland
+? In welke provincie ben je nu? -> friesland/fryslan -> friesland | friesland-fout
+
+# friesland-fout
+De provincie waar ze Fries spreken en waar de Elfstedentocht wordt gereden. Hij ligt in het noorden, met de Waddenzee erboven.
+> Kijk nog eens naar de kaart -> trein
+
+# friesland
+Friesland! In het museum in Leeuwarden staat een oude vitrine met schaatsen. Op het bordje staat: Gedragen tijdens de Elfstedentocht van 1940. Geschonken door Anna.
+
+Onder de schaatsen ligt een opgevouwen papiertje, dat niemand ooit heeft opgemerkt. De volgende aanwijzing:
+
+Steek het water over naar het grootste eiland in het rijtje Waddeneilanden. Daar woonde ik als meisje.
+> Ga naar het eiland -> eiland
+> Vraag de museumbaas wie Anna was -> museum
+
+# museum
+De museumbaas is een oude man met een snor. 'Anna? Die ken ik nog van vroeger. Ze heeft de Elfstedentocht uitgereden, bijna tweehonderd kilometer op de schaats, in één dag. Ze kwam van het eiland. Van het grootste.'
+
+Hij knipoogt. 'Ze kwam elk jaar langs, om naar haar schaatsen te kijken. En dan zei ze altijd: het beste ligt onder het zand.'
+> Ga naar het eiland -> eiland
+
+# eiland
+Je neemt de bus naar Den Helder en dan de veerboot. Op de boot hangt een kaart van de Waddeneilanden. Een van de eilanden is gekleurd.
+kaart: nederland eiland:Texel
+? Welk eiland is het grootste Waddeneiland? -> texel -> texel | eiland-fout
+
+# eiland-fout
+Het grootste Waddeneiland ligt het meest naar het westen, vlak boven Den Helder. Het eerste eiland van het rijtje.
+> Kijk nog eens naar de kaart -> eiland
+
+# texel
+Texel! Overal zijn duinen, schapen en fietsers. In de brief staat:
+
+Zoek mijn kleine vuurtoren bij de oude haven. Tel zijn treden. Het getal is de code.
+
+Het is een klein wit vuurtorentje, al lang niet meer in gebruik. De deur is open. Je klimt naar boven en telt elke trede. Bovenaan heb je er 118 geteld. Op een verweerd bordje staat: 'Dit torentje telt 9 verdiepingen van elk 13 treden, plus 1 opstapje.'
+? Hoeveel treden heeft de vuurtoren? (9 keer 13, plus 1) -> 118 -> code | code-fout
+
+# code-fout
+Reken het in twee stappen. 9 keer 13: denk aan 9 keer 10 en 9 keer 3. Tel die op. Dan nog 1 erbij.
+> Reken het nog eens uit -> texel
+
+# code
+118. Precies wat je telde. In de brief staat het laatste stukje:
+
+Loop van het torentje naar het strand, naar het derde paaltje. Graaf. Het beste ligt onder het zand.
+> Graaf bij het derde paaltje -> graven
+> Kijk eerst rond in de duinen -> schapen
+
+# schapen
+Je loopt de duinen in. Overal grazen schapen. Op Texel wonen bijna net zoveel schapen als mensen. Een van de schapen kijkt je aan en begint achter je aan te lopen. Dan nog een. En nog een.
+
+Na een half uur loop je met dertig schapen achter je over het strand. Een boer op een tractor lacht zich slap. 'Die denken dat jij de herder bent!'
+
+Je bent helemaal vergeten welk paaltje het was.
+== einde: Je bent de nieuwe schapenherder van Texel.
+
+# graven
+Bij het derde paaltje graaf je met je handen in het zand. Je graaft en graaft. Hoe meer zand je weghaalt, hoe groter het gat wordt. Dan stoten je vingers op iets hards. Een blikken doos.
+
+In de doos zit een klein kruisje aan een lint: het Elfstedenkruisje. Dat krijg je alleen als je de hele Elfstedentocht uitrijdt. Op de achterkant staat 1940. En een foto van een meisje met vlechten, op schaatsen, lachend in de sneeuw. Achterop staat: Anna, 14 jaar.
+
+Er zit ook een briefje bij. Lief kind van later. Dit kruisje is van jou. Niet omdat je hem gevonden hebt, maar omdat je hebt gezocht. Wie zoekt, die vindt.
+> Breng het kruisje naar oma -> oma
+
+# oma
+Als oma het kruisje ziet, moet ze huilen. Goede tranen, zegt ze. Ze had nooit geweten dat haar moeder de Elfstedentocht had uitgereden.
+
+Het kruisje hangt nu in een lijstje bij oma in de kamer. Naast een kaart van Nederland, met een rood lijntje erop: Utrecht, Leeuwarden, Texel. Jouw route.
+== einde: Je vond het Elfstedenkruisje van overgrootmoeder Anna!

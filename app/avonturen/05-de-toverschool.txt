@@ -1,0 +1,151 @@
+titel: De toverschool
+over: Je eerste week op de toverschool. Er verdwijnen boeken uit de bibliotheek, en iedereen denkt dat jij het was.
+
+# start
+% ...........vv...........
+% ..........vvvv..........
+% .........vvyvvv.........
+% ........vvvvvvvv........
+% .......vvvvvyvvvv.......
+% ......vvvvvvvvvvvv......
+% .....vvvvvvvvvvvvvv.....
+% ....yyyyyyyyyyyyyyyy....
+% .........hhhhhh.........
+% ........hhkhhkhh........
+% ........hhhhhhhh........
+% .........hhrrhh.........
+Je zit voor het eerst in de grote zaal van de toverschool Steenwijck. Duizend kaarsen zweven onder het plafond. Aan de lange tafels zitten leerlingen in mantels, en iedereen kijkt naar jou.
+
+Professor Uil, de directeur, staat op. 'Er zijn deze week drie boeken uit de verboden afdeling van de bibliotheek verdwenen,' zegt ze. 'En de nieuwe leerling is de enige die gisteravond in de buurt was.'
+
+Tweehonderd paar ogen draaien naar jou. Je wangen worden warm. Je was in de bibliotheek, dat klopt. Maar je hebt niets gestolen.
+
+Naast je fluistert een meisje met rood haar. 'Ik geloof je. Ik ben Fien. Zullen we uitzoeken wie het wel was?'
+> Ja, samen met Fien -> fien [+fien]
+> Nee, je doet het liever alleen -> alleen
+
+# alleen
+'Bedankt,' zeg je, 'maar ik red me wel.'
+
+Fien haalt haar schouders op. 'Zoals je wilt. Ik zit bij de toverdranken, als je me nodig hebt.'
+
+Je loopt alleen naar je eerste les.
+> Ga naar de les toverdranken -> dranken
+
+# fien
+'Graag,' zeg je. Fien grijnst. 'Eerst moeten we naar de les toverdranken. Professor Kwak is streng. Maar zijn kantoor ligt naast de bibliotheek, dus misschien weet hij iets.'
+> Ga met Fien naar de les toverdranken -> dranken
+
+# dranken
+De les toverdranken is in een kelder vol borrelende ketels. Professor Kwak heeft een lange neus en een nog langere mantel.
+
+'Vandaag maken we een Toverdrank van de Waarheid,' zegt hij. 'Wie hem drinkt, kan een uur lang alleen de waarheid spreken.'
+
+Op het bord staat het recept, voor 2 personen: 3 drakenschubben, 6 druppels maanwater, 1 uilenveer.
+
+'Jullie maken hem voor de hele groep,' zegt Kwak. 'Dat zijn 6 personen.'
+? Hoeveel drakenschubben heb je nodig voor 6 personen? -> 9 -> drank-goed | drank-fout
+
+# drank-fout
+Je kijkt nog eens naar het recept. Het is voor 2 personen. 6 personen is 3 keer zoveel. Dus alles keer 3.
+> Reken het nog eens uit -> dranken
+
+# drank-goed
+Negen drakenschubben, achttien druppels maanwater, drie uilenveren. Je roert drie keer met de klok mee. De drank wordt zilverkleurig en ruikt naar vers brood.
+
+'Perfect,' zegt professor Kwak verbaasd. 'Tien punten voor de nieuweling.'
+
+Na de les hoor je hem zachtjes tegen zichzelf praten. 'Waar heb ik dat boek toch gelaten. Het Boek der Schaduwen...'
+> Vraag Kwak naar het boek -> kwak
+> Sluip achter Kwak aan -> sluipen
+
+# kwak
+'Professor, mist u ook een boek?'
+
+Kwak kijkt je scherp aan. 'Ik heb het geleend,' zegt hij. 'Netjes, met een briefje. Maar toen ik terugkwam, was het weg van mijn bureau. Iemand heeft het van míj gestolen.'
+
+Hij geeft je een flesje van de Toverdrank van de Waarheid. 'Als je iemand verdenkt, laat hem hiervan drinken.'
+> Neem het flesje en ga naar de bibliotheek -> bieb [+drank]
+
+# sluipen
+Je sluipt achter Kwak aan door de gangen. Hij loopt naar de bibliotheek. Bij de deur blijft hij staan, kijkt om zich heen, en gaat naar binnen.
+
+Jij wacht even en volgt hem. Maar de deur gaat niet open. Er staat een raadsel op.
+> Lees het raadsel -> raadsel
+
+# bieb
+Je loopt naar de bibliotheek. De grote eiken deur zit dicht. Er staat een raadsel op, in gouden letters.
+> Lees het raadsel -> raadsel
+
+# raadsel
+In de deur staat gekrast:
+
+Hoe meer je ervan weghaalt, hoe groter het wordt. Wat ben ik?
+? Wat is het antwoord op het raadsel? -> gat/een gat/een kuil/kuil -> binnen | raadsel-fout
+
+# raadsel-fout
+De deur blijft dicht. Een stem uit het hout zegt: 'Denk aan een schep en zand. Als je graaft en graaft, wordt iets steeds groter...'
+> Probeer het nog eens -> raadsel
+
+# binnen
+De deur zwaait open. De bibliotheek is enorm, met boekenkasten tot aan het plafond. Achterin is een hek met een bordje: VERBODEN AFDELING.
+
+Op de vloer zie je modderige voetafdrukken. Ze zijn klein. Kleiner dan die van een volwassene. Ze leiden naar het hek.
+
+Bij het hek staat een stenen beeld van een uil. Onder het beeld staat: Spreek de spreuk voor licht, en ik wijs de weg.
+
+Op een papiertje op de grond staat in kriebelig handschrift: Spreuken zijn Engelse woorden, achterstevoren. Licht = THGIL.
+? Welk Engels woord zit er achterstevoren in THGIL? -> light -> licht | licht-fout
+
+# licht-fout
+Lees THGIL eens van achter naar voren. T, H, G, I, L wordt... L, I, G, H, T.
+> Probeer het nog eens -> binnen
+
+# licht
+'Light!' zeg je. De ogen van de stenen uil gaan geel branden. Een straal licht valt op een boekenkast achter het hek. Een van de boeken steekt een stukje uit.
+
+Je trekt aan het boek. De kast schuift opzij. Erachter is een smalle trap naar beneden. Van beneden hoor je gefluister.
+> Ga de trap af -> kelder
+
+# kelder
+Onder aan de trap is een kleine kamer met een kaars. Op de grond zitten twee leerlingen uit het hoogste jaar, Daan en Mo. Om hen heen liggen drie boeken uit de verboden afdeling.
+
+'Wat doen jullie hier?' vraag je.
+
+Daan springt op. 'Niks! We... lezen gewoon.'
+> Laat ze van de Toverdrank van de Waarheid drinken -> waarheid ?drank
+> Ren naar boven om professor Uil te halen -> uil
+> Vraag gewoon wat er aan de hand is -> praten
+
+# praten
+Mo kijkt naar de grond. 'We hebben volgende week ons eindexamen,' zegt ze. 'Over zwarte magie. En niemand mag de boeken lenen. Dus we... leenden ze toch. Stiekem.'
+
+'En de nieuwe leerling krijgt de schuld,' zegt Daan. Hij kijkt een beetje beschaamd. 'Sorry.'
+> Zeg dat ze het zelf moeten opbiechten -> biecht
+> Haal professor Uil -> uil
+
+# waarheid
+Je doet een paar druppels van de drank in hun limonade. Daan drinkt. Dan opent hij zijn mond.
+
+'We hebben de boeken gepakt, omdat we volgende week examen hebben, en ik ben vergeten te leren, en ik ben ook bang voor spinnen, en ik slaap nog met een knuffel die Meneer Wolk heet, en...'
+
+'Stop!' roept Mo. 'Het werkt! We geven het toe!'
+> Breng ze naar professor Uil -> uil
+
+# biecht
+De volgende ochtend staan Daan en Mo in de grote zaal. Ze vertellen alles. Het wordt heel stil.
+
+Professor Uil kijkt over haar brilletje. 'Eerlijkheid,' zegt ze, 'is de sterkste spreuk die er bestaat.' Daan en Mo moeten een maand de bibliotheek opruimen. Maar ze mogen hun examen doen.
+
+En jij? Je krijgt vijftig punten voor je huis, omdat je de waarheid vond zonder iemand te verraden. Fien slaat je op je schouder.
+== einde: Je vond de waarheid, en liet anderen eerlijk zijn.
+
+# uil
+Je rent naar boven en haalt professor Uil. Ze komt de trap af, kijkt naar de boeken, en dan naar Daan en Mo.
+
+'Zo,' zegt ze alleen. Dat ene woord is erger dan schreeuwen.
+
+Daan en Mo moeten een maand lang alle ketels van professor Kwak schrobben. En jij krijgt dertig punten voor je huis.
+
+'Maar,' zegt professor Uil, 'de volgende keer kom je eerst naar mij. Ondergrondse kamers zijn gevaarlijk voor een eerstejaars.'
+== einde: Mysterie opgelost, en een preek van de directeur.

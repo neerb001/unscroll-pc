@@ -1,0 +1,133 @@
+titel: De robot die verdwaalde
+over: De robot van de wetenschapsmarkt is ontsnapt. Alleen jij kunt hem met een programmaatje terugsturen.
+
+# start
+% ........................
+% ...........yy...........
+% ...........ss...........
+% ........ssssssss........
+% ........sbbssbbs........
+% ........sbbssbbs........
+% ........ssssssss........
+% ........sssrrsss........
+% ..........ssss..........
+% .......ssssssssss.......
+% .......sscccccccs.......
+% .......sscccccccs.......
+% .......ssssssssss.......
+% ........dd....dd........
+Het is de dag van de wetenschapsmarkt. In de gymzaal staan tafels met vulkanen van bakpoeder, zelfgemaakte weerstations en een aardappel die een lampje laat branden.
+
+Op jouw tafel staat Bolt. Bolt is een robot die jij en je vriend Omar hebben gebouwd. Hij kan rijden, draaien en piepen. Je bent er best trots op.
+
+Dan gebeurt het. Iemand stoot tegen de tafel. Bolt valt op de grond, zijn aan-knop springt in, en hij rijdt weg. Dwars door de gymzaal, de deur uit, de gang op.
+
+'Bolt!' roept Omar. 'Hij doet alleen nog wat je hem opdraagt via de afstandsbediening!'
+
+Omar geeft je de afstandsbediening. Er zit een klein toetsenbord op. Je moet Bolt programmeren.
+> Ga achter Bolt aan de gang in -> gang1
+
+# gang1
+Bolt staat stil in de gang, vlak bij de lerarenkamer. Hij moet naar het lokaal van de meester, om de hoek.
+
+Op het schermpje van de afstandsbediening zie je een plattegrond. Bolt staat linksonder en kijkt naar rechts (oost). Het lokaal is de ster.
+robot: 4x3 start=0,2,oost doel=3,0 -> gang1-goed | gang1-fout
+// oplossing gang1: vooruit 3, links, vooruit 2
+
+# gang1-fout
+'Hij moet eerst helemaal naar rechts,' zegt Omar, 'en dan omhoog. Omhoog is voor hem naar links draaien, want hij kijkt nu naar rechts.'
+> Probeer het nog eens -> gang1
+
+# gang1-goed
+Bolt rijdt drie vakjes naar rechts, draait naar links, en rijdt het lokaal in. Piep!
+
+Maar het lokaal is leeg. Op het bord staat een programma geschreven, met krijt:
+
+herhaal 4: vooruit 1, rechts
+
+'Wat doet Bolt als je hem dat laat doen?' vraagt Omar. 'Teken het maar in je hoofd. Een stap vooruit, dan rechtsom draaien. En dat vier keer.'
+> Denk goed na over wat er gebeurt -> voorspel
+
+# voorspel
+Bolt staat in het midden van het lokaal. Hij doet vier keer: één stap vooruit, dan rechtsom draaien. Waar komt hij uit?
+> Bolt rijdt een rondje en staat weer op dezelfde plek -> voorspel-goed
+> Bolt rijdt vier stappen rechtdoor -> voorspel-fout
+> Bolt draait alleen maar rondjes op de plek -> voorspel-fout
+
+# voorspel-fout
+Omar pakt een stukje krijt en tekent het op de vloer. Stap vooruit. Draai rechts. Stap vooruit. Draai rechts. Na vier keer...
+
+'Kijk,' zegt hij. 'Het is een vierkantje!'
+> Kijk nog eens naar het vierkantje -> voorspel
+
+# voorspel-goed
+Precies! Een stap, draaien, een stap, draaien. Dat is een vierkant, en na vier keer sta je weer waar je begon.
+
+Je probeert het. Bolt rijdt een klein vierkantje en staat weer op zijn plek. Hij piept tevreden.
+
+Dan hoor je het: een alarm. Uit de richting van de gymzaal.
+> Ren terug naar de gymzaal -> gymzaal
+
+# gymzaal
+In de gymzaal is het een chaos. Iemands vulkaan is ontploft. Overal ligt schuim. En de directeur staat op het podium met een microfoon.
+
+'Wie heeft er een robot laten wegrijden?' vraagt ze. 'Hij is op de trap naar het dak gezien.'
+
+Je kijkt naar Bolt, die naast je staat. Bolt kijkt terug. Dat kan niet. Bolt is hier.
+
+'Er is nog een robot,' fluistert Omar.
+> Ga naar de trap naar het dak -> trap
+> Vertel de directeur dat Bolt hier is -> directeur
+
+# directeur
+Je steekt je hand op. 'Mevrouw, onze robot is hier. Het moet een andere robot zijn.'
+
+De directeur fronst. 'Een andere robot? Er is maar één robot op de markt. De jouwe.'
+
+Achter haar, op het podium, beweegt iets. Een tweede robot, net als Bolt, maar dan rood. Hij rijdt achter het gordijn.
+> Ga achter het gordijn kijken -> gordijn
+> Ga toch naar de trap -> trap
+
+# gordijn
+Achter het gordijn staat de rode robot. Op zijn rug zit een briefje: Eigendom van groep 8. Tweelingbroer van Bolt. We hebben hem nagebouwd. Groetjes, Sanne.
+
+Sanne uit groep 8 komt naar je toe. Ze bloost. 'Jullie robot was zo goed. We wilden er ook een. Maar die van ons gaat steeds zijn eigen gang.'
+
+Omar grijnst. 'Wij kunnen jullie wel helpen met programmeren.'
+== einde: Bolt heeft een tweelingbroer, en jullie een nieuwe vriendin.
+
+# trap
+De trap naar het dak is een wenteltrap met overal kisten. De rode robot is al boven. Bolt moet hem achterna, maar de treden zijn als een trap van blokjes.
+
+Bolt staat linksonder en kijkt naar rechts. De ster is boven aan de trap. Elke trede is: één stap vooruit, dan één stap omhoog.
+
+'Dit is precies waar herhaal voor is,' zegt Omar. 'In plaats van alles twintig keer te typen.'
+robot: 6x6 start=0,5,oost doel=5,0 muur=2,5 3,5 4,5 5,5 3,4 4,4 5,4 4,3 5,3 5,2 -> dak | trap-fout
+// oplossing trap: herhaal 5: vooruit 1, links, vooruit 1, rechts
+
+# trap-fout
+Bolt botst tegen een trede. 'Kijk naar één trede,' zegt Omar. 'Vooruit 1. Dan links draaien, zodat hij omhoog kijkt. Vooruit 1. Dan rechts draaien, zodat hij weer vooruit kijkt. En dat herhalen. Hoe vaak? Tel de treden.'
+> Probeer het nog eens -> trap
+
+# dak
+Bolt klimt de trap op, trede voor trede. Bovenaan rolt hij het dak op.
+
+Op het dak staat de rode robot, vlak bij de rand. Hij rijdt langzaam heen en weer. Nog een paar stappen en hij valt naar beneden!
+
+Je moet Bolt ernaartoe sturen, zodat hij hem kan tegenhouden. Maar het dak staat vol met zonnepanelen (de grijze blokken). Bolt staat linksboven en kijkt naar beneden (zuid). De rode robot is de ster.
+robot: 5x5 start=0,0,zuid doel=4,4 muur=1,0 1,1 1,2 3,2 3,3 3,4 -> gered | dak-fout
+// oplossing dak: vooruit 3, links, vooruit 2, links, vooruit 2, rechts, vooruit 2, rechts, vooruit 3
+
+# dak-fout
+Bolt rijdt tegen een zonnepaneel. Bonk. De rode robot rijdt weer een stukje dichter naar de rand.
+
+Tip: ga eerst ver genoeg naar beneden om onder de eerste rij panelen door te kunnen. Dan naar rechts, en dan weer omhoog om om de tweede rij heen te gaan.
+> Probeer het nog eens -> dak
+
+# gered
+Bolt rijdt keurig tussen de zonnepanelen door en duwt de rode robot met een zacht bonkje weg van de rand. Net op tijd!
+
+Je pakt de rode robot op. Op zijn rug staat: Eigendom van groep 8. Even later komt Sanne uit groep 8 hijgend het dak op. 'Onze robot! Jullie hebben hem gered!'
+
+Bij de prijsuitreiking krijgen jullie de eerste prijs. Niet voor de mooiste robot, zegt de jury, maar voor het beste programmeerwerk. Bolt piept zo hard dat de microfoon fluit.
+== einde: Je redde de robot van groep 8 en won de eerste prijs!
