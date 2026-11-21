@@ -24,11 +24,10 @@ Je mag van je ouders, als je bij je tante Noor blijft, die mee wil. Jullie kopen
 # parijs
 De trein uit Amsterdam rijdt in ruim drie uur naar de stad met de hoge ijzeren toren. Op de kaart in de trein licht het land op waar je naartoe gaat.
 kaart: europa FRA
-? Welk land is dit? -> frankrijk/france -> toren | land-fout
-
-# land-fout
-Kijk goed naar de kaart. Het grote land ten zuiden van België, met Spanje eronder. De hoge ijzeren toren heet de Eiffeltoren.
-> Kijk nog eens naar de kaart -> parijs
+? Welk land is dit? -> frankrijk/france -> toren
+tip: Kijk goed naar de kaart. Het gekleurde land ligt ten zuiden van België, met Spanje eronder.
+tip: Het is het land van de Eiffeltoren, de hoge ijzeren toren in Parijs. Parijs is de hoofdstad.
+tip: Het begint met Fr...
 
 # toren
 Frankrijk. En de hoofdstad met de ijzeren toren is Parijs. Jullie gaan naar de Eiffeltoren. Bij de kassa ligt een envelop met jouw naam erop.
@@ -36,11 +35,10 @@ Frankrijk. En de hoofdstad met de ijzeren toren is Parijs. Jullie gaan naar de E
 Erin zit een kaartje: Ga naar de stad van het Colosseum. Je reist 1400 kilometer met een trein die 200 kilometer per uur rijdt.
 
 'Hoe lang zitten we dan in de trein?' vraagt tante Noor.
-? Hoeveel uur duurt de reis? (1400 km, 200 km per uur) -> 7/7 uur/zeven -> rome | rome-fout
-
-# rome-fout
-Elk uur rijdt de trein 200 kilometer. Hoeveel keer past 200 in 1400? Denk aan 14 gedeeld door 2.
-> Reken het nog eens uit -> toren
+? Hoeveel uur duurt de reis? (1400 km, 200 km per uur) -> 7/7 uur/zeven -> rome
+tip: Elk uur rijdt de trein 200 kilometer. Hoeveel uur duurt het tot je 1400 kilometer hebt gereden?
+tip: Tel in sprongen van 200: na 1 uur 200, na 2 uur 400, na 3 uur 600. Ga zo door tot 1400.
+tip: Hoe vaak past 200 in 1400? Dat is hetzelfde als hoe vaak 2 in 14 past.
 
 # rome
 Zeven uur later stap je uit in Rome, de hoofdstad van Italië. Het is warm, het ruikt naar pizza en overal staan oude stenen.
@@ -49,19 +47,19 @@ Bij het Colosseum, een enorm rond stadion van tweeduizend jaar oud, verkoopt een
 
 Hij geeft je een ijsje en een briefje. Op het briefje staat een kaart, met een land gekleurd.
 kaart: europa AUT
-? Welk land moet je nu naartoe? -> oostenrijk/austria -> oostenrijk | oostenrijk-fout
-
-# oostenrijk-fout
-Het land met de hoge Alpen, ten noorden van Italië, ten zuiden van Duitsland. Het lijkt een beetje op een stuk taart, of een kikkerbil.
-> Kijk nog eens naar de kaart -> rome
+? Welk land moet je nu naartoe? -> oostenrijk/austria -> oostenrijk
+tip: Kijk naar de kaart. Het gekleurde land ligt boven Italië, waar je nu bent, en onder Duitsland. Er liggen hoge bergen: de Alpen.
+tip: Het is het land van Mozart en van skiën in de Alpen. Het heeft een vorm als een kikkerbil.
+tip: Het begint met Oost...
 
 # oostenrijk
 Oostenrijk! De ijsjesman knikt. 'Felix zei: ga naar de hoofdstad, naar het grote reuzenrad.'
-? Wat is de hoofdstad van Oostenrijk? -> wenen/wien/vienna -> wenen | wenen-fout
 
-# wenen-fout
-De hoofdstad van Oostenrijk is beroemd om muziek (Mozart woonde er), taartjes en paleizen. Hij begint met een W.
-> Probeer het nog eens -> oostenrijk
+Tante Noor pakt haar reisgidsje en bladert. Achterin staat een lijstje: Duitsland, hoofdstad Berlijn. Oostenrijk, hoofdstad Wenen. Zwitserland, hoofdstad Bern. Italië, hoofdstad Rome.
+? Wat is de hoofdstad van Oostenrijk? -> wenen/wien/vienna -> wenen
+tip: Kijk in het reisgidsje van tante Noor. Daar staan landen met hun hoofdsteden.
+tip: Zoek in het lijstje het land Oostenrijk. Welke stad staat erachter?
+tip: Het begint met een W. In het Engels heet het Vienna.
 
 # wenen
 In Wenen staat het grote reuzenrad in een pretpark. Bovenin, in een van de gondels, vind je een pakketje met touw eromheen.
@@ -88,11 +86,10 @@ Griekenland! Daar is het een uur later dan thuis. Als het in Nederland 12:00 is,
 
 Jullie nemen de trein en de boot. Op de boot hangt een kaart van Europa. Het land waar jullie heen gaan is gekleurd.
 kaart: europa GRC
-? Welk land is gekleurd? -> griekenland/greece -> eilanden | grc-fout
-
-# grc-fout
-Het land helemaal in het zuidoosten van Europa, met honderden eilanden in een blauwe zee. Je bent er net naartoe gereisd.
-> Kijk nog eens naar de kaart -> griekenland
+? Welk land is gekleurd? -> griekenland/greece -> eilanden
+tip: Kijk naar de kaart. Het gekleurde land ligt helemaal in het zuidoosten van Europa, met heel veel eilanden.
+tip: Je hebt het net zelf gekozen, in de scène hiervoor: het land waar het een uur later is dan thuis.
+tip: Het begint met Gr...
 
 # eilanden
 De boot vaart langs witte huisjes met blauwe daken. Tante Noor wijst. 'Daar! Het oudste huis van de stad, staat op het briefje.'

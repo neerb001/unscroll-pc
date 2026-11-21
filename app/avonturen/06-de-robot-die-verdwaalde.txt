@@ -31,12 +31,11 @@ Omar geeft je de afstandsbediening. Er zit een klein toetsenbord op. Je moet Bol
 Bolt staat stil in de gang, vlak bij de lerarenkamer. Hij moet naar het lokaal van de meester, om de hoek.
 
 Op het schermpje van de afstandsbediening zie je een plattegrond. Bolt staat linksonder en kijkt naar rechts (oost). Het lokaal is de ster.
-robot: 4x3 start=0,2,oost doel=3,0 -> gang1-goed | gang1-fout
+robot: 4x3 start=0,2,oost doel=3,0 -> gang1-goed
 // oplossing gang1: vooruit 3, links, vooruit 2
-
-# gang1-fout
-'Hij moet eerst helemaal naar rechts,' zegt Omar, 'en dan omhoog. Omhoog is voor hem naar links draaien, want hij kijkt nu naar rechts.'
-> Probeer het nog eens -> gang1
+tip: 'Kijk waar Bolt staat en waar de ster is,' zegt Omar. 'Hij moet eerst naar rechts en dan omhoog.'
+tip: 'Tel de vakjes naar rechts tot hij onder de ster staat,' zegt Omar. 'Dat is vooruit 3.'
+tip: 'Dan moet hij omhoog. Hij kijkt nu naar rechts, dus omhoog is links draaien. Daarna nog een paar vakjes vooruit.'
 
 # gang1-goed
 Bolt rijdt drie vakjes naar rechts, draait naar links, en rijdt het lokaal in. Piep!
@@ -102,12 +101,11 @@ De trap naar het dak is een wenteltrap met overal kisten. De rode robot is al bo
 Bolt staat linksonder en kijkt naar rechts. De ster is boven aan de trap. Elke trede is: één stap vooruit, dan één stap omhoog.
 
 'Dit is precies waar herhaal voor is,' zegt Omar. 'In plaats van alles twintig keer te typen.'
-robot: 6x6 start=0,5,oost doel=5,0 muur=2,5 3,5 4,5 5,5 3,4 4,4 5,4 4,3 5,3 5,2 -> dak | trap-fout
+robot: 6x6 start=0,5,oost doel=5,0 muur=2,5 3,5 4,5 5,5 3,4 4,4 5,4 4,3 5,3 5,2 -> dak
 // oplossing trap: herhaal 5: vooruit 1, links, vooruit 1, rechts
-
-# trap-fout
-Bolt botst tegen een trede. 'Kijk naar één trede,' zegt Omar. 'Vooruit 1. Dan links draaien, zodat hij omhoog kijkt. Vooruit 1. Dan rechts draaien, zodat hij weer vooruit kijkt. En dat herhalen. Hoe vaak? Tel de treden.'
-> Probeer het nog eens -> trap
+tip: 'Kijk naar één trede,' zegt Omar. 'Wat moet Bolt doen om één trede hoger te komen?'
+tip: 'Eén trede is: vooruit 1, links draaien (dan kijkt hij omhoog), vooruit 1, rechts draaien (dan kijkt hij weer vooruit).'
+tip: 'Dat moet hij een paar keer doen. Tel de treden tot de ster. Typ dan: herhaal zoveel: vooruit 1, links, vooruit 1, rechts.'
 
 # dak
 Bolt klimt de trap op, trede voor trede. Bovenaan rolt hij het dak op.
@@ -115,14 +113,11 @@ Bolt klimt de trap op, trede voor trede. Bovenaan rolt hij het dak op.
 Op het dak staat de rode robot, vlak bij de rand. Hij rijdt langzaam heen en weer. Nog een paar stappen en hij valt naar beneden!
 
 Je moet Bolt ernaartoe sturen, zodat hij hem kan tegenhouden. Maar het dak staat vol met zonnepanelen (de grijze blokken). Bolt staat linksboven en kijkt naar beneden (zuid). De rode robot is de ster.
-robot: 5x5 start=0,0,zuid doel=4,4 muur=1,0 1,1 1,2 3,2 3,3 3,4 -> gered | dak-fout
+robot: 5x5 start=0,0,zuid doel=4,4 muur=1,0 1,1 1,2 3,2 3,3 3,4 -> gered
 // oplossing dak: vooruit 3, links, vooruit 2, links, vooruit 2, rechts, vooruit 2, rechts, vooruit 3
-
-# dak-fout
-Bolt rijdt tegen een zonnepaneel. Bonk. De rode robot rijdt weer een stukje dichter naar de rand.
-
-Tip: ga eerst ver genoeg naar beneden om onder de eerste rij panelen door te kunnen. Dan naar rechts, en dan weer omhoog om om de tweede rij heen te gaan.
-> Probeer het nog eens -> dak
+tip: 'Bolt kijkt naar beneden,' zegt Omar. 'Kijk waar de zonnepanelen staan: een rij bovenaan en een rij onderaan. Hij moet ertussendoor slingeren.'
+tip: 'Eerst ver genoeg naar beneden, onder de eerste rij panelen door: vooruit 3. Dan links draaien. Hij kijkt dan naar rechts.'
+tip: 'Daarna naar rechts, omhoog langs de tweede rij panelen, weer naar rechts en dan helemaal naar beneden naar de ster.'
 
 # gered
 Bolt rijdt keurig tussen de zonnepanelen door en duwt de rode robot met een zacht bonkje weg van de rand. Net op tijd!

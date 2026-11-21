@@ -28,11 +28,10 @@ Het is herfstvakantie. Je hebt een hele week.
 'Op een gewone dag verdien ik zo'n 70 euro,' zegt opa. 'Na alle kosten.'
 
 Je rekent even. Een week heeft zes werkdagen, want op zondag is de bakkerij dicht.
-? Hoeveel verdient opa in zes gewone dagen? -> 420/420 euro/€420 -> tekort | normaal-fout
-
-# normaal-fout
-Zes dagen, elke dag 70 euro. Dat is 6 keer 70. Weet je 6 keer 7? Zet er dan een nul achter.
-> Reken het nog eens uit -> normaal
+? Hoeveel verdient opa in zes gewone dagen? -> 420/420 euro/€420 -> tekort
+tip: Elke dag verdient opa 70 euro, en hij werkt 6 dagen. Dat is 6 keer 70.
+tip: Reken eerst 6 keer 7. Dat weet je vast uit de tafels.
+tip: 6 keer 7 is 42. Bij 6 keer 70 zet je er een nul achter.
 
 # tekort
 '420 euro,' zeg je. 'Dan kom je 180 euro tekort.'
@@ -48,21 +47,19 @@ Maandagochtend. Om zes uur sta je naast opa in de bakkerij, met een schort voor 
 Op de muur hangt opa's oude receptenschrift. 'Mijn beroemde appeltaart,' zegt opa. 'Daar komen mensen van ver voor. Maar het recept is voor 1 taart, en we willen er vandaag 4 maken.'
 
 In het recept staat: 300 gram bloem, 150 gram boter, 3 eieren, 5 appels.
-? Hoeveel gram bloem heb je nodig voor 4 taarten? -> 1200/1200 gram/1200g/1,2 kilo/1.2 kg -> boter | bloem-fout
-
-# bloem-fout
-Voor 1 taart heb je 300 gram nodig. Voor 4 taarten heb je 4 keer zoveel nodig. 4 keer 3 is 12, en dan nog twee nullen erachter.
-> Reken het nog eens uit -> ochtend
+? Hoeveel gram bloem heb je nodig voor 4 taarten? -> 1200/1200 gram/1200g/1,2 kilo/1.2 kg -> boter
+tip: Voor 1 taart heb je 300 gram bloem nodig. Voor 4 taarten 4 keer zoveel.
+tip: 4 keer 300. Reken eerst 4 keer 3, en zet er dan twee nullen achter.
+tip: 4 keer 3 is 12. Met twee nullen erachter...
 
 # boter
 '1200 gram,' zeg je. 'Dat is 1,2 kilo.' Opa schept de bloem in de grote mengkom.
 
 'En eieren?' vraagt hij. 'We hebben er nog maar 10.'
-? Hoeveel eieren heb je nodig voor 4 taarten? (3 per taart) -> 12/twaalf -> eieren | boter-fout
-
-# boter-fout
-3 eieren per taart, en 4 taarten. 4 keer 3.
-> Reken het nog eens uit -> boter
+? Hoeveel eieren heb je nodig voor 4 taarten? (3 per taart) -> 12/twaalf -> eieren
+tip: Voor 1 taart heb je 3 eieren nodig, en jullie maken 4 taarten.
+tip: Dat is 4 keer 3. Of 3 + 3 + 3 + 3.
+tip: 3 + 3 is 6. En nog twee keer 3 erbij.
 
 # eieren
 'Twaalf,' zeg je. 'We hebben er 2 te weinig.'
@@ -99,11 +96,10 @@ De taarten zijn binnen een uur op.
 'Twaalf euro,' zegt opa. 'Al twintig jaar.'
 
 'Mensen kopen ook vaak een stuk,' zeg je. 'Je kunt een taart in 8 stukken snijden en elk stuk voor 2 euro verkopen.'
-? Hoeveel euro verdien je aan 1 taart als je 8 stukken van 2 euro verkoopt? -> 16/16 euro/€16 -> stukken | prijs-fout
-
-# prijs-fout
-8 stukken, elk stuk kost 2 euro. 8 keer 2.
-> Reken het nog eens uit -> prijs
+? Hoeveel euro verdien je aan 1 taart als je 8 stukken van 2 euro verkoopt? -> 16/16 euro/€16 -> stukken
+tip: Je snijdt de taart in 8 stukken, en elk stuk kost 2 euro.
+tip: Dat is 8 keer 2. Of 8 plus 8.
+tip: 8 plus 8. Tel vanaf 8 nog 8 verder.
 
 # stukken
 'Zestien euro,' zeg je. 'Dat is 4 euro meer dan een hele taart!'
@@ -129,11 +125,10 @@ Dinsdag verkopen jullie taart per stuk. Woensdag ook. Het gaat goed, maar het is
 
 # plan
 Woensdagavond tel je het geld. In de kassa zit 310 euro. Er moet 600 euro komen.
-? Hoeveel euro moet er nog bij? -> 290/290 euro/€290 -> drie-dagen | plan-fout
-
-# plan-fout
-Van 310 naar 600. Tel eerst tot 400, dan tot 600. Of reken 600 min 310.
-> Reken het nog eens uit -> plan
+? Hoeveel euro moet er nog bij? -> 290/290 euro/€290 -> drie-dagen
+tip: Er zit 310 euro in de kassa en het moet 600 worden. Hoeveel komt er nog bij?
+tip: Tel in stukjes: van 310 naar 400 is 90. Van 400 naar 600 is 200.
+tip: 90 plus 200.
 
 # drie-dagen
 'Nog 290 euro in drie dagen,' zeg je. 'Dat is bijna 100 euro per dag. We moeten iets groots doen.'
@@ -147,11 +142,10 @@ Je denkt na. Je hebt drie ideeën.
 'Korting!' zeg je. 'Iedereen houdt van korting.'
 
 Opa fronst. 'Een brood kost nu 4 euro. Met 25 procent korting...'
-? Wat kost een brood van 4 euro met 25 procent korting? -> 3/3 euro/€3/3.00 -> korting-uitleg | korting-fout
-
-# korting-fout
-25 procent is een kwart. Een kwart van 4 euro is 1 euro. Dat haal je van de prijs af.
-> Reken het nog eens uit -> korting
+? Wat kost een brood van 4 euro met 25 procent korting? -> 3/3 euro/€3/3.00 -> korting-uitleg
+tip: 25 procent korting betekent: een kwart gaat eraf. Hoeveel is een kwart van 4 euro?
+tip: Een kwart is 1 van de 4 gelijke stukken. Een kwart van 4 euro is dus 1 euro.
+tip: Het brood kost 4 euro en er gaat 1 euro af. 4 min 1.
 
 # korting-uitleg
 '3 euro,' zeg je. 'Dan kopen mensen er misschien twee in plaats van een.'
@@ -166,11 +160,10 @@ Hij heeft gelijk. Korting werkt alleen als er veel meer mensen komen. Je moet er
 Je maakt een folder op opa's oude computer. Je tekent er een appeltaart op, met grote letters: PROEF DE BESTE APPELTAART VAN HET DORP. Gratis proeven op vrijdag!
 
 In de straat staan 48 huizen. Je hebt 3 uur om de folders rond te brengen.
-? Hoeveel huizen moet je per uur doen? -> 16/zestien -> vrijdag | folder-fout
-
-# folder-fout
-48 huizen verdelen over 3 uur. 48 gedeeld door 3. Denk aan 30 gedeeld door 3 en 18 gedeeld door 3.
-> Reken het nog eens uit -> folder
+? Hoeveel huizen moet je per uur doen? -> 16/zestien -> vrijdag
+tip: 48 huizen in 3 uur. Hoeveel huizen moet je elk uur doen, als je het eerlijk verdeelt?
+tip: Dat is 48 gedeeld door 3. Splits 48 in 30 en 18. 30 gedeeld door 3 is 10.
+tip: 18 gedeeld door 3 is 6. En 10 plus 6...
 
 # vrijdag
 Zestien huizen per uur, dat lukt makkelijk. Je bent na twee uur al klaar.
@@ -194,12 +187,11 @@ Zaterdag is de grote bakwedstrijd op het dorpsplein. De hoofdprijs is 300 euro.
 
 De opdracht: bak een taart die er bijzonder uitziet. Jij wilt een taart in de vorm van een klok, met stukjes appel als cijfers.
 
-De jury vraagt elke deelnemer een vraag over hun taart. 'Je taart heeft de vorm van een klok,' zegt een jurylid. 'Er liggen appels op het uur. De wijzers zijn van chocola. De kleine wijzer staat op de 4, de grote op de 6.'
-? Hoe laat is het op de taart? (schrijf als 4:30 of 16:30) -> 4:30/16:30/half vijf/0430/1630/430 -> jury | klok-fout
-
-# klok-fout
-De grote wijzer op de 6 betekent dat het half is. De kleine wijzer staat tussen de 4 en de 5. Het is dus half vijf. Je schrijft dat als 4:30.
-> Probeer het nog eens -> wedstrijd
+De jury vraagt elke deelnemer een vraag over hun taart. 'Je taart heeft de vorm van een klok,' zegt een jurylid. 'Er liggen appels op het uur. De wijzers zijn van chocola. De grote wijzer staat op de 6. De kleine wijzer staat precies tussen de 4 en de 5.'
+? Hoe laat is het op de taart? (schrijf het zoals op een digitale klok, bijvoorbeeld 7:15) -> 4:30/16:30/half vijf/0430/1630/430 -> jury
+tip: Begin met de grote wijzer. Die staat op de 6. Staat de grote wijzer op de 12, dan is het heel. Op de 6 is het half.
+tip: De kleine wijzer staat tussen de 4 en de 5. Het is dus al na 4 uur, maar nog geen 5 uur. Half vijf.
+tip: Half vijf is 4 uur en 30 minuten. Op een digitale klok: 4 dubbele punt 30.
 
 # jury
 'Half vijf,' zeg je. 'Theetijd. Tijd voor taart.'

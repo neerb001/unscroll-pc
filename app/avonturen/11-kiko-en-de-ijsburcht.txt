@@ -48,31 +48,28 @@ Jij bent de snelste springer van het dal. Iedereen kijkt naar jou.
 Wereld 1: Het Bessenbos.
 
 Je rent tussen de bomen door. Boven je hoofd zweven gouden munten, in drie rijen van 8. Je springt en springt en vangt ze allemaal.
-? Hoeveel munten heb je gevangen? -> 24/vierentwintig -> blokken | munten-fout
-
-# munten-fout
-Drie rijen, en in elke rij zitten 8 munten. 3 keer 8. Of tel 8 plus 8 plus 8.
-> Tel nog eens -> wereld1
+? Hoeveel munten heb je gevangen? -> 24/vierentwintig -> blokken
+tip: Er zweven drie rijen munten, en in elke rij zitten 8 munten.
+tip: Dat is 8 + 8 + 8. Of 3 keer 8.
+tip: 8 + 8 is 16. En dan nog 8 erbij.
 
 # blokken
 24 munten! Ze rinkelen in je buidel.
 
 Verderop zweven twee gouden blokken met een vraagteken erop. Als je er van onderen tegenaan springt, verschijnt er een som. Op het eerste blok staat: 7 x 6.
-? Wat is 7 x 6? -> 42/tweeenveertig -> blok2 | blok1-fout
-
-# blok1-fout
-De tafel van 7: 7, 14, 21, 28, 35, 42. Zes keer zeven.
-> Spring nog eens tegen het blok -> blokken
+? Wat is 7 x 6? -> 42/tweeenveertig -> blok2
+tip: Zeven keer zes. Weet je 7 keer 5 nog? Dat is 35.
+tip: 7 keer 6 is één 7 meer dan 7 keer 5. Dus 35 plus 7.
+tip: 35 plus 5 is 40. En dan nog 2 erbij.
 
 # blok2
 Pling! Er springen 5 munten uit het blok.
 
 Het tweede blok: 9 x 8.
-? Wat is 9 x 8? -> 72/tweeenzeventig -> mol | blok2-fout
-
-# blok2-fout
-Een truc voor de tafel van 9: 10 keer 8 is 80, haal er een keer 8 af. 80 min 8.
-> Spring nog eens tegen het blok -> blok2
+? Wat is 9 x 8? -> 72/tweeenzeventig -> mol
+tip: Een truc voor de tafel van 9: reken eerst 10 keer 8.
+tip: 10 keer 8 is 80. 9 keer 8 is één 8 minder. Dus 80 min 8.
+tip: 80 min 10 is 70. Maar je moest er maar 8 af, dus er komt nog 2 bij.
 
 # mol
 Pling! Nog 5 munten. Je hebt er nu 34.
@@ -84,19 +81,17 @@ Aan het eind van het bos staat een winkeltje in een molshoop. De mol zet zijn br
 
 # veer
 Je telt 30 munten uit. De mol geeft je een lange witte veer. Hij gloeit een beetje.
-? Hoeveel munten heb je nog over van je 34? -> 4/vier -> stammen | veer-fout
-
-# veer-fout
-Je had 34 munten en je betaalt er 30. 34 min 30.
-> Tel nog eens -> veer
+? Hoeveel munten heb je nog over van je 34? -> 4/vier -> stammen
+tip: Je had 34 munten en je hebt er 30 uitgegeven.
+tip: 34 min 30. Haal eerst de tientallen weg: 3 tientallen min 3 tientallen.
+tip: Er blijven geen tientallen over, alleen de losse munten van 34.
 
 # sjaal
 Je telt 20 munten uit. De mol geeft je een dikke rood-witte sjaal. Meteen heb je het lekker warm.
-? Hoeveel munten heb je nog over van je 34? -> 14/veertien -> stammen | sjaal-fout
-
-# sjaal-fout
-Je had 34 munten en je betaalt er 20. 34 min 20.
-> Tel nog eens -> sjaal
+? Hoeveel munten heb je nog over van je 34? -> 14/veertien -> stammen
+tip: Je had 34 munten en je hebt er 20 uitgegeven.
+tip: 34 min 20. Haal de tientallen weg: 3 tientallen min 2 tientallen is 1 tiental.
+tip: 1 tiental en dan nog de 4 losse munten.
 
 # stammen
 Achter de winkel staan drie holle boomstammen. Hoeroe heeft verteld dat je erdoor kunt glijden, naar een andere wereld. Maar maar een stam brengt je naar de Wolkenbergen.
@@ -158,12 +153,11 @@ Bij de ster zet je zachtjes af. Je hoeft niet eens te puffen.
 Je ziet de blokken als een rooster van vakjes. Jij staat linksonder, en je kijkt naar rechts. De ster zweeft rechtsonder. De grijze blokken zijn rotsen waar je niet door kunt.
 
 Schrijf je route als opdrachten, met komma's ertussen: vooruit 3, links, rechts. Links en rechts betekent: draai een kwartslag, zonder te lopen.
-robot: 7x4 start=0,3,oost doel=6,3 muur=2,3 2,2 4,3 4,2 -> wereld3 | sprong-fout
+robot: 7x4 start=0,3,oost doel=6,3 muur=2,3 2,2 4,3 4,2 -> wereld3
 // oplossing sprong: vooruit 1, links, vooruit 2, rechts, vooruit 4, rechts, vooruit 2, links, vooruit 1
-
-# sprong-fout
-Kijk goed naar het rooster. Je moet eerst omhoog, over beide rotsblokken heen, en dan weer naar beneden. Na een stap vooruit draai je naar links, dan kijk je omhoog.
-> Probeer het nog eens -> sprong
+tip: Je staat linksonder. Tussen jou en de ster staan twee rotsblokken. Je moet erover springen: eerst omhoog, dan naar rechts, dan weer omlaag.
+tip: Begin met vooruit 1. Draai dan links: nu kijk je omhoog. Ga 2 omhoog, zodat je boven de rotsen bent.
+tip: Draai dan rechts (je kijkt weer naar rechts) en ga vooruit tot je voorbij de tweede rots bent. Daarna rechts draaien, omlaag, en nog één stapje naar rechts.
 
 # wereld3
 Je staat bij de ster. Hij gloeit, en dan wijst een straal licht naar boven. Daar, op de hoogste wolk, staat een burcht van blauw ijs. De IJsburcht.
@@ -171,11 +165,10 @@ Je staat bij de ster. Hij gloeit, en dan wijst een straal licht naar boven. Daar
 Een lange brug leidt naar de poort. Maar de brug heeft geen planken meer. Er zweven alleen een paar ijsplaten in de lucht, met getallen erop: 1, 4, 9, 16. De volgende plaat is leeg.
 
 Op de poort staat: Wie verder wil, weet het volgende getal.
-? Welk getal komt na 1, 4, 9, 16? -> 25/vijfentwintig -> burcht | brug-fout
-
-# brug-fout
-Kijk naar de tafels. 1 is 1 x 1. 4 is 2 x 2. 9 is 3 x 3. 16 is 4 x 4. Wat komt er dan?
-> Probeer het nog eens -> wereld3
+? Welk getal komt na 1, 4, 9, 16? -> 25/vijfentwintig -> burcht
+tip: Kijk hoe de getallen groeien: 1, 4, 9, 16. Het verschil wordt steeds groter: 3, 5, 7...
+tip: Het verschil wordt elke keer 2 meer: 3, 5, 7, en dan 9. Dus 16 plus 9.
+tip: Of kijk naar de tafels: 1 is 1 x 1, 4 is 2 x 2, 9 is 3 x 3, 16 is 4 x 4. Het volgende is 5 x 5.
 
 # burcht
 25 is 5 x 5! Er verschijnt een nieuwe ijsplaat, en de poort gaat krakend open.
@@ -188,11 +181,10 @@ Binnen is het ijskoud. Alles is van ijs: de muren, de vloer, de trappen. De wind
 Het is zo koud dat je poten stijf worden. Je kunt bijna niet meer lopen. Je moet het ijs laten smelten om warm te blijven.
 
 In een hoek ligt een stapel van 12 ijsblokken. Als je er tegen springt, smelt een kwart ervan, en dan komt er warme stoom vrij.
-? Een kwart van 12 ijsblokken smelt. Hoeveel blijven er over? -> 9/negen -> troon | koud-fout
-
-# koud-fout
-Een kwart van 12 is 12 gedeeld door 4. Dat smelt weg. Wat houd je dan over van 12?
-> Probeer het nog eens -> koud
+? Een kwart van 12 ijsblokken smelt. Hoeveel blijven er over? -> 9/negen -> troon
+tip: Een kwart is 1 van de 4 gelijke stukken. Verdeel de 12 ijsblokken in 4 gelijke stapels.
+tip: 12 gedeeld door 4 is 3. Er smelten dus 3 ijsblokken.
+tip: Er waren 12 ijsblokken en er smelten er 3. 12 min 3.
 
 # troon
 Warm genoeg loop je de troonzaal in. Daar, op een troon van ijs, zit de IJskoning. Hij is groot, met een baard van ijspegels en een kroon van sneeuw.
@@ -207,11 +199,10 @@ In zijn handen houdt hij de Zonnesteen. Maar het rare is: hij houdt hem dicht te
 'Ik daag je uit,' zeg je. 'Een rekenduel. Als ik win, krijg ik de Zonnesteen.'
 
 De IJskoning grinnikt. 'Goed. Maar mijn sommen zijn zo koud als ijs.' Hij gooit een ijsblok in de lucht. Er staat iets op: Ik heb 3 vriezers met elk 8 ijsjes. Ik eet er 4 op. Hoeveel ijsjes heb ik nog?
-? Hoeveel ijsjes heeft de IJskoning nog? -> 20/twintig -> gewonnen | duel-fout
-
-# duel-fout
-Eerst: 3 vriezers met elk 8 ijsjes, dat is 3 keer 8. Dan gaan er 4 af.
-> Probeer het nog eens -> duel
+? Hoeveel ijsjes heeft de IJskoning nog? -> 20/twintig -> gewonnen
+tip: Reken het in twee stappen. Eerst: hoeveel ijsjes zijn er in 3 vriezers met elk 8 ijsjes?
+tip: 3 keer 8 is 24 ijsjes. Daarna eet de koning er 4 op.
+tip: 24 min 4.
 
 # gewonnen
 'Twintig,' zeg je.
@@ -241,11 +232,10 @@ Je kijkt om je heen. Een burcht van ijs, zonder vrienden, zonder zon. Je zou het
 
 # delen
 'De steen geeft licht voor het hele dal,' zeg je. 'Maar wat als je hem elke maand een dag mag lenen? Een maand heeft ongeveer 30 dagen.'
-? Als de koning de steen 1 dag per maand heeft, hoeveel dagen per jaar is dat? -> 12/twaalf -> gedeeld | delen-fout
-
-# delen-fout
-Een jaar heeft 12 maanden. Elke maand 1 dag.
-> Probeer het nog eens -> delen
+? Als de koning de steen 1 dag per maand heeft, hoeveel dagen per jaar is dat? -> 12/twaalf -> gedeeld
+tip: Hoeveel maanden heeft een jaar? Januari, februari, maart...
+tip: Een jaar heeft 12 maanden. Elke maand krijgt de koning de steen 1 dag.
+tip: 12 maanden, en elke maand 1 dag. 12 keer 1.
 
 # gedeeld
 'Twaalf dagen per jaar,' zegt de IJskoning langzaam. 'Twaalf warme dagen. Dat heb ik in duizend jaar nog nooit gehad.'

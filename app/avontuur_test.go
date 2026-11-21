@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/charmbracelet/bubbles/textinput"
 	"math/rand/v2"
 	"path"
 	"regexp"
@@ -46,7 +47,10 @@ func TestAlleAvonturenKloppen(t *testing.T) {
 				werk = append(werk, k.doel)
 			}
 			if sc.naarGoed != "" {
-				werk = append(werk, sc.naarGoed, sc.naarFout)
+				werk = append(werk, sc.naarGoed)
+			}
+			if sc.anders != nil {
+				werk = append(werk, sc.anders.doel)
 			}
 		}
 		for id, sc := range a.scenes {
@@ -59,7 +63,20 @@ func TestAlleAvonturenKloppen(t *testing.T) {
 			invoer := sc.vraag != "" || sc.robot != ""
 			if invoer {
 				bestaat(id, sc.naarGoed)
-				bestaat(id, sc.naarFout)
+				if sc.naarFout != "" {
+					t.Errorf("%s: scène %q: geen fout-scène meer, zet de hulp in tip:-regels", n.Name(), id)
+				}
+				if len(sc.tips) < 2 {
+					t.Errorf("%s: scène %q: minstens twee tips nodig (van zacht naar sterk)", n.Name(), id)
+				}
+				for _, tp := range sc.tips {
+					if strings.Contains(tp, "—") {
+						t.Errorf("%s: scène %q: gedachtestreepje in een tip", n.Name(), id)
+					}
+				}
+				if sc.anders != nil {
+					bestaat(id, sc.anders.doel)
+				}
 				if len(sc.keuzes) > 0 {
 					t.Errorf("%s: scène %q heeft een vraag én keuzes (cijfers zijn dan antwoorden)", n.Name(), id)
 				}
@@ -241,11 +258,29 @@ func TestKlokkentorenSpelen(t *testing.T) {
 		t.Fatalf("voortgang niet bewaard: %q %v", m.ls.avontuur.scene, m.ls.avontuur.spul)
 	}
 	speel("1", "1") // zaklamp aan, slot bekijken (zonder sleutel)
-	speel("312")    // fout
-	if m.ls.avontuur.scene != "fout-code" || !strings.Contains(m.View(), "klopt niet") {
+	// fout: je blijft bij de vraag en het maatje helpt, steeds een beetje meer
+	speel("312")
+	if m.ls.avontuur.scene != "slot2" || !strings.Contains(m.View(), "klopt niet") || !strings.Contains(m.View(), "Bliep:") || m.ls.avontuur.hint != 1 {
 		t.Fatalf("fout antwoord: %q\n%s", m.ls.avontuur.scene, m.View())
 	}
-	speel("1", "245") // nog eens, goed
+	speel("312") // hetzelfde nog eens telt niet
+	if m.ls.avontuur.hint != 1 {
+		t.Fatalf("hetzelfde foute antwoord gaf een nieuwe tip (%d)", m.ls.avontuur.hint)
+	}
+	speel("?") // zelf om een tip vragen
+	if m.ls.avontuur.hint != 2 || !strings.Contains(m.ls.avontuur.tip, "kwart voor drie") {
+		t.Fatalf("? hoort de volgende tip te geven: %q", m.ls.avontuur.tip)
+	}
+	speel("111", "222")
+	if !strings.Contains(m.ls.avontuur.tip, "2 _ _") {
+		t.Fatalf("na de tips hoort het maatje een stukje voor te zeggen: %q", m.ls.avontuur.tip)
+	}
+	speel("?") // met ? komen er geen letters bij
+	speel("333", "444", "555")
+	if !strings.Contains(m.ls.avontuur.tip, "2 4 _") || strings.Contains(m.ls.avontuur.tip, "2 4 5") {
+		t.Fatalf("het maatje zegt nooit alles voor: %q", m.ls.avontuur.tip)
+	}
+	speel("245") // goed
 	speel("2", "1", "1648", "1")
 	if m.ls.avontuur.scene != "schat" || !strings.Contains(m.View(), "tijdcapsule van 1926") || !strings.Contains(m.View(), "1 van de 4 eindes") {
 		t.Fatalf("het beste einde:\n%s", m.View())
@@ -263,4 +298,71 @@ func TestKlokkentorenSpelen(t *testing.T) {
 		t.Errorf("n n hoort opnieuw te beginnen: %q", m.ls.avontuur.scene)
 	}
 	_ = fmt.Sprint
+}
+
+func TestMaskers(t *testing.T) {
+	for _, c := range []struct {
+		antwoord string
+		n        int
+		want     string
+	}{
+		{"1648", 1, "1 _ _ _"}, {"1648", 9, "1 6 4 _"}, {"deur open", 5, "d e u r   o _ _ _"},
+		{"n", 3, "_"}, {"1/4", 1, "1 / _"}, {"4:30", 2, "4 : 3 _"},
+	} {
+		if got := maskerAntwoord(c.antwoord, c.n); got != c.want {
+			t.Errorf("maskerAntwoord(%q, %d) = %q, wil %q", c.antwoord, c.n, got, c.want)
+		}
+	}
+	if got := maskerProgramma("vooruit 3, links, vooruit 2", 1); got != "vooruit 3, ..." {
+		t.Errorf("programma 1: %q", got)
+	}
+	if got := maskerProgramma("vooruit 3, links, vooruit 2", 9); got != "vooruit 3, links, ..." {
+		t.Errorf("programma 9: %q", got)
+	}
+}
+
+// Een robotpuzzel en een uitweg met Tab, in een klein proefverhaal.
+func TestAvontuurHulpBijRobotEnUitweg(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+	m, _ := testModel(t, Geheimen{})
+	m.inst.Taal = "nl"
+	m.breed, m.hoog = 100, 30
+	a, err := leesAvontuur("proef", `titel: Proef
+# start
+Een robot.
+robot: 4x3 start=0,2,oost doel=3,0 -> klaar
+// oplossing start: vooruit 3, links, vooruit 2
+tip: eerst naar rechts
+tip: dan omhoog
+anders: Geef het op -> weg
+# klaar
+== einde: Gelukt
+# weg
+== einde: Opgegeven`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	m = toets(m, tabToets(tabLezen))
+	m = toets(m, "tab")
+	m.ls.avontuur = &avStaat{av: a, invoer: textinput.New()}
+	m.avNaarScene("start")
+	typ := func(s string) {
+		for _, r := range s {
+			m = toets(m, string(r))
+		}
+		m = toets(m, "enter")
+	}
+	typ("vooruit 1")
+	typ("vooruit 2")
+	typ("links")
+	if m.ls.avontuur.scene != "start" || !strings.Contains(m.ls.avontuur.tip, "vooruit 3, ...") {
+		t.Fatalf("robot: scène %q, tip %q", m.ls.avontuur.scene, m.ls.avontuur.tip)
+	}
+	if v := m.View(); !strings.Contains(v, "Tab: Geef het op") {
+		t.Fatalf("de uitweg hoort in beeld te staan:\n%s", v)
+	}
+	m = toets(m, "tab")
+	if m.ls.avontuur.scene != "weg" {
+		t.Fatalf("Tab hoort de uitweg te nemen: %q", m.ls.avontuur.scene)
+	}
 }

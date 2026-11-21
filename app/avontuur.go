@@ -1,15 +1,18 @@
 package main
 
 import (
+	"cmp"
 	"embed"
 	"encoding/json"
 	"fmt"
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
+	"unicode"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -18,8 +21,10 @@ import (
 
 // Tekstavonturen: verhalen om zelf te lezen, met keuzes. Onderweg moet je dingen oplossen die je
 // op school leert: klokkijken, sommen, breuken, een plek op de kaart, een robot programmeren.
-// Een fout antwoord geeft een hint en een nieuwe kans; er is geen "game over". Er zijn meer
-// eindes, dus je kunt een avontuur vaker spelen.
+// Bij een fout antwoord blijf je bij de vraag en helpt het maatje: eerst een duwtje, dan hoe je
+// het kunt beredeneren, en daarna zegt het letter voor letter iets van het antwoord voor (nooit
+// alles: intypen doe je zelf). Met ? vraag je zelf om een tip. Er zijn meer eindes, dus je kunt
+// een avontuur vaker spelen.
 //
 // Een avontuur is een tekstbestand in app/avonturen:
 //
@@ -29,9 +34,12 @@ import (
 //	# scène-naam
 //	Alinea's tekst, gescheiden door een lege regel.
 //	> Een keuze -> volgende-scène [+zaklamp] [-sleutel] ?zaklamp !sleutel
-//	? Een vraag -> antwoord/ander-antwoord -> goed-scène | fout-scène
+//	? Een vraag -> antwoord/ander-antwoord -> goed-scène
+//	tip: een duwtje in de goede richting (minstens twee tips, van zacht naar sterk)
+//	tip: hoe je het kunt beredeneren
+//	anders: Geef het op -> andere-scène   (een uitweg met Tab)
 //	kaart: nederland stad:Utrecht
-//	robot: 6x4 start=0,3,oost doel=5,0 muur=2,1 2,2 -> goed-scène | fout-scène
+//	robot: 6x4 start=0,3,oost doel=5,0 muur=2,1 2,2 -> goed-scène
 //	== einde: hoe dit einde heet
 //	| een tekening van tekens: regels die met | beginnen, spaties blijven staan
 //	% ..rrrr..   een pixelplaatje in kleur: elke letter is een pixel (zie plaatjeKleuren)
@@ -50,16 +58,19 @@ type avKeuze struct {
 }
 
 type avScene struct {
-	id       string
-	alineas  []string
-	keuzes   []avKeuze
-	vraag    string   // een antwoord intypen
-	goed     []string // goede antwoorden
-	naarGoed string
-	naarFout string
-	kaart    string // "nederland stad:Utrecht"
-	robot    string // de robotpuzzel
-	einde    string // naam van het einde, als dit een einde is
+	id        string
+	alineas   []string
+	keuzes    []avKeuze
+	vraag     string   // een antwoord intypen
+	goed      []string // goede antwoorden
+	naarGoed  string
+	naarFout  string
+	kaart     string   // "nederland stad:Utrecht"
+	robot     string   // de robotpuzzel
+	einde     string   // naam van het einde, als dit een einde is
+	tips      []string // hints van het maatje bij een vraag of robotpuzzel, van zacht naar sterk
+	anders    *avKeuze // bij een vraag: een uitweg met Tab (bijvoorbeeld "geef het op")
+	oplossing string   // bij een robotpuzzel: een programma dat werkt (uit // oplossing)
 }
 
 type avontuur struct {
@@ -73,6 +84,7 @@ func leesAvontuur(id, tekst string) (*avontuur, error) {
 	a := &avontuur{id: id, scenes: map[string]*avScene{}}
 	var s *avScene
 	var alinea, tekening, plaatje []string
+	oplossingen := map[string]string{}
 	klaarAlinea := func() {
 		if s != nil && len(alinea) > 0 {
 			s.alineas = append(s.alineas, strings.Join(alinea, " "))
@@ -107,6 +119,9 @@ func leesAvontuur(id, tekst string) (*avontuur, error) {
 		}
 		switch {
 		case strings.HasPrefix(r, "//"):
+			if m := oplossingRegel.FindStringSubmatch(r); m != nil {
+				oplossingen[m[1]] = strings.TrimSpace(m[2])
+			}
 		case s == nil && strings.HasPrefix(r, "titel:"):
 			a.titel = strings.TrimSpace(strings.TrimPrefix(r, "titel:"))
 		case s == nil && strings.HasPrefix(r, "over:"):
@@ -138,23 +153,34 @@ func leesAvontuur(id, tekst string) (*avontuur, error) {
 				return nil, fmt.Errorf("regel %d: een vraag is: ? vraag -> antwoord -> goed | fout", nr+1)
 			}
 			naar := strings.Split(delen[2], "|")
-			if len(naar) != 2 {
-				return nil, fmt.Errorf("regel %d: na het antwoord: goed-scène | fout-scène", nr+1)
+			if len(naar) > 2 {
+				return nil, fmt.Errorf("regel %d: na het antwoord: de scène als het goed is", nr+1)
 			}
+			naar = append(naar, "")
 			s.vraag = strings.TrimSpace(delen[0])
 			for _, g := range strings.Split(delen[1], "/") {
 				s.goed = append(s.goed, strings.TrimSpace(g))
 			}
 			s.naarGoed, s.naarFout = strings.TrimSpace(naar[0]), strings.TrimSpace(naar[1])
+		case strings.HasPrefix(r, "tip:"):
+			klaarAlinea()
+			s.tips = append(s.tips, strings.TrimSpace(strings.TrimPrefix(r, "tip:")))
+		case strings.HasPrefix(r, "anders:"):
+			klaarAlinea()
+			k, err := leesKeuze(strings.TrimSpace(strings.TrimPrefix(r, "anders:")))
+			if err != nil {
+				return nil, fmt.Errorf("regel %d: %w", nr+1, err)
+			}
+			s.anders = &k
 		case strings.HasPrefix(r, "kaart:"):
 			klaarAlinea()
 			s.kaart = strings.TrimSpace(strings.TrimPrefix(r, "kaart:"))
 		case strings.HasPrefix(r, "robot:"):
 			klaarAlinea()
 			spec, naar, ok := strings.Cut(strings.TrimPrefix(r, "robot:"), "->")
-			delen := strings.Split(naar, "|")
-			if !ok || len(delen) != 2 {
-				return nil, fmt.Errorf("regel %d: robot: rooster -> goed | fout", nr+1)
+			delen := append(strings.Split(naar, "|"), "")
+			if !ok || len(delen) > 3 {
+				return nil, fmt.Errorf("regel %d: robot: rooster -> goed", nr+1)
 			}
 			s.robot = strings.TrimSpace(spec)
 			s.naarGoed, s.naarFout = strings.TrimSpace(delen[0]), strings.TrimSpace(delen[1])
@@ -170,11 +196,19 @@ func leesAvontuur(id, tekst string) (*avontuur, error) {
 		}
 	}
 	klaarAlinea()
+	for id, op := range oplossingen {
+		if sc := a.scenes[id]; sc != nil {
+			sc.oplossing = op
+		}
+	}
 	if a.titel == "" || a.begin == "" {
 		return nil, fmt.Errorf("titel of scènes ontbreken")
 	}
 	return a, nil
 }
+
+// oplossingRegel: // oplossing scène: programma (voor de tests, en voor de laatste hints)
+var oplossingRegel = regexp.MustCompile(`^//\s*oplossing\s+(\S+):\s*(.+)$`)
 
 // tekeningTeken: een alinea die zo begint is een tekening (niet afbreken, wel kleuren).
 const tekeningTeken = "\x00tekening\n"
@@ -523,6 +557,11 @@ type avStaat struct {
 	route   [][2]int
 	boven   int  // gescrold in de tekst
 	opnieuw bool // n is één keer ingedrukt: nog een keer om opnieuw te beginnen
+	// het maatje dat helpt bij een vraag
+	tip    string // wat het maatje nu zegt
+	hint   int    // hoeveel tips al gegeven
+	masker int    // hoeveel letters (of opdrachten) van het antwoord al voorgezegd
+	vorige string // het vorige foute antwoord: hetzelfde nog eens telt niet als nieuwe poging
 }
 
 func (s *avStaat) heeft(ding string) bool {
@@ -589,6 +628,7 @@ func (m *model) avNaarScene(id string) tea.Cmd {
 		return nil
 	}
 	s.scene, s.boven, s.route = id, 0, nil
+	s.tip, s.hint, s.masker, s.vorige = "", 0, 0, ""
 	s.invoer.SetValue("")
 	g := laadAvGeheugen()
 	g.Plek[s.av.id], g.Spul[s.av.id] = id, s.spul
@@ -648,6 +688,17 @@ func (m *model) toetsAvontuur(msg tea.KeyMsg) tea.Cmd {
 		return nil
 	}
 	if sc.vraag != "" || sc.robot != "" {
+		switch k {
+		case "?":
+			m.avTip(false)
+			return nil
+		case "tab":
+			if sc.anders != nil {
+				s.terug = ""
+				return m.avNaarScene(sc.anders.doel)
+			}
+			return nil
+		}
 		if k != "enter" {
 			var cmd tea.Cmd
 			s.invoer, cmd = s.invoer.Update(msg)
@@ -672,17 +723,16 @@ func (m *model) toetsAvontuur(msg tea.KeyMsg) tea.Cmd {
 			if fout == "bonk" {
 				s.terug = m.t("adv.robotbonk")
 			}
-			naar := sc.naarFout
-			cmd := m.avNaarScene(naar)
-			s.route = route
-			return cmd
+			m.avFout(antwoord)
+			return nil
 		}
 		if antwoordGoed(antwoord, sc.goed) {
 			s.terug = ""
 			return m.avNaarScene(sc.naarGoed)
 		}
 		s.terug = m.t("adv.wrong", antwoord)
-		return m.avNaarScene(sc.naarFout)
+		m.avFout(antwoord)
+		return nil
 	}
 	if len(k) == 1 && k[0] >= '1' && k[0] <= '9' {
 		keuzes := s.zichtbareKeuzes()
@@ -764,11 +814,18 @@ func (m model) viewAvontuur(p palet) string {
 			"  1  "+m.t("adv.again"), "  2  "+m.t("adv.back"))
 		toetsen = m.t("adv.endkeys")
 	case sc.vraag != "" || sc.robot != "":
+		if s.tip != "" {
+			gezicht := lipgloss.NewStyle().Foreground(p.acc2).Bold(true).Render(gezichten[m.inst.Gezicht] + " " + cmp.Or(m.inst.Maatje, "Bliep") + ":")
+			onder = append(onder, gezicht+" "+lipgloss.NewStyle().Width(max(breed-lipgloss.Width(gezicht)-1, 20)).Render(s.tip), "")
+		}
 		if sc.vraag != "" {
 			onder = append(onder, lipgloss.NewStyle().Bold(true).Width(breed).Render(sc.vraag))
 		}
 		onder = append(onder, s.invoer.View())
 		toetsen = m.t("adv.answerkeys")
+		if sc.anders != nil {
+			toetsen += " · " + m.t("adv.other", sc.anders.tekst)
+		}
 	default:
 		for i, k := range s.zichtbareKeuzes() {
 			onder = append(onder, acc.Render(fmt.Sprintf("  %d  ", i+1))+k.tekst)
@@ -782,6 +839,105 @@ func (m model) viewAvontuur(p palet) string {
 	inhoud := venster(verhaal, &s.boven, hoogte, dim.Render(m.t("scroll.more"))) + "\n\n" + strings.Join(onder, "\n")
 	return lipgloss.PlaceHorizontal(m.breed-4, lipgloss.Center, kop+"\n\n"+lipgloss.NewStyle().Width(breed).Render(inhoud)) +
 		"\n" + lipgloss.PlaceHorizontal(m.breed-4, lipgloss.Center, dim.Render(toetsen))
+}
+
+/* ---------------- het maatje helpt ---------------- */
+
+// avFout: een fout antwoord. Je blijft bij de vraag en het maatje geeft de volgende tip. Een
+// nieuwe poging is nodig: hetzelfde foute antwoord nog eens telt niet.
+func (m *model) avFout(antwoord string) {
+	s := m.ls.avontuur
+	s.invoer.SetValue("")
+	if zoekVorm(antwoord) == s.vorige {
+		return
+	}
+	s.vorige = zoekVorm(antwoord)
+	m.avTip(true)
+}
+
+// avTip: de volgende hint. Eerst de tips uit het verhaal, van zacht naar sterk (met ? kun je
+// er zelf om vragen). Zijn die op, dan zegt het maatje na elke nieuwe foute poging één letter
+// (of opdracht) meer van het antwoord voor, maar nooit alles: intypen doe je zelf.
+func (m *model) avTip(doorPoging bool) {
+	s := m.ls.avontuur
+	sc := s.av.scenes[s.scene]
+	tips := sc.tips
+	if fout := s.av.scenes[sc.naarFout]; fout != nil { // oud formaat: de fout-scène als uitleg
+		for _, a := range fout.alineas {
+			if !strings.HasPrefix(a, plaatjeTeken) && !strings.HasPrefix(a, tekeningTeken) {
+				tips = append(tips, a)
+			}
+		}
+	}
+	if s.hint < len(tips) {
+		s.tip = tips[s.hint]
+		s.hint++
+		return
+	}
+	if !doorPoging {
+		s.tip = m.t("adv.tiptry")
+		if len(tips) > 0 {
+			s.tip = tips[len(tips)-1] + " " + s.tip
+		}
+		return
+	}
+	s.masker++
+	if sc.robot != "" {
+		if voor := maskerProgramma(sc.oplossing, s.masker); voor != "" {
+			s.tip = m.t("adv.tiprobot", voor)
+		}
+		return
+	}
+	s.tip = m.t("adv.tipmask", maskerAntwoord(sc.goed[0], s.masker))
+}
+
+// maskerAntwoord: de eerste n letters of cijfers, de rest als streepjes. Nooit het hele woord:
+// de laatste letter blijft altijd verborgen. Spaties en leestekens staan er gewoon.
+func maskerAntwoord(antwoord string, n int) string {
+	r := []rune(antwoord)
+	letters := 0
+	for _, c := range r {
+		if unicode.IsLetter(c) || unicode.IsDigit(c) {
+			letters++
+		}
+	}
+	n = min(n, letters-1)
+	var b []string
+	gezien := 0
+	for _, c := range r {
+		switch {
+		case unicode.IsLetter(c) || unicode.IsDigit(c):
+			if gezien < n {
+				b = append(b, string(c))
+			} else {
+				b = append(b, "_")
+			}
+			gezien++
+		case c == ' ':
+			b = append(b, " ")
+		default:
+			b = append(b, string(c))
+		}
+	}
+	return strings.Join(b, " ")
+}
+
+// maskerProgramma: de eerste n opdrachten van de oplossing, en ... voor de rest.
+func maskerProgramma(oplossing string, n int) string {
+	var delen []string
+	for _, d := range strings.Split(oplossing, ",") {
+		if d = strings.TrimSpace(d); d != "" {
+			delen = append(delen, d)
+		}
+	}
+	if len(delen) == 0 {
+		return ""
+	}
+	n = max(1, min(n, len(delen)-1))
+	if len(delen) == 1 {
+		n = 0
+	}
+	return strings.Join(append(delen[:n:n], "..."), ", ")
 }
 
 func (m *model) avonturenLijst() lijst { return lijst{items: avontuurItems()} }

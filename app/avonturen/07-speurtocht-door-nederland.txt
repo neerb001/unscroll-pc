@@ -34,11 +34,10 @@ Misschien ga je volgend weekend zoeken. Misschien.
 # station
 Je staat op het grootste treinstation van Nederland. Overal lopen mensen met koffers. Op een groot scherm zie je de kaart van Nederland, met een stip waar jij nu bent.
 kaart: nederland stad:Utrecht
-? In welke stad ben je? -> utrecht -> utrecht | station-fout
-
-# station-fout
-Je kijkt nog eens naar de kaart. De stip staat precies in het midden van Nederland, in de provincie met dezelfde naam als de stad.
-> Kijk nog eens naar de kaart -> station
+? In welke stad ben je? -> utrecht -> utrecht
+tip: Kijk naar de kaart. De stip staat precies in het midden van Nederland.
+tip: De stad heeft dezelfde naam als de provincie waar hij in ligt. In die stad staat een beroemde hoge kerktoren: de Dom.
+tip: Het begint met een U.
 
 # utrecht
 Utrecht! In de brief staat de tweede aanwijzing:
@@ -46,20 +45,18 @@ Utrecht! In de brief staat de tweede aanwijzing:
 Ga naar het noorden, naar de provincie waar ze hun eigen taal spreken en waar ze in een strenge winter een schaatstocht langs elf steden rijden.
 
 Op het bord zie je: Trein naar Leeuwarden, vertrek 10:47. De reis duurt 1 uur en 25 minuten.
-? Hoe laat kom je aan? (bijvoorbeeld 11:30) -> 12:12/12.12/1212 -> trein | trein-fout
-
-# trein-fout
-Tel het in stukjes. Van 10:47 naar 11:47 is 1 uur. Dan nog 25 minuten erbij: van 11:47 is 13 minuten naar 12:00. Dan heb je nog 12 minuten over.
-> Reken het nog eens uit -> utrecht
+? Hoe laat kom je aan? (bijvoorbeeld 11:30) -> 12:12/12.12/1212 -> trein
+tip: Reken het in twee stukjes: eerst het hele uur, dan de minuten.
+tip: Van 10:47 plus 1 uur is 11:47. Dan nog 25 minuten erbij.
+tip: Van 11:47 naar 12:00 is 13 minuten. Van de 25 minuten blijven er dan nog 12 over. Dus 12:00 plus 12 minuten.
 
 # trein
 Om 12:12 stap je uit. Je kijkt op de kaart in het station. Welke provincie is dit?
 kaart: nederland prov:Friesland
-? In welke provincie ben je nu? -> friesland/fryslan -> friesland | friesland-fout
-
-# friesland-fout
-De provincie waar ze Fries spreken en waar de Elfstedentocht wordt gereden. Hij ligt in het noorden, met de Waddenzee erboven.
-> Kijk nog eens naar de kaart -> trein
+? In welke provincie ben je nu? -> friesland/fryslan -> friesland
+tip: Lees de aanwijzing in de brief nog eens: de provincie met een eigen taal en de Elfstedentocht.
+tip: Je stapte uit in Leeuwarden. Dat is de hoofdstad van deze provincie. De taal die ze er spreken heet Fries.
+tip: De taal heet Fries, de provincie heet bijna hetzelfde. Fries...
 
 # friesland
 Friesland! In het museum in Leeuwarden staat een oude vitrine met schaatsen. Op het bordje staat: Gedragen tijdens de Elfstedentocht van 1940. Geschonken door Anna.
@@ -77,25 +74,23 @@ Hij knipoogt. 'Ze kwam elk jaar langs, om naar haar schaatsen te kijken. En dan 
 > Ga naar het eiland -> eiland
 
 # eiland
-Je neemt de bus naar Den Helder en dan de veerboot. Op de boot hangt een kaart van de Waddeneilanden. Een van de eilanden is gekleurd.
+Je neemt de bus naar Den Helder en dan de veerboot. Op de boot hangt een kaart van de Waddeneilanden. Een van de eilanden is gekleurd. Onder de kaart staan de namen, van west naar oost: Texel, Vlieland, Terschelling, Ameland, Schiermonnikoog. Het eerste eiland is ook het grootste.
 kaart: nederland eiland:Texel
-? Welk eiland is het grootste Waddeneiland? -> texel -> texel | eiland-fout
-
-# eiland-fout
-Het grootste Waddeneiland ligt het meest naar het westen, vlak boven Den Helder. Het eerste eiland van het rijtje.
-> Kijk nog eens naar de kaart -> eiland
+? Welk eiland is het grootste Waddeneiland? -> texel -> texel
+tip: Kijk naar het kaartje op de boot. De namen staan erbij, van west naar oost.
+tip: Het grootste eiland is het eerste van het rijtje: het ligt het meest naar het westen, vlak boven Den Helder.
+tip: Het begint met een T en heeft vijf letters.
 
 # texel
 Texel! Overal zijn duinen, schapen en fietsers. In de brief staat:
 
 Zoek mijn kleine vuurtoren bij de oude haven. Tel zijn treden. Het getal is de code.
 
-Het is een klein wit vuurtorentje, al lang niet meer in gebruik. De deur is open. Je klimt naar boven en telt elke trede. Bovenaan heb je er 118 geteld. Op een verweerd bordje staat: 'Dit torentje telt 9 verdiepingen van elk 13 treden, plus 1 opstapje.'
-? Hoeveel treden heeft de vuurtoren? (9 keer 13, plus 1) -> 118 -> code | code-fout
-
-# code-fout
-Reken het in twee stappen. 9 keer 13: denk aan 9 keer 10 en 9 keer 3. Tel die op. Dan nog 1 erbij.
-> Reken het nog eens uit -> texel
+Het is een klein wit vuurtorentje, al lang niet meer in gebruik. De deur is open. Je klimt naar boven en telt elke trede, maar halverwege raak je de tel kwijt. Op een verweerd bordje staat: 'Dit torentje telt 9 verdiepingen van elk 13 treden, plus 1 opstapje.'
+? Hoeveel treden heeft de vuurtoren? (9 keer 13, plus 1) -> 118 -> code
+tip: Lees het bordje nog eens: 9 verdiepingen, elk 13 treden, en dan nog 1 opstapje.
+tip: Reken 9 keer 13 in twee stukken: 9 keer 10 is 90, en 9 keer 3 is 27.
+tip: 90 plus 27 is 117. En dan nog het opstapje erbij.
 
 # code
 118. Precies wat je telde. In de brief staat het laatste stukje:

@@ -42,11 +42,12 @@ Voor een werkbank heb je 4 planken nodig, en voor een deur nog eens 6.
 
 # planken
 Je legt de boomstammen op een rij. Hoeveel planken kun je maken van al je 5 boomstammen?
-? Hoeveel planken krijg je uit 5 boomstammen? -> 20 -> planken-goed | planken-fout
 
-# planken-fout
-Je telt nog eens. Uit 1 boomstam krijg je 4 planken. Je hebt 5 boomstammen. Dat is dus 5 keer 4.
-> Probeer het nog eens -> planken
+Uit 1 boomstam maak je 4 planken.
+? Hoeveel planken krijg je uit 5 boomstammen? -> 20 -> planken-goed
+tip: Kijk in het lijstje in je hoofd: uit 1 boomstam maak je 4 planken. En je hebt 5 boomstammen.
+tip: Je kunt optellen: 4 + 4 + 4 + 4 + 4. Of je rekent het uit als 5 keer 4.
+tip: Tel in sprongen van 4, vijf keer: 4, 8, 12, en dan nog twee sprongen.
 
 # planken-goed
 Twintig planken! Je stapelt ze netjes op. Je maakt een werkbank (4 planken weg) en een deur (6 planken weg).
@@ -61,11 +62,10 @@ De zon staat nu laag. De schaduwen worden lang. Je moet een plek vinden om te sc
 Je wilt een hut bouwen van 4 blokken breed en 3 blokken hoog. Eén muur, aan de voorkant. Daarin komt je deur, en die neemt 2 blokken in.
 
 Hoeveel planken heb je nodig voor die voorkant?
-? Hoeveel planken heb je nodig? (4 breed, 3 hoog, min 2 voor de deur) -> 10 -> hut-goed | hut-fout
-
-# hut-fout
-Je kijkt nog eens naar de muur. 4 breed en 3 hoog is 4 keer 3 blokken. Daar gaan nog 2 blokken af, want daar komt de deur.
-> Reken het nog eens uit -> hut
+? Hoeveel planken heb je nodig? (4 breed, 3 hoog, min 2 voor de deur) -> 10 -> hut-goed
+tip: Stel je de muur voor: 4 blokken breed en 3 rijen hoog. Hoeveel blokken zitten er in de hele muur, als er nog geen deur in zit?
+tip: 3 rijen van 4 blokken is 3 keer 4. Dat zijn 12 blokken.
+tip: Van die 12 blokken heb je er 2 niet nodig, want daar komt de deur. Dus 12 min 2.
 
 # hut-goed
 Precies tien! Je hebt precies genoeg. Je bouwt de voorkant tegen een rotswand aan, zodat je alleen die ene muur nodig hebt. De deur gaat met een klik dicht, net op het moment dat de zon onder gaat.
@@ -124,11 +124,10 @@ Maar het pad naar de diamant loopt dwars langs de lava. Eén verkeerde stap...
 
 # brug
 De lavaplas is 7 blokken lang. Je wilt er een brug overheen bouwen, met aan elke kant 1 blok extra om op te staan. Hoeveel planken heb je nodig?
-? Hoeveel planken voor de brug? -> 9 -> brug-goed | brug-fout
-
-# brug-fout
-Je meet nog eens. De plas is 7 blokken. Aan het begin 1 blok extra, aan het eind ook 1 blok extra.
-> Reken het nog eens uit -> brug
+? Hoeveel planken voor de brug? -> 9 -> brug-goed
+tip: Teken het in gedachten: eerst 1 blok om op te staan, dan de lavaplas, en dan weer 1 blok.
+tip: De plas zelf is 7 blokken lang. Daar komen aan de twee kanten nog blokken bij.
+tip: 7 blokken voor de plas, plus 1 aan het begin, plus 1 aan het eind. Dus 7 + 1 + 1.
 
 # brug-goed
 Negen planken, en je hebt er tien. Je legt ze één voor één neer, voetje voor voetje. Onder je borrelt de lava. Kakel blijft aan de kant staan en kijkt de andere kant op.
@@ -150,15 +149,12 @@ De mijn is oud. Er loopt een spoor met een mijnkarretje naar beneden, diep de be
 Je stapt in het karretje. Kakel springt op je schoot. Voor je ligt de bodem van de mijn: een veld met hier en daar lava. Achterin glinstert een schatkist. Je moet het karretje sturen, zonder in de lava te rijden.
 
 Het karretje staat linksonder en kijkt naar rechts (oost). De ster is de schatkist. De grijze blokken zijn lava.
-robot: 7x5 start=0,4,oost doel=6,0 muur=2,4 2,3 2,2 4,0 4,1 4,2 -> kist | karretje-fout
+robot: 7x5 start=0,4,oost doel=6,0 muur=2,4 2,3 2,2 4,0 4,1 4,2 -> kist
 // oplossing mijn: vooruit 1, links, vooruit 3, rechts, vooruit 2, rechts, vooruit 2, links, vooruit 3, links, vooruit 3
-
-# karretje-fout
-Het karretje piept en stopt. Gelukkig net op tijd, voor de lava. Kakel kijkt je aan alsof ze het zelf beter kan.
-
-Tip: begin met één stapje naar rechts, en ga dan omhoog (links draaien) om om de eerste lavamuur heen te rijden.
-> Probeer het nog eens -> mijn
-> Ga terug naar boven -> slapen
+tip: Kijk eerst waar de lava zit (de grijze blokken). Er staan twee lavamuren tussen jou en de kist. Je moet eromheen slingeren, als een slang.
+tip: Begin met vooruit 1. Draai dan links: dan kijk je omhoog. Rij omhoog tot je naast de bovenkant van de eerste muur bent.
+tip: De route: omhoog langs de eerste muur, naar rechts, naar beneden langs de tweede muur, weer naar rechts, en dan omhoog naar de kist.
+anders: Ga terug naar boven -> slapen
 
 # kist
 Het karretje rijdt keurig om alle lava heen en stopt precies voor de schatkist. Je doet hem open.
@@ -166,11 +162,10 @@ Het karretje rijdt keurig om alle lava heen en stopt precies voor de schatkist. 
 Erin ligt een kaart van de hele blokkenwereld, met een kruisje erop. En een briefje: De weg naar huis. Ga naar x = 120, z = -45.
 
 Je kijkt op het kompas in je hoofd. Je staat nu op x = 80, z = -45.
-? Hoeveel blokken moet je lopen in de x-richting om op x = 120 te komen? -> 40 -> naarhuis | kist-fout
-
-# kist-fout
-Je staat op 80 en je moet naar 120. Het verschil tussen 120 en 80, dat is hoeveel blokken je moet lopen.
-> Reken het nog eens uit -> kist
+? Hoeveel blokken moet je lopen in de x-richting om op x = 120 te komen? -> 40 -> naarhuis
+tip: Je staat op x = 80 en je wilt naar x = 120. Hoe groot is het verschil?
+tip: Tel vanaf 80 door in sprongen van 10: 90, 100, 110, 120. Hoeveel sprongen van 10 zijn dat?
+tip: 4 sprongen van 10 blokken. Of reken: 120 min 80.
 
 # naarhuis
 Veertig blokken. Je telt elke stap. Kakel rent voor je uit.

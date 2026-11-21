@@ -33,11 +33,10 @@ Je doet je ogen open. Je ligt in een smal bed met slangetjes aan je armen. Het p
 
 # test
 'Een makkelijke om mee te beginnen,' zegt MAX. 'Wat is 7 keer 8?'
-? Wat is 7 × 8? -> 56 -> test-goed | test-fout
-
-# test-fout
-'Hmm,' zegt MAX. 'Je hersenen zijn nog een beetje stijf. Geeft niet. Denk aan 7 keer 7, en tel er dan nog één 7 bij op.'
-> Probeer het nog eens -> test
+? Wat is 7 × 8? -> 56 -> test-goed
+tip: 'Weet je 7 keer 7 nog?' vraagt MAX. 'Dat is 49. Begin daar.'
+tip: '7 keer 8 is één 7 meer dan 7 keer 7,' zegt MAX. 'Dus 49 plus 7.'
+tip: '49 plus 1 is 50,' zegt MAX. 'En dan nog 6 erbij.'
 
 # test-goed
 'Uitstekend,' zegt MAX. 'Je hersenen werken. Mag ik je nu vertellen waarom je hier bent?'
@@ -63,11 +62,10 @@ Je slaapt. En slaapt. Als je wakker wordt, zie je door het raam een groene plane
 In de stuurkamer zie je door een groot raam de sterren. Duizenden. Ze knipperen niet, zoals op aarde. Hier is geen lucht die ze laat twinkelen.
 
 'We hebben een probleem,' zegt MAX. 'Voor de terugreis hebben we de helft van een volle tank nodig. De tank is nu voor driekwart vol. Hoeveel houden we over als we thuis zijn?'
-? Hoeveel van de tank houden we over? (een breuk, zoals 1/3) -> 1/4/een kwart/0,25/kwart -> brandstof-goed | brandstof-fout
-
-# brandstof-fout
-'Laten we het tekenen,' zegt MAX. Op het scherm verschijnt een tank in vier stukken. Drie stukken zijn vol. De helft van de tank, dat zijn twee van de vier stukken. Hoeveel stukken blijven er over?
-> Probeer het nog eens -> stuurkamer
+? Hoeveel van de tank houden we over? (een breuk, zoals 1/3) -> 1/4/een kwart/0,25/kwart -> brandstof-goed
+tip: 'Laten we het tekenen,' zegt MAX. Op het scherm verschijnt een tank in vier gelijke stukken. Driekwart vol betekent: 3 van de 4 stukken zijn vol.
+tip: 'De helft van een volle tank, hoeveel stukken van de vier is dat?' vraagt MAX. 'Dat zijn er 2.'
+tip: 'Er zijn 3 stukken vol en we gebruiken er 2,' zegt MAX. 'Hoeveel van de 4 stukken blijven er over? Schrijf het als breuk: zoveel van de 4, dus iets met /4.'
 
 # brandstof-goed
 'Een kwart,' zegt MAX. 'Precies. Genoeg om thuis te komen, maar we kunnen niet te veel omwegen maken.'
@@ -84,11 +82,10 @@ Het laboratorium staat vol buisjes en microscopen. In een glazen bak zie je een 
 Naast de bak ligt een notitieboekje in jouw handschrift. Op de laatste bladzijde staat: Ze groeien twee keer zo snel als het warm is. Bij min 10 graden houden ze op met eten.
 
 De thermometer bij de bak wijst 15 graden aan.
-? Hoeveel graden moet het kouder worden, van 15 naar min 10? -> 25 -> lab-goed | lab-fout
-
-# lab-fout
-Je kijkt naar de thermometer. Van 15 naar 0 is 15 graden. En van 0 naar min 10 nog eens 10 graden.
-> Reken het nog eens uit -> lab
+? Hoeveel graden moet het kouder worden, van 15 naar min 10? -> 25 -> lab-goed
+tip: Kijk naar de thermometer in gedachten: 15 staat boven de nul, min 10 staat onder de nul. Je moet over de nul heen.
+tip: Van 15 graden naar 0 graden is 15 graden kouder. En van 0 naar min 10 is nog eens 10 graden kouder.
+tip: Tel de twee stukken bij elkaar op: 15 + 10.
 
 # lab-goed
 Vijfentwintig graden kouder. Je zet de koeling van de bak aan. Langzaam daalt de temperatuur. 15, 10, 5, 0, min 5, min 10.
@@ -114,11 +111,10 @@ Je stuurt een signaal: drie korte piepjes. Het blijft stil. Dan komt er antwoord
 Op het scherm verschijnt: 2, 4, 8, 16, ...
 
 'Als we het goede volgende getal terugsturen, weten ze dat we slim zijn.'
-? Welk getal komt na 2, 4, 8, 16? -> 32 -> vriend | signaal-fout
-
-# signaal-fout
-'Kijk eens hoe de getallen groeien,' zegt MAX. 'Van 2 naar 4, van 4 naar 8, van 8 naar 16. Wat gebeurt er elke keer?'
-> Probeer het nog eens -> signaal
+? Welk getal komt na 2, 4, 8, 16? -> 32 -> vriend
+tip: 'Kijk hoe de getallen groeien,' zegt MAX. 'Van 2 naar 4, van 4 naar 8, van 8 naar 16. Wat gebeurt er elke keer?'
+tip: 'Elke keer wordt het getal twee keer zo groot,' zegt MAX. '2 keer 2 is 4, 4 keer 2 is 8, 8 keer 2 is 16.'
+tip: 'Dus het volgende getal is 16 keer 2,' zegt MAX. 'Of 16 plus 16.'
 
 # vriend
 Je stuurt 32 terug. Even is het stil. Dan klinken er vrolijke tonen, snel achter elkaar, alsof iemand lacht.
@@ -146,22 +142,20 @@ Maar op een dag kijk je door het raam en zie je een klein geel sterretje. De zon
 De terugreis duurt lang. MAX rekent uit dat De Hoop 1,5 miljoen kilometer per uur vliegt.
 
 'Het laatste stuk naar de aarde is nog 3 uur vliegen,' zegt MAX. 'Hoeveel kilometer is dat?'
-? Hoeveel miljoen kilometer in 3 uur? (1,5 miljoen km per uur) -> 4,5/4.5/4,5 miljoen/4500000 -> landen | reis-fout
-
-# reis-fout
-'Elk uur 1,5 miljoen kilometer,' zegt MAX. 'Na 1 uur is dat 1,5. Na 2 uur 3. En na 3 uur?'
-> Reken het nog eens uit -> naarhuis
+? Hoeveel miljoen kilometer in 3 uur? (1,5 miljoen km per uur) -> 4,5/4.5/4,5 miljoen/4500000 -> landen
+tip: 'Elk uur vliegen we 1,5 miljoen kilometer,' zegt MAX. 'Hoeveel is dat na 2 uur?'
+tip: 'Na 1 uur: 1,5 miljoen. Na 2 uur: 1,5 + 1,5 = 3 miljoen,' zegt MAX. 'En na 3 uur komt er nog een keer 1,5 bij.'
+tip: '3 + 1,5,' zegt MAX. 'Typ het antwoord in miljoenen, met een komma, zoals 2,5.'
 
 # landen
 De aarde wordt groter en groter in het raam. Blauw met wit. Het mooiste wat je ooit hebt gezien.
 
 'Waar zullen we landen?' vraagt MAX. Op het scherm licht een werelddeel op.
 kaart: wereld deel:Europe
-? Op welk werelddeel landen we? -> europa -> aankomst | landen-fout
-
-# landen-fout
-'Kijk nog eens goed,' zegt MAX. 'Het is het werelddeel waar Nederland ligt. Ten noorden van Afrika.'
-> Kijk nog eens naar de kaart -> landen
+? Op welk werelddeel landen we? -> europa -> aankomst
+tip: 'Kijk naar de kaart,' zegt MAX. 'Het werelddeel dat oplicht, ligt boven Afrika. Daar ligt ook Nederland.'
+tip: 'Het is het werelddeel met Frankrijk, Duitsland, Spanje en Nederland,' zegt MAX.
+tip: 'Het begint met een E,' zegt MAX. 'Eu...'
 
 # aankomst
 De capsule landt met een plons in de Noordzee. Een boot haalt je op. Op de kade staan honderden mensen te zwaaien. Een groep wetenschappers rent op je af.

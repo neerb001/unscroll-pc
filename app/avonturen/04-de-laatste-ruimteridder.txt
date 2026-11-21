@@ -41,13 +41,12 @@ De gang is lang en vol deuren. Op een scherm aan de muur staat een bericht. Het 
 GHXU RSHQ
 
 Commandant Ilse fluistert in je oor: 'Dat is een geheimschrift. Elke letter is drie plaatsen opgeschoven in het alfabet. Een D wordt een A, een E wordt een B. Schuif elke letter drie plaatsen terug.'
-? Wat staat er echt? (twee woorden) -> deur open -> codegoed | codefout
 
-# codefout
-Je kijkt nog eens naar de letters. G, drie terug, is D. H, drie terug, is E. X wordt U. U wordt R.
-
-Het eerste woord begint dus met DEUR...
-> Probeer het nog eens -> gang
+Op je pols licht het alfabet op: A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+? Wat staat er echt? (twee woorden) -> deur open -> codegoed
+tip: Neem de eerste letter: G. Zoek de G in het alfabet op je pols en ga drie letters terug: F, E, D. Dus de G wordt een D.
+tip: Doe hetzelfde met de volgende letters. H wordt E. X wordt U. U wordt R. Het eerste woord is dus DEUR.
+tip: Nu het tweede woord: RSHQ. R wordt O, S wordt P. Ga zo verder met H en Q. Typ beide woorden, met een spatie ertussen.
 
 # codegoed
 DEUR OPEN. Je typt het in op het scherm. Met een sis schuift de deur aan het eind van de gang open.
@@ -81,11 +80,10 @@ Je zit in een cel. Naast je, in de cel ernaast, piept iets. Een kleine blauwe dr
 'Piep,' zegt R-4. 'Piep piep boe.'
 
 De deur van je cel heeft een slot met lampjes. Drie lampjes: aan, uit, aan. Commandant Ilse fluistert: 'Dat is een binaire code. Het rechter lampje telt 1, het middelste telt 2, het linker telt 4. Tel op wat er aan staat.'
-? Welk getal toets je in? (lampjes: aan, uit, aan) -> 5 -> celopen | celfout
-
-# celfout
-Kijk welke lampjes aan staan. Het linker lampje (dat telt 4) is aan. Het middelste (dat telt 2) is uit. Het rechter (dat telt 1) is aan. Tel op wat aan staat.
-> Probeer het nog eens -> gevangen
+? Welk getal toets je in? (lampjes: aan, uit, aan) -> 5 -> celopen
+tip: Elk lampje dat aan staat, telt mee. Een lampje dat uit staat, telt niet mee. Welke lampjes staan aan?
+tip: Het linker lampje is aan, dat telt 4. Het middelste is uit, dat telt niet. Het rechter is aan, dat telt 1.
+tip: Tel op wat aan staat: 4 + 1.
 
 # celopen
 Vijf. De celdeur schuift open. Je maakt ook de cel van R-4 open. Hij rolt een rondje om je heen van blijdschap.
@@ -101,14 +99,11 @@ Je kruipt door de schacht. Het is stoffig en donker. Na een tijdje zie je door e
 Je kunt er niet zelf in, maar door het rooster kun je R-4 een signaal sturen. Hij kan zelf door de schachten naar je toe rijden, als jij hem de weg wijst.
 
 R-4 staat linksboven en kijkt naar rechts (oost). Jij zit bij de ster. De grijze blokken zijn dichte schachten.
-robot: 6x5 start=0,0,oost doel=5,4 muur=0,1 1,1 2,1 3,1 2,3 3,3 4,3 5,3 -> r4 | r4fout
+robot: 6x5 start=0,0,oost doel=5,4 muur=0,1 1,1 2,1 3,1 2,3 3,3 4,3 5,3 -> r4
 // oplossing schacht: vooruit 4, rechts, vooruit 2, rechts, vooruit 4, links, vooruit 2, links, vooruit 5
-
-# r4fout
-R-4 botst ergens tegenaan of rijdt de verkeerde kant op. 'Piep boe,' klinkt het, een beetje beledigd.
-
-Tip: de schachten maken een zigzag. Eerst helemaal naar rechts tot vlak voor de rand, dan omlaag, dan helemaal naar links, dan weer omlaag.
-> Probeer het nog eens -> schacht
+tip: R-4 staat linksboven. Kijk waar de dichte schachten (grijs) zitten: twee lange muren met een opening aan de zijkant. Je moet zigzaggen.
+tip: Eerst naar rechts tot vlak voor de rand: vooruit 4. Dan rechts draaien (nu kijkt R-4 omlaag) en twee vakjes naar beneden.
+tip: Daarna helemaal naar links, weer omlaag, en dan helemaal naar rechts naar de ster. Let op: na naar beneden rijden kijkt R-4 omlaag. Draai dan rechts om naar links te kijken.
 
 # r4
 R-4 rijdt keurig door alle schachten en ploft naast je neer. 'Piep piep!' Op zijn kop brandt een lampje. De bouwtekeningen zitten er nog in!
@@ -122,11 +117,10 @@ In de hangar staat je schip, maar er staan nu tien soldaten omheen. En in het mi
 R-4 piept zacht. Op zijn schermpje verschijnt een plattegrond. Er is een knop in de hangar die het licht uit kan zetten. Die knop zit achter een paneel met een code: 1 1 0.
 
 'Binair,' fluistert commandant Ilse. 'Links telt 4, midden telt 2, rechts telt 1.'
-? Welk getal is 110 in binair? -> 6 -> donker | hangarfout
-
-# hangarfout
-Kijk welke lampjes aan staan: links (4) aan, midden (2) aan, rechts (1) uit. Tel op wat aan staat.
-> Probeer het nog eens -> hangar
+? Welk getal is 110 in binair? -> 6 -> donker
+tip: Het werkt net als bij het slot van de cel. Een 1 betekent: lampje aan. Een 0 betekent: lampje uit.
+tip: 1 1 0: links aan (telt 4), midden aan (telt 2), rechts uit (telt niet).
+tip: Tel op wat aan staat: 4 + 2.
 
 # donker
 Zes. Het licht gaat uit. Het is pikdonker in de hangar. Soldaten roepen door elkaar. Je rent naar je schip, R-4 rolt achter je aan. Alleen het rode zwaard van Vorr gloeit in het donker, en het komt dichterbij.

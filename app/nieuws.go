@@ -19,6 +19,10 @@ type nieuwsItem struct {
 
 // nieuwsLijst: nieuwste bovenaan.
 var nieuwsLijst = []nieuwsItem{
+	{"v0.37.0", [2]string{
+		"Vast bij een vraag in een avontuur? Bliep helpt je nu: na een fout antwoord krijg je een tip, en met ? vraag je er zelf om. Eerst een duwtje, dan hoe je het kunt bedenken. Het antwoord typ je altijd zelf.",
+		"Stuck on a question in an adventure? Bliep helps you now: after a wrong answer you get a hint, and ? asks for one. First a nudge, then how to work it out. You always type the answer yourself.",
+	}},
 	{"v0.36.0", [2]string{
 		"Nieuw bovenaan 3 Leren: Mijn heelal (al je vakken als sterren die feller gaan schijnen) en Missie Bliep: met goede antwoorden repareer je het ruimteschip van Bliep, en elke week wacht er een baas. Bij Bliep kun je nu ook zelf de leraar zijn: kies Leg het uit.",
 		"New at the top of 3 Learn: My universe (all your subjects as stars that shine brighter) and Mission Bliep: right answers repair Bliep's spaceship, and every week a boss is waiting. With Bliep you can now be the teacher too: choose Explain it.",

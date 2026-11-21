@@ -44,11 +44,10 @@ De les toverdranken is in een kelder vol borrelende ketels. Professor Kwak heeft
 Op het bord staat het recept, voor 2 personen: 3 drakenschubben, 6 druppels maanwater, 1 uilenveer.
 
 'Jullie maken hem voor de hele groep,' zegt Kwak. 'Dat zijn 6 personen.'
-? Hoeveel drakenschubben heb je nodig voor 6 personen? -> 9 -> drank-goed | drank-fout
-
-# drank-fout
-Je kijkt nog eens naar het recept. Het is voor 2 personen. 6 personen is 3 keer zoveel. Dus alles keer 3.
-> Reken het nog eens uit -> dranken
+? Hoeveel drakenschubben heb je nodig voor 6 personen? -> 9 -> drank-goed
+tip: Kijk nog eens naar het recept op het bord. Voor hoeveel personen is het? En voor hoeveel personen moet jij het maken?
+tip: Het recept is voor 2 personen, en jij maakt het voor 6. 6 is 3 keer zoveel als 2. Dus van alles heb je 3 keer zoveel nodig.
+tip: Voor 2 personen zijn het 3 drakenschubben. Voor 6 personen dus 3 keer 3.
 
 # drank-goed
 Negen drakenschubben, achttien druppels maanwater, drie uilenveren. Je roert drie keer met de klok mee. De drank wordt zilverkleurig en ruikt naar vers brood.
@@ -81,11 +80,10 @@ Je loopt naar de bibliotheek. De grote eiken deur zit dicht. Er staat een raadse
 In de deur staat gekrast:
 
 Hoe meer je ervan weghaalt, hoe groter het wordt. Wat ben ik?
-? Wat is het antwoord op het raadsel? -> gat/een gat/een kuil/kuil -> binnen | raadsel-fout
-
-# raadsel-fout
-De deur blijft dicht. Een stem uit het hout zegt: 'Denk aan een schep en zand. Als je graaft en graaft, wordt iets steeds groter...'
-> Probeer het nog eens -> raadsel
+? Wat is het antwoord op het raadsel? -> gat/een gat/een kuil/kuil -> binnen
+tip: Een stem uit het hout fluistert: 'Denk niet aan iets dat je kunt vasthouden. Denk aan iets dat juist ontstaat als je iets weghaalt.'
+tip: 'Pak een schep en ga graven in het zand,' zegt de stem. 'Hoe meer zand je weghaalt, hoe groter wordt...'
+tip: 'Het is een woord van drie letters,' zegt de stem. 'Een konijn woont erin, en in een sok kan er ook een zitten.'
 
 # binnen
 De deur zwaait open. De bibliotheek is enorm, met boekenkasten tot aan het plafond. Achterin is een hek met een bordje: VERBODEN AFDELING.
@@ -95,11 +93,10 @@ Op de vloer zie je modderige voetafdrukken. Ze zijn klein. Kleiner dan die van e
 Bij het hek staat een stenen beeld van een uil. Onder het beeld staat: Spreek de spreuk voor licht, en ik wijs de weg.
 
 Op een papiertje op de grond staat in kriebelig handschrift: Spreuken zijn Engelse woorden, achterstevoren. Licht = THGIL.
-? Welk Engels woord zit er achterstevoren in THGIL? -> light -> licht | licht-fout
-
-# licht-fout
-Lees THGIL eens van achter naar voren. T, H, G, I, L wordt... L, I, G, H, T.
-> Probeer het nog eens -> binnen
+? Welk Engels woord zit er achterstevoren in THGIL? -> light -> licht
+tip: Lees THGIL eens van achter naar voren, letter voor letter.
+tip: Achterstevoren wordt T, H, G, I, L: L, I, G, H, T.
+tip: Dat is het Engelse woord voor licht. Typ het gewoon in kleine letters.
 
 # licht
 'Light!' zeg je. De ogen van de stenen uil gaan geel branden. Een straal licht valt op een boekenkast achter het hek. Een van de boeken steekt een stukje uit.

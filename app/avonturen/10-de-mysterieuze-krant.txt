@@ -47,11 +47,10 @@ Je leest de krant van gisteren nog eens, heel precies. Er staan foutjes in. Rare
 In de krant staat: De hond werd gevonden door een kind dat in het park wandelt.
 
 Hmm. Een kind dat in het park wandelt. Dat klopt toch? Je leest verder. Bij het weerbericht staat: Morgen word het mooi weer.
-? Hoe schrijf je 'word' in die zin goed? -> wordt -> fout1-goed | fout1-fout
-
-# fout1-fout
-Het weer is hij, het weer wordt mooi. Bij hij, zij en het komt er een t achter de stam: word plus t. Probeer het ezelsbruggetje: vervang word door loop. Het loopt. Dus: het wordt.
-> Probeer het nog eens -> fout1
+? Hoe schrijf je 'word' in die zin goed? -> wordt -> fout1-goed
+tip: Doe de loop-test: zet in plaats van 'word' het woord 'lopen' in de zin. Morgen... het mooi weer. Zeg je 'het loop' of 'het loopt'?
+tip: Je zegt 'het loopt', met een t. Dus bij 'het weer' komt er ook een t achter de stam. De stam is 'word'.
+tip: word plus t...
 
 # fout1-goed
 Wordt, met dt. Iemand die een krant maakt, weet dat toch?
@@ -65,11 +64,10 @@ Misschien is het geen foutje. Misschien is het een letter van een boodschap.
 Woensdagochtend ligt er weer een krant. Voorpagina: Groot onweer in de middag. Bliksem slaat in de oude eik op het schoolplein.
 
 Je speurt naar foutjes. In het verhaal over de eik staat: De conciërge vind het jammer van de boom.
-? Hoe schrijf je 'vind' hier goed? -> vindt -> woensdag-goed | woensdag-fout
-
-# woensdag-fout
-Hij vind, of hij vindt? Doe de loop-test: hij loopt. Dus komt er een t achter de stam. De stam is vind, dan wordt het vind plus t.
-> Probeer het nog eens -> woensdag
+? Hoe schrijf je 'vind' hier goed? -> vindt -> woensdag-goed
+tip: Doe weer de loop-test: de conciërge... Zeg je 'hij loop' of 'hij loopt'?
+tip: 'Hij loopt', met een t. De conciërge is een hij, dus ook hier komt er een t achter de stam. De stam is 'vind'.
+tip: vind plus t...
 
 # woensdag-goed
 Vindt. Weer een t die mist. Je schrijft hem in de kantlijn. T, T.
@@ -108,24 +106,22 @@ Wie de boodschap vind, vindt de drukker.
 
 Hé. Daar staat het twee keer, een keer fout en een keer goed. Dat is vast expres. De drukker wil dat je de letters bij elkaar zoekt.
 
-Je hebt er nu drie: T, T, en nu nog een T. Maar met alleen T's maak je geen woord. Je leest alle kranten nog eens, heel goed, en vindt nog meer foutjes.
+Je hebt nu twee letters: de T van wordt en de T van vindt. Daar maak je nog geen woord van. Je leest alle kranten nog eens, heel goed, en vindt nog meer foutjes.
 
 In de krant van maandag staat: Het dorp telt 3 bakkers. Een bakker word ouder en stopt. In de krant van woensdag: De bliksem slaat in om drie uur. Ik heb het gezien met mijn eige ogen.
-? Welke letter mist er in 'eige'? -> n -> zoeken | donderdag-fout
-
-# donderdag-fout
-Je ziet iets met je eigen ogen. Er mist een letter aan het eind.
-> Probeer het nog eens -> donderdag
+? Welke letter mist er in 'eige'? -> n -> zoeken
+tip: Lees het woord hardop: 'met mijn eige ogen'. Hoe zeg je het eigenlijk?
+tip: Je zegt 'met mijn eigen ogen'. Welke letter staat er dan aan het eind die hier mist?
+tip: eige... en dan nog één letter. Het is dezelfde letter als aan het eind van 'ogen'.
 
 # zoeken
-Een N. Je schrijft al je letters onder elkaar en schuift ermee. Er zijn ook nog een paar letters die er te veel staan in de kranten: een R hier, een E daar, een O in 'groote'.
+Een N. In de kranten staan ook letters te veel: een O in 'groote', een R in 'warrm' en een E in 'kerek'.
 
-Je streept de dubbele letters weg. Over blijven: T, O, R, E, N.
-? Welk woord maak je van T, O, R, E en N? -> toren -> torenvraag | zoeken-fout
-
-# zoeken-fout
-Een hoog gebouw, vaak bij een kerk. Er hangt soms een klok in.
-> Probeer het nog eens -> zoeken
+Je zet al je letters op een rij: T, T, N, O, R, E. Er staan twee T's, dus je streept er een weg. Over blijven: T, N, O, R, E.
+? Welk woord maak je van T, N, O, R en E? -> toren -> torenvraag
+tip: Schuif met de letters. Het is een gebouw, en het woord staat zelfs al in een van de kranten.
+tip: Het is een hoog gebouw, vaak naast een kerk. Er hangt soms een klok of een bel in.
+tip: Het begint met een T en eindigt met een N.
 
 # torenvraag
 TOREN! De kerktoren, achter de kerk staat de oude drukkerij. Daar moet je naartoe.
@@ -161,11 +157,10 @@ Wil glimlacht en wijst naar de grootste machine. 'Die drukt het nieuws van morge
 Ze legt een vel papier voor je neer. 'Laatste proef. Hier staat een zin. Maak hem foutloos.'
 
 Op het papier staat: Morgen vindt de burgemeester een kat in de boom, en hij word er blij van.
-? Welk woord is fout? Typ het goed. -> wordt -> proef | proef-fout
-
-# proef-fout
-Kijk naar elk werkwoord. Vindt, daar zit al een t aan. Maar 'hij word'? Doe de loop-test: hij loopt.
-> Probeer het nog eens -> morgen
+? Welk woord is fout? Typ het goed. -> wordt -> proef
+tip: Doe de loop-test bij elk werkwoord in de zin. 'De burgemeester vindt' (hij loopt): dat klopt al.
+tip: Kijk naar het tweede deel: 'en hij word er blij van'. Zeg je 'hij loop' of 'hij loopt'?
+tip: Hij loopt, met een t. Dus hij word plus t. Typ het goede woord.
 
 # proef
 'Wordt,' zeg je. 'Hij wordt er blij van.'

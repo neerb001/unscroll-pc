@@ -108,14 +108,13 @@ Bovenaan is een houten deur. Erop zit een oud koperen slot, met een groot sleute
 Zonder sleutel moet je de draaiwieltjes gebruiken, zoals bij een fietsslot. Er moeten drie cijfers op.
 
 Alleen wie de tijd kent... Welke tijd? Je denkt aan wat de meester vanmiddag vertelde over de klok in deze toren.
-? Welke drie cijfers draai je in? -> 245 -> slot | fout-code
 
-# fout-code
-Je draait de wieltjes. Klik, klik, klik. Je trekt aan het slot. Niets. Het zit nog steeds dicht.
-
-Denk aan de klok in de toren. Op welke tijd staat die al jaren stil? Kwart voor drie is... hoeveel uur en hoeveel minuten? Schrijf het op zoals op een digitale klok, zonder de dubbele punt.
-> Probeer het nog eens -> slot2
-> Geef het op en ga terug naar bed -> slapen
+De meester zei het nog zo: 'Die klok staat al jaren op kwart voor drie.'
+? Welke drie cijfers draai je in? -> 245 -> slot
+tip: Het slot zegt: alleen wie de tijd kent. Welke tijd? De meester vertelde vanmiddag dat de torenklok al jaren stilstaat. Op welke tijd ook alweer?
+tip: De klok staat op kwart voor drie. Dat is nog net geen drie uur. Het is dus 2 uur en nog wat minuten. Een uur heeft 60 minuten. Hoeveel minuten is het na 2 uur als het kwart voor drie is?
+tip: Kwart voor drie is 2 uur en 45 minuten. Op een digitale klok zie je dan 2:45. Draai die cijfers in, zonder de dubbele punt.
+anders: Geef het op en ga terug naar bed -> slapen
 
 # slot
 Klik. Het slot springt open. De deur kraakt als je hem openduwt.
@@ -137,14 +136,13 @@ Onder de tekst zit een klein luikje in de vloer, met een cijferslot. Er staat bi
 
 # luikje-slot
 Je knielt bij het luikje. Vier draaiwieltjes. Het jaar dat de Tachtigjarige Oorlog eindigde...
-? Welk jaartal draai je in? -> 1648 -> luikje | fout-jaar
 
-# fout-jaar
-Klik. Het luikje blijft dicht.
-
-De Tachtigjarige Oorlog... die begon in 1568 en duurde, nou ja, ongeveer tachtig jaar. Hij eindigde met de Vrede van Münster. Reken maar: 1568 plus tachtig.
-> Probeer het nog eens -> luikje-slot
-> Kijk eerst achter het gordijn -> gordijn
+Aan de muur hangt een oude schoolplaat, grijs van het stof. Je veegt hem schoon met je mouw. Er staat een prins te paard op, en eronder: 1568, het begin van de opstand tegen Spanje. Tachtig jaar lang werd er gevochten, tot de vrede kwam.
+? Welk jaartal draai je in? -> 1648 -> luikje
+tip: Kijk eens goed naar de schoolplaat aan de muur. Daarop staat in welk jaar de oorlog begon.
+tip: De oorlog begon in 1568. En hoe lang duurde hij? Dat zit al in de naam: de Tachtigjarige Oorlog.
+tip: Tel 80 jaar op bij 1568. Doe het in twee stappen: 1568 plus 30 is 1598. En dan nog 50 erbij.
+anders: Kijk eerst achter het gordijn -> gordijn
 
 # luikje
 Het luikje springt open. Daaronder ligt een blikken trommel, bruin van ouderdom. Je wrikt het deksel los.
