@@ -10,7 +10,7 @@ import (
 func poortModel(t *testing.T) model {
 	t.Setenv("HOME", t.TempDir())
 	m, _ := testModel(t, Geheimen{})
-	m.inst.Taal, m.inst.Naam = "nl", "Sam"
+	m.inst.Taal, m.inst.Naam = "nl", "Jip"
 	m.breed, m.hoog = 112, 29
 	m.nu = time.Date(2026, 11, 20, 15, 0, 0, 0, time.Local) // middag: geen avondslot
 	m.ouders.EerstOefenen.Sommen, m.ouders.EerstOefenen.Tafel = 5, 7
@@ -19,7 +19,7 @@ func poortModel(t *testing.T) model {
 
 func TestEerstOefenen(t *testing.T) {
 	m := poortModel(t)
-	if !strings.Contains(m.View(), "Eerst even oefenen, Sam!") || !strings.Contains(m.View(), "tafel van 7") || !strings.Contains(m.View(), "0 van de 5 goed") {
+	if !strings.Contains(m.View(), "Eerst even oefenen, Jip!") || !strings.Contains(m.View(), "tafel van 7") || !strings.Contains(m.View(), "0 van de 5 goed") {
 		t.Fatalf("het oefenscherm hoort eerst te komen:\n%s", m.View())
 	}
 	// cijfers zijn antwoorden, geen tabbladen

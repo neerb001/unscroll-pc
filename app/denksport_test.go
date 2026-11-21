@@ -177,7 +177,7 @@ func TestRekenmachineKnoppen(t *testing.T) {
 	}
 }
 
-// Zoals Sam het doet: tafels openen (alles staat nog aan) en op 7 drukken. Dan alleen de
+// Zoals een kind het doet: tafels openen (alles staat nog aan) en op 7 drukken. Dan alleen de
 // tafel van 7, met de 7 achteraan zoals op school.
 func TestTafelVanZevenMetEenCijfer(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())

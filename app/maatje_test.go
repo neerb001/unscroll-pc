@@ -20,17 +20,17 @@ func TestFilterPrive(t *testing.T) {
 		{"mail me op sam.de.vries@example.nl", "mail me op", "example"},
 		{"bel 06-12345678 of +31 6 12345678", "bel", "12345678"},
 		{"ik woon op de Dorpsstraat 12 in 3511 AB", "ik woon op de", "3511"},
-		{"ik heet Sam en ik ben 11", "[name]", "Sam"},
+		{"ik heet Jip en ik ben 11", "[name]", "Jip"},
 		{"in 2024 en 1999 gebeurde er veel", "2024 en 1999", "[…]"},
 		{"hoeveel is 12 x 345?", "12 x 345", "[…]"},
 	}
 	for _, g := range gevallen {
-		uit, _ := filterPrivé(g.in, "Sam")
+		uit, _ := filterPrivé(g.in, "Jip")
 		if !strings.Contains(uit, g.mag) || strings.Contains(uit, g.magNiet) {
 			t.Errorf("filterPrivé(%q) = %q", g.in, uit)
 		}
 	}
-	if _, veranderd := filterPrivé("hoe werkt een vulkaan?", "Sam"); veranderd {
+	if _, veranderd := filterPrivé("hoe werkt een vulkaan?", "Jip"); veranderd {
 		t.Error("een gewone vraag mag niet gefilterd worden")
 	}
 }
@@ -105,7 +105,7 @@ func maatjeModel(t *testing.T) (model, *nepClaude, *[]string) {
 	}))
 	t.Cleanup(ntfy.Close)
 	m.ouders.Ntfy.URL, m.ouders.Ntfy.Topic = ntfy.URL, "test"
-	m.inst.Taal, m.inst.Naam = "nl", "Sam"
+	m.inst.Taal, m.inst.Naam = "nl", "Jip"
 	m.mj = nieuwMaatjeStaat(Geheimen{"ANTHROPIC_API_KEY": "test-sleutel"}, m.ouders)
 	m.mj.ai = nieuwMaatjeAI(Geheimen{"ANTHROPIC_API_KEY": "test-sleutel"}, m.ouders, option.WithBaseURL(srv.URL), option.WithMaxRetries(0))
 	return m, nep, &meldingen
@@ -123,7 +123,7 @@ func TestMaatjeVraag(t *testing.T) {
 		t.Fatalf("keuzemenu niet te zien:\n%s", m.View())
 	}
 	m = toets(m, "enter") // Vraag iets
-	m = typ(m, "Hoi ik ben Sam, hoe werkt een vulkaan? Bel me op 0612345678")
+	m = typ(m, "Hoi ik ben Jip, hoe werkt een vulkaan? Bel me op 0612345678")
 	if !strings.Contains(m.View(), "berg met een gat") {
 		t.Fatalf("antwoord niet te zien:\n%s", m.View())
 	}
@@ -135,7 +135,7 @@ func TestMaatjeVraag(t *testing.T) {
 		t.Fatalf("verwacht 1 verzoek aan het maatje, kreeg %d", len(hoofd))
 	}
 	verzoek, _ := json.Marshal(hoofd[0])
-	if strings.Contains(string(verzoek), "0612345678") || strings.Contains(string(verzoek), "Sam") {
+	if strings.Contains(string(verzoek), "0612345678") || strings.Contains(string(verzoek), "Jip") {
 		t.Errorf("persoonsgegevens gingen mee: %s", verzoek)
 	}
 	if hoofd[0]["fallbacks"] != "default" || !strings.Contains(string(verzoek), "Dutch") {

@@ -91,10 +91,10 @@ func TestHedyProgrammeren(t *testing.T) {
 	if m.od.hedy.proc == nil || !strings.Contains(m.View(), "Hoe heet jij?") {
 		t.Fatalf("programma vraagt niets:\n%s", m.View())
 	}
-	m = toets(m, "Sam")
+	m = toets(m, "Jip")
 	nm, cmd = m.Update(tea.KeyMsg{Type: tea.KeyEnter})
 	m = draaiHedy(t, nm.(model), cmd)
-	if m.od.hedy.proc != nil || !strings.Contains(m.View(), "Hallo Sam! niveau 1 taal nl") {
+	if m.od.hedy.proc != nil || !strings.Contains(m.View(), "Hallo Jip! niveau 1 taal nl") {
 		t.Fatalf("antwoord kwam niet aan:\n%s", m.View())
 	}
 	// code is bewaard per opdracht

@@ -47,14 +47,14 @@ if setpriv --reuid=nobody --regid=nogroup --clear-groups touch "$B/lib/hedy/data
   echo "het pakket is beschrijfbaar voor een gewone gebruiker; dan test dit niet wat het apparaat doet"; exit 1
 fi
 toets 1 nl "hallo wereld" "print hallo wereld"
-toets 1 nl "Sam" "vraag hoe heet jij?
-echo hallo" "Sam"
+toets 1 nl "Jip" "vraag hoe heet jij?
+echo hallo" "Jip"
 toets 2 en "pizza" "food is pizza
 print I like food"
 toets 4 en "dice" "choices is 1, 2, 3
 print 'dice ' choices at random"
-toets 5 nl "goed" "naam is Sam
-als naam is Sam print 'goed' anders print 'fout'"
+toets 5 nl "goed" "naam is Jip
+als naam is Jip print 'goed' anders print 'fout'"
 # het eerste voorbeeld van "repeat" uit Hedy's eigen opdrachten moet draaien
 REPEAT="$(python3 -c "
 import json, sys
