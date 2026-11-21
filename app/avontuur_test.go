@@ -87,6 +87,9 @@ func TestAlleAvonturenKloppen(t *testing.T) {
 				if strings.Contains(al, "—") {
 					t.Errorf("%s: scène %q bevat een gedachtestreepje", n.Name(), id)
 				}
+				if al != "" && strings.ContainsAny(al[:1], "?>=%|#") && !strings.HasPrefix(al, plaatjeTeken) && !strings.HasPrefix(al, tekeningTeken) {
+					t.Errorf("%s: scène %q: losse regel die op een code lijkt: %q", n.Name(), id, al)
+				}
 				if pl, ok := strings.CutPrefix(al, plaatjeTeken); ok {
 					rijen := strings.Split(pl, "\n")
 					if len(rijen) > 24 {

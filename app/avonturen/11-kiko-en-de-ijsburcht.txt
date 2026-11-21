@@ -1,0 +1,266 @@
+titel: Kiko en de IJsburcht
+over: Een platformavontuur. Jij bent Kiko, een vos die springt, munten vangt en door holle boomstammen glijdt, op weg naar de burcht van de IJskoning.
+
+# start
+% ........................
+% ...oo..............oo...
+% ...ooo............ooo...
+% ...oppo..........oppo...
+% ...oooooooooooooooooo...
+% ..oooooooooooooooooooo..
+% ..oooooooooooooooooooo..
+% ..ooowdoooooooooodwooo..
+% ..oooddooooooooooddooo..
+% ..oooooooooooooooooooo..
+% ...wwwoooooooooooowww...
+% ....wwwwwwwddwwwwwww....
+% .....wwwwwwwwwwwwww.....
+% .......wwwwwwwwww.......
+% ..........wwww..........
+% ........................
+Je bent Kiko, een kleine rode vos uit Bessendal. In Bessendal is het altijd zomer, want boven op de hoogste heuvel ligt de Zonnesteen. Die geeft het hele dal licht en warmte.
+
+Maar vanochtend is het koud. Er ligt rijp op de bessen. Je adem maakt wolkjes.
+
+De oude uil Hoeroe landt naast je op een tak. 'De IJskoning heeft de Zonnesteen gestolen!' roept ze. 'Hij heeft hem meegenomen naar zijn burcht, achter de Wolkenbergen. Als hij niet terugkomt, bevriest heel Bessendal.'
+
+Jij bent de snelste springer van het dal. Iedereen kijkt naar jou.
+> 'Ik haal hem terug!' -> wereld1
+> Vraag Hoeroe eerst om raad -> raad
+
+# raad
+'Luister goed,' zegt Hoeroe. 'Onderweg vind je gouden munten. Spaar ze. Bij de winkel van de mol kun je er iets nuttigs voor kopen. En spring nooit zonder te kijken.'
+> Op weg -> wereld1
+
+# wereld1
+% ........................
+% ........yy..yy..yy......
+% .......yyyyyyyyyyyy.....
+% ........yy..yy..yy......
+% ........................
+% ..nnnn..........nnnn....
+% ..nyyn..........nyyn....
+% ..nnnn..........nnnn....
+% ........................
+% gggggggggg....gggggggggg
+% nnnnnnnnnn....nnnnnnnnnn
+% nnnnnnnnnn....nnnnnnnnnn
+Wereld 1: Het Bessenbos.
+
+Je rent tussen de bomen door. Boven je hoofd zweven gouden munten, in drie rijen van 8. Je springt en springt en vangt ze allemaal.
+? Hoeveel munten heb je gevangen? -> 24/vierentwintig -> blokken | munten-fout
+
+# munten-fout
+Drie rijen, en in elke rij zitten 8 munten. 3 keer 8. Of tel 8 plus 8 plus 8.
+> Tel nog eens -> wereld1
+
+# blokken
+24 munten! Ze rinkelen in je buidel.
+
+Verderop zweven twee gouden blokken met een vraagteken erop. Als je er van onderen tegenaan springt, verschijnt er een som. Op het eerste blok staat: 7 x 6.
+? Wat is 7 x 6? -> 42/tweeenveertig -> blok2 | blok1-fout
+
+# blok1-fout
+De tafel van 7: 7, 14, 21, 28, 35, 42. Zes keer zeven.
+> Spring nog eens tegen het blok -> blokken
+
+# blok2
+Pling! Er springen 5 munten uit het blok.
+
+Het tweede blok: 9 x 8.
+? Wat is 9 x 8? -> 72/tweeenzeventig -> mol | blok2-fout
+
+# blok2-fout
+Een truc voor de tafel van 9: 10 keer 8 is 80, haal er een keer 8 af. 80 min 8.
+> Spring nog eens tegen het blok -> blok2
+
+# mol
+Pling! Nog 5 munten. Je hebt er nu 34.
+
+Aan het eind van het bos staat een winkeltje in een molshoop. De mol zet zijn brilletje recht. 'Twee dingen te koop,' piept hij. 'Een vliegveer, 30 munten. Daarmee zweef je over gaten. Of een warme sjaal, 20 munten. Daarmee kun je niet bevriezen.'
+> Koop de vliegveer (30 munten) -> veer [+veer]
+> Koop de warme sjaal (20 munten) -> sjaal [+sjaal]
+> Koop niets en spaar -> stammen
+
+# veer
+Je telt 30 munten uit. De mol geeft je een lange witte veer. Hij gloeit een beetje.
+? Hoeveel munten heb je nog over van je 34? -> 4/vier -> stammen | veer-fout
+
+# veer-fout
+Je had 34 munten en je betaalt er 30. 34 min 30.
+> Tel nog eens -> veer
+
+# sjaal
+Je telt 20 munten uit. De mol geeft je een dikke rood-witte sjaal. Meteen heb je het lekker warm.
+? Hoeveel munten heb je nog over van je 34? -> 14/veertien -> stammen | sjaal-fout
+
+# sjaal-fout
+Je had 34 munten en je betaalt er 20. 34 min 20.
+> Tel nog eens -> sjaal
+
+# stammen
+Achter de winkel staan drie holle boomstammen. Hoeroe heeft verteld dat je erdoor kunt glijden, naar een andere wereld. Maar maar een stam brengt je naar de Wolkenbergen.
+
+Op de stammen staan getallen: 12, 18 en 21. Op een bordje ernaast: Neem de stam uit de tafel van 7.
+> Glij door stam 12 -> stam12
+> Glij door stam 18 -> stam18
+> Glij door stam 21 -> wereld2
+
+# stam12
+Woesj! Je glijdt naar beneden en komt uit... in het bos, vlak voor de stammen. 12 zit niet in de tafel van 7.
+
+De tafel van 7 gaat zo: 7, 14, 21, 28.
+> Probeer opnieuw -> stammen
+
+# stam18
+Woesj! Je glijdt naar beneden en komt uit in een plas modder. Bah. 18 zit niet in de tafel van 7. Je klimt eruit en loopt terug.
+
+De tafel van 7 gaat zo: 7, 14, 21, 28.
+> Probeer opnieuw -> stammen
+
+# wereld2
+% ........................
+% ..www.........wwww......
+% .wwwww.......wwwwww.....
+% ........................
+% ..........ss............
+% .........ssss...........
+% ........ssssss.......y..
+% .......sswwssss.....yyy.
+% ......ssssssssss...yyyyy
+% .gg..ssssssssssss..ggggg
+% .gg.ssssssssssssss.ggggg
+% ........................
+Woesj! 21 zit in de tafel van 7. Je glijdt door de stam en komt omhoog in Wereld 2: De Wolkenbergen.
+
+Hier zweven blokken in de lucht. Daartussen zitten diepe gaten, en onderin is alleen maar mist.
+
+Je moet van het blok linksonder naar de ster rechtsonder. Je kunt niet zomaar springen. Je moet je route plannen.
+> Plan je route -> sprong
+> Gebruik de vliegveer -> zweven ?veer
+> Spring gewoon, je bent toch de snelste? -> val !veer
+
+# val
+Je neemt een aanloop en springt. Je springt ver. Maar niet ver genoeg.
+
+Je valt door de wolken naar beneden, zachtjes, alsof je in een kussen valt, en landt weer in Bessendal. Het is nog steeds koud.
+
+Hoeroe kijkt je hoofdschuddend aan. 'Spring nooit zonder te kijken,' zegt ze.
+== einde: Game over. Spring de volgende keer niet zonder te kijken!
+
+# zweven
+Je houdt de veer omhoog en springt. De veer trekt je omhoog en je zweeft rustig over alle gaten heen, als een blaadje in de wind.
+
+Bij de ster zet je zachtjes af. Je hoeft niet eens te puffen.
+> Verder -> wereld3
+
+# sprong
+Je ziet de blokken als een rooster van vakjes. Jij staat linksonder, en je kijkt naar rechts. De ster zweeft rechtsonder. De grijze blokken zijn rotsen waar je niet door kunt.
+
+Schrijf je route als opdrachten, met komma's ertussen: vooruit 3, links, rechts. Links en rechts betekent: draai een kwartslag, zonder te lopen.
+robot: 7x4 start=0,3,oost doel=6,3 muur=2,3 2,2 4,3 4,2 -> wereld3 | sprong-fout
+// oplossing sprong: vooruit 1, links, vooruit 2, rechts, vooruit 4, rechts, vooruit 2, links, vooruit 1
+
+# sprong-fout
+Kijk goed naar het rooster. Je moet eerst omhoog, over beide rotsblokken heen, en dan weer naar beneden. Na een stap vooruit draai je naar links, dan kijk je omhoog.
+> Probeer het nog eens -> sprong
+
+# wereld3
+Je staat bij de ster. Hij gloeit, en dan wijst een straal licht naar boven. Daar, op de hoogste wolk, staat een burcht van blauw ijs. De IJsburcht.
+
+Een lange brug leidt naar de poort. Maar de brug heeft geen planken meer. Er zweven alleen een paar ijsplaten in de lucht, met getallen erop: 1, 4, 9, 16. De volgende plaat is leeg.
+
+Op de poort staat: Wie verder wil, weet het volgende getal.
+? Welk getal komt na 1, 4, 9, 16? -> 25/vijfentwintig -> burcht | brug-fout
+
+# brug-fout
+Kijk naar de tafels. 1 is 1 x 1. 4 is 2 x 2. 9 is 3 x 3. 16 is 4 x 4. Wat komt er dan?
+> Probeer het nog eens -> wereld3
+
+# burcht
+25 is 5 x 5! Er verschijnt een nieuwe ijsplaat, en de poort gaat krakend open.
+
+Binnen is het ijskoud. Alles is van ijs: de muren, de vloer, de trappen. De wind blaast door de gangen.
+> Loop verder -> koud !sjaal
+> Loop verder -> troon ?sjaal
+
+# koud
+Het is zo koud dat je poten stijf worden. Je kunt bijna niet meer lopen. Je moet het ijs laten smelten om warm te blijven.
+
+In een hoek ligt een stapel van 12 ijsblokken. Als je er tegen springt, smelt een kwart ervan, en dan komt er warme stoom vrij.
+? Een kwart van 12 ijsblokken smelt. Hoeveel blijven er over? -> 9/negen -> troon | koud-fout
+
+# koud-fout
+Een kwart van 12 is 12 gedeeld door 4. Dat smelt weg. Wat houd je dan over van 12?
+> Probeer het nog eens -> koud
+
+# troon
+Warm genoeg loop je de troonzaal in. Daar, op een troon van ijs, zit de IJskoning. Hij is groot, met een baard van ijspegels en een kroon van sneeuw.
+
+In zijn handen houdt hij de Zonnesteen. Maar het rare is: hij houdt hem dicht tegen zich aan, alsof hij het koud heeft.
+
+'Ga weg, vos,' bromt hij. 'Deze steen is van mij.'
+> Daag hem uit voor een rekenduel -> duel
+> Vraag waarom hij de steen nodig heeft -> waarom
+
+# duel
+'Ik daag je uit,' zeg je. 'Een rekenduel. Als ik win, krijg ik de Zonnesteen.'
+
+De IJskoning grinnikt. 'Goed. Maar mijn sommen zijn zo koud als ijs.' Hij gooit een ijsblok in de lucht. Er staat iets op: Ik heb 3 vriezers met elk 8 ijsjes. Ik eet er 4 op. Hoeveel ijsjes heb ik nog?
+? Hoeveel ijsjes heeft de IJskoning nog? -> 20/twintig -> gewonnen | duel-fout
+
+# duel-fout
+Eerst: 3 vriezers met elk 8 ijsjes, dat is 3 keer 8. Dan gaan er 4 af.
+> Probeer het nog eens -> duel
+
+# gewonnen
+'Twintig,' zeg je.
+
+De IJskoning zakt in elkaar op zijn troon. 'Verloren,' bromt hij. 'Neem die steen dan maar.' Hij geeft hem aan jou. Meteen begint het ijs om je heen te druppen.
+
+Hij kijkt verdrietig, en heel koud.
+> Neem de steen en ren naar huis -> naarhuis
+> Vraag waarom hij de steen eigenlijk wilde -> waarom
+
+# naarhuis
+Je rent de burcht uit, over de brug, door de wolken, door de holle stam, door het Bessenbos. Als je de Zonnesteen terug op de heuvel legt, schijnt de zon weer over Bessendal.
+
+Het ijs smelt, de bessen worden weer rood en iedereen juicht. Je bent een held.
+
+Maar soms, als je naar de Wolkenbergen kijkt, denk je aan de IJskoning. Alleen in zijn koude burcht.
+== einde: De Zonnesteen is terug in Bessendal!
+
+# waarom
+'Waarom heb je de steen nodig?' vraag je.
+
+De IJskoning is even stil. Dan zegt hij zacht: 'Omdat het hier altijd koud is. Al duizend jaar. Ik wilde het ook een keer warm hebben.'
+
+Je kijkt om je heen. Een burcht van ijs, zonder vrienden, zonder zon. Je zou het ook koud krijgen.
+> Nodig hem uit om in Bessendal te komen wonen -> vriend
+> Bedenk een plan om de steen te delen -> delen
+
+# delen
+'De steen geeft licht voor het hele dal,' zeg je. 'Maar wat als je hem elke maand een dag mag lenen? Een maand heeft ongeveer 30 dagen.'
+? Als de koning de steen 1 dag per maand heeft, hoeveel dagen per jaar is dat? -> 12/twaalf -> gedeeld | delen-fout
+
+# delen-fout
+Een jaar heeft 12 maanden. Elke maand 1 dag.
+> Probeer het nog eens -> delen
+
+# gedeeld
+'Twaalf dagen per jaar,' zegt de IJskoning langzaam. 'Twaalf warme dagen. Dat heb ik in duizend jaar nog nooit gehad.'
+
+Jullie sluiten een afspraak. Je neemt de Zonnesteen mee naar huis, en elke eerste dag van de maand brengt Hoeroe hem naar de burcht.
+
+Op die dagen smelt er een beetje ijs van de koning zijn baard, en hij lacht.
+== einde: Je hebt de Zonnesteen eerlijk gedeeld.
+
+# vriend
+'Kom toch bij ons wonen,' zeg je. 'In Bessendal is het altijd zomer. Er is plek genoeg.'
+
+De IJskoning kijkt je aan alsof niemand ooit iets aardigs tegen hem heeft gezegd. Dan staat hij op, langzaam, en geeft je de Zonnesteen.
+
+Samen lopen jullie naar Bessendal. De koning smelt een beetje kleiner bij elke stap, tot hij precies zo groot is als een sneeuwpop. Hij krijgt een plekje in de schaduw van de grote eik, waar hij nooit te warm wordt.
+
+De kinderen van Bessendal spelen elke dag met hem. 's Zomers maakt hij ijsjes voor iedereen.
+== einde: De IJskoning is je beste vriend geworden!

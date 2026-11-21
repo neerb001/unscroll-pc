@@ -1,0 +1,137 @@
+titel: Interrail door Europa
+over: Je oom Felix is verdwenen tijdens een treinreis door Europa. Hij laat aanwijzingen achter, en jij reist hem achterna.
+
+# start
+% ........................
+% ........................
+% ..rrrrrrrrrrrrrrrrrrrr..
+% .rrwwwrwwwrwwwrwwwrwwrr.
+% .rrcwcrcwcrcwcrcwcrcwrr.
+% .rrrrrrrrrrrrrrrrrrrrrr.
+% .rrrrrrrrrrrrrrrrrrrrrr.
+% ..dd...........dd....dd.
+% ssssssssssssssssssssssss
+% .n..n..n..n..n..n..n..n.
+Oom Felix is de leukste oom van de wereld. Hij is treinmachinist geweest, kent overal ter wereld iemand, en stuurt je elk jaar een kaart van een plek waar je nog nooit van hebt gehoord.
+
+Deze zomer zou hij met de trein door Europa reizen. Maar al een week heeft niemand iets van hem gehoord. Zijn telefoon staat uit.
+
+Dan komt er een ansichtkaart. Op de voorkant: een hoge ijzeren toren. Op de achterkant, in zijn handschrift: Ik zit in de problemen. Volg de aanwijzingen. Begin hier. Vertel het niemand.
+
+Je mag van je ouders, als je bij je tante Noor blijft, die mee wil. Jullie kopen een Interrail-pas.
+> Vertrek met tante Noor -> parijs
+
+# parijs
+De trein uit Amsterdam rijdt in ruim drie uur naar de stad met de hoge ijzeren toren. Op de kaart in de trein licht het land op waar je naartoe gaat.
+kaart: europa FRA
+? Welk land is dit? -> frankrijk/france -> toren | land-fout
+
+# land-fout
+Kijk goed naar de kaart. Het grote land ten zuiden van België, met Spanje eronder. De hoge ijzeren toren heet de Eiffeltoren.
+> Kijk nog eens naar de kaart -> parijs
+
+# toren
+Frankrijk. En de hoofdstad met de ijzeren toren is Parijs. Jullie gaan naar de Eiffeltoren. Bij de kassa ligt een envelop met jouw naam erop.
+
+Erin zit een kaartje: Ga naar de stad van het Colosseum. Je reist 1400 kilometer met een trein die 200 kilometer per uur rijdt.
+
+'Hoe lang zitten we dan in de trein?' vraagt tante Noor.
+? Hoeveel uur duurt de reis? (1400 km, 200 km per uur) -> 7/7 uur/zeven -> rome | rome-fout
+
+# rome-fout
+Elk uur rijdt de trein 200 kilometer. Hoeveel keer past 200 in 1400? Denk aan 14 gedeeld door 2.
+> Reken het nog eens uit -> toren
+
+# rome
+Zeven uur later stap je uit in Rome, de hoofdstad van Italië. Het is warm, het ruikt naar pizza en overal staan oude stenen.
+
+Bij het Colosseum, een enorm rond stadion van tweeduizend jaar oud, verkoopt een man ijsjes. 'Ben jij familie van Felix?' vraagt hij. 'Hij zei dat je zou komen.'
+
+Hij geeft je een ijsje en een briefje. Op het briefje staat een kaart, met een land gekleurd.
+kaart: europa AUT
+? Welk land moet je nu naartoe? -> oostenrijk/austria -> oostenrijk | oostenrijk-fout
+
+# oostenrijk-fout
+Het land met de hoge Alpen, ten noorden van Italië, ten zuiden van Duitsland. Het lijkt een beetje op een stuk taart, of een kikkerbil.
+> Kijk nog eens naar de kaart -> rome
+
+# oostenrijk
+Oostenrijk! De ijsjesman knikt. 'Felix zei: ga naar de hoofdstad, naar het grote reuzenrad.'
+? Wat is de hoofdstad van Oostenrijk? -> wenen/wien/vienna -> wenen | wenen-fout
+
+# wenen-fout
+De hoofdstad van Oostenrijk is beroemd om muziek (Mozart woonde er), taartjes en paleizen. Hij begint met een W.
+> Probeer het nog eens -> oostenrijk
+
+# wenen
+In Wenen staat het grote reuzenrad in een pretpark. Bovenin, in een van de gondels, vind je een pakketje met touw eromheen.
+
+Erin zit een oude zakklok en een briefje: Bijna. In het land waar ik nu ben, is het 1 uur later dan in Nederland. Ik zit in het oudste huis van een eilandstad, met een helder blauwe zee.
+
+Jullie kijken op de kaart. Welke landen hebben de tijd van Nederland plus 1 uur?
+> Griekenland -> griekenland
+> Engeland -> engeland
+> Spanje -> spanje
+
+# engeland
+In Engeland is het niet later, maar juist 1 uur vroeger dan in Nederland. Als het in Amsterdam 14:00 is, is het in Londen pas 13:00.
+
+Felix zit dus niet in Engeland.
+> Kijk nog eens op de kaart -> wenen
+
+# spanje
+Spanje heeft dezelfde tijd als Nederland. Als het in Amsterdam 14:00 is, is het in Madrid ook 14:00. Felix bedoelt een land waar het 1 uur later is.
+> Kijk nog eens op de kaart -> wenen
+
+# griekenland
+Griekenland! Daar is het een uur later dan thuis. Als het in Nederland 12:00 is, is het in Griekenland al 13:00.
+
+Jullie nemen de trein en de boot. Op de boot hangt een kaart van Europa. Het land waar jullie heen gaan is gekleurd.
+kaart: europa GRC
+? Welk land is gekleurd? -> griekenland/greece -> eilanden | grc-fout
+
+# grc-fout
+Het land helemaal in het zuidoosten van Europa, met honderden eilanden in een blauwe zee. Je bent er net naartoe gereisd.
+> Kijk nog eens naar de kaart -> griekenland
+
+# eilanden
+De boot vaart langs witte huisjes met blauwe daken. Tante Noor wijst. 'Daar! Het oudste huis van de stad, staat op het briefje.'
+
+Het huis is een klein museum. Binnen zit een man met een grote grijze baard achter een schrijfmachine. Oom Felix!
+
+'Je hebt me gevonden!' roept hij. Hij geeft je een knuffel die naar zee en koffie ruikt.
+
+'Maar je zat in de problemen!' zeg je.
+> Vraag wat er aan de hand is -> uitleg
+> Word een beetje boos dat hij iedereen bang heeft gemaakt -> boos
+
+# boos
+'Iedereen was ongerust!' zeg je. 'Je telefoon stond uit!'
+
+Felix kijkt je beschaamd aan. 'Je hebt gelijk. Dat was niet slim. Ik had je ouders moeten vertellen dat het een spel was.'
+
+Hij belt meteen je ouders. Het wordt een lang gesprek.
+> Vraag wat dan dat spel was -> uitleg
+
+# uitleg
+Felix lacht een beetje verlegen. 'De problemen... ik zit vast met mijn boek. Ik schrijf een boek over treinreizen door Europa, voor kinderen. En ik wilde weten of een kind van jouw leeftijd mijn aanwijzingen zou snappen.'
+
+Hij laat je de schrijfmachine zien. Op het papier staat: Hoofdstuk 1. Begin bij de ijzeren toren.
+
+'Jij hebt alles opgelost,' zegt hij. 'Parijs, Rome, Wenen, en nu dit eiland. Wil je me helpen het boek af te maken?'
+> Ja, natuurlijk -> boek
+> Nee, je wilt nu eerst naar het strand -> strand
+
+# strand
+'Eerst het strand,' zeg je. Felix lacht. 'Natuurlijk.'
+
+Je zwemt in de blauwe zee, eet ijs en vergeet alles over raadsels en kaarten. Tante Noor valt in slaap onder een parasol. De zon zakt langzaam in de zee.
+
+Morgen help je Felix misschien met zijn boek. Of overmorgen.
+== einde: Een week strand in Griekenland. Ook een goed einde.
+
+# boek
+Je blijft een week op het eiland. Elke ochtend schrijf je met Felix aan het boek. Jij bedenkt de raadsels, hij schrijft de verhalen.
+
+Een jaar later ligt het boek in de winkel. Op de voorkant staat: Interrail door Europa. Door oom Felix en jou. Met jouw tekening van de ijzeren toren erop.
+== einde: Je schreef een boek met oom Felix!

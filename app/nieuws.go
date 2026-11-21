@@ -19,6 +19,10 @@ type nieuwsItem struct {
 
 // nieuwsLijst: nieuwste bovenaan.
 var nieuwsLijst = []nieuwsItem{
+	{"v0.35.0", [2]string{
+		"Nieuw bij 2 Lezen: elf avonturen waarin jij kiest wat er gebeurt. Los sommen, codes en kaartpuzzels op, stuur een robot en zoek alle eindes. Druk op Tab bij Lezen.",
+		"New in 2 Read: eleven adventures where you choose what happens. Solve sums, codes and map puzzles, steer a robot and find every ending. Press Tab in Read.",
+	}},
 	{"v0.34.0", [2]string{
 		"Je kunt de computer nu zelf uitzetten of opnieuw opstarten: ga naar 9 Systeem en druk twee keer op z (uitzetten) of r (opnieuw opstarten).",
 		"You can now shut down or restart the computer yourself: go to 9 System and press z (shut down) or r (restart) twice.",

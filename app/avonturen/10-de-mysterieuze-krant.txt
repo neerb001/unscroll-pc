@@ -1,0 +1,191 @@
+titel: De mysterieuze krant
+over: Elke ochtend ligt er een krant op je stoep, met nieuws van morgen. En er staan foutjes in die een geheime boodschap vormen.
+
+# start
+% ........................
+% .wwwwwwwwwwwwwwwwwwwwww.
+% .wkkkkkkkkkkkkkkkkkkkkw.
+% .wwwwwwwwwwwwwwwwwwwwww.
+% .wsssssssswwwsssssssssw.
+% .wwwwwwwwwwwwwwwwwwwwww.
+% .wbbbbbbbbwwsssssssssww.
+% .wbbbbbbbbwwwwwwwwwwwww.
+% .wbbbybbbbwwsssssssssww.
+% .wbbbbbbbbwwwwwwwwwwwww.
+% .wggggggggwwsssssssssww.
+% .wwwwwwwwwwwwwwwwwwwwww.
+% .wsssssssswwssssssssssw.
+% .wwwwwwwwwwwwwwwwwwwwww.
+% ........................
+Het begint op een maandag. Op de stoep voor je huis ligt een krant. Jullie hebben helemaal geen krant. En niemand in de straat heeft er een gekregen.
+
+Bovenaan staat: De Morgenbode. En de datum van morgen.
+
+Op de voorpagina: Hond van de bakker loopt weg, gevonden in het park bij de vijver.
+
+Je haalt je schouders op. Een grap, waarschijnlijk.
+> Gooi de krant bij het oud papier -> weg
+> Bewaar de krant in je tas -> dinsdag [+krant]
+
+# weg
+Je gooit de krant in de papierbak. Maar de volgende ochtend is de hond van de bakker echt weg.
+
+En op de stoep ligt weer een krant.
+> Raap hem op -> dinsdag [+krant]
+
+# dinsdag
+Dinsdag. De hond van de bakker is echt weggelopen. De hele buurt zoekt. Jij weet waar hij is.
+
+Je rent naar het park. Bij de vijver ligt de hond in het riet te slapen.
+
+De bakker is zo blij dat hij je een zak krentenbollen geeft. Maar jij denkt aan de krant. Hoe kan iemand dit weten?
+
+Je leest de krant van gisteren nog eens, heel precies. Er staan foutjes in. Rare foutjes.
+> Lees de eerste zin met een foutje -> fout1
+
+# fout1
+In de krant staat: De hond werd gevonden door een kind dat in het park wandelt.
+
+Hmm. Een kind dat in het park wandelt. Dat klopt toch? Je leest verder. Bij het weerbericht staat: Morgen word het mooi weer.
+? Hoe schrijf je 'word' in die zin goed? -> wordt -> fout1-goed | fout1-fout
+
+# fout1-fout
+Het weer is hij, het weer wordt mooi. Bij hij, zij en het komt er een t achter de stam: word plus t. Probeer het ezelsbruggetje: vervang word door loop. Het loopt. Dus: het wordt.
+> Probeer het nog eens -> fout1
+
+# fout1-goed
+Wordt, met dt. Iemand die een krant maakt, weet dat toch?
+
+Je pakt een pen en zet een rondje om de t die mist. Je schrijft hem in de kantlijn: T.
+
+Misschien is het geen foutje. Misschien is het een letter van een boodschap.
+> Wacht op de krant van woensdag -> woensdag
+
+# woensdag
+Woensdagochtend ligt er weer een krant. Voorpagina: Groot onweer in de middag. Bliksem slaat in de oude eik op het schoolplein.
+
+Je speurt naar foutjes. In het verhaal over de eik staat: De conciërge vind het jammer van de boom.
+? Hoe schrijf je 'vind' hier goed? -> vindt -> woensdag-goed | woensdag-fout
+
+# woensdag-fout
+Hij vind, of hij vindt? Doe de loop-test: hij loopt. Dus komt er een t achter de stam. De stam is vind, dan wordt het vind plus t.
+> Probeer het nog eens -> woensdag
+
+# woensdag-goed
+Vindt. Weer een t die mist. Je schrijft hem in de kantlijn. T, T.
+
+Je kijkt uit het raam. De lucht is blauw, geen wolkje te zien. 'Onweer?' zeg je hardop. 'Nooit.'
+> Waarschuw de school -> waarschuwen
+> Wacht af wat er gebeurt -> afwachten
+
+# waarschuwen
+Je gaat naar de conciërge. 'Er komt onweer,' zeg je. 'De bliksem slaat in de eik. Er mag vanmiddag niemand onder staan.'
+
+Hij kijkt naar de blauwe lucht en lacht. Maar hij zet toch een lint om de boom. 'Voor de zekerheid,' knipoogt hij.
+
+Om drie uur wordt de lucht zwart. Een enorme knal. De bliksem slaat in de eik. Er staat niemand onder, dankzij het lint.
+
+De conciërge kijkt je aan, met grote ogen. 'Hoe wist je dat?'
+> Vertel hem over de krant -> vertellen
+> Zeg dat je het weerbericht hebt gezien -> donderdag
+
+# vertellen
+Je laat hem de kranten zien. Hij leest ze langzaam. Dan wordt hij heel stil.
+
+'Morgenbode,' zegt hij. 'Zo heette de krant van dit dorp. Mijn opa was de drukker. Maar die krant bestaat al vijftig jaar niet meer. De oude drukkerij staat leeg, achter de kerk.'
+> Ga naar de oude drukkerij -> donderdag [+tip]
+
+# afwachten
+Je wacht af. Om drie uur wordt de lucht zwart. Een enorme knal. De bliksem slaat in de eik op het schoolplein. Gelukkig staat er net niemand onder.
+
+Je handen trillen. Het klopt. Alles wat in de krant staat, klopt.
+> Wacht op de krant van donderdag -> donderdag
+
+# donderdag
+Donderdag. Een nieuwe krant. Deze keer is de voorpagina bijna leeg. Er staat maar een zin, in grote letters:
+
+Wie de boodschap vind, vindt de drukker.
+
+Hé. Daar staat het twee keer, een keer fout en een keer goed. Dat is vast expres. De drukker wil dat je de letters bij elkaar zoekt.
+
+Je hebt er nu drie: T, T, en nu nog een T. Maar met alleen T's maak je geen woord. Je leest alle kranten nog eens, heel goed, en vindt nog meer foutjes.
+
+In de krant van maandag staat: Het dorp telt 3 bakkers. Een bakker word ouder en stopt. In de krant van woensdag: De bliksem slaat in om drie uur. Ik heb het gezien met mijn eige ogen.
+? Welke letter mist er in 'eige'? -> n -> zoeken | donderdag-fout
+
+# donderdag-fout
+Je ziet iets met je eigen ogen. Er mist een letter aan het eind.
+> Probeer het nog eens -> donderdag
+
+# zoeken
+Een N. Je schrijft al je letters onder elkaar en schuift ermee. Er zijn ook nog een paar letters die er te veel staan in de kranten: een R hier, een E daar, een O in 'groote'.
+
+Je streept de dubbele letters weg. Over blijven: T, O, R, E, N.
+? Welk woord maak je van T, O, R, E en N? -> toren -> torenvraag | zoeken-fout
+
+# zoeken-fout
+Een hoog gebouw, vaak bij een kerk. Er hangt soms een klok in.
+> Probeer het nog eens -> zoeken
+
+# torenvraag
+TOREN! De kerktoren, achter de kerk staat de oude drukkerij. Daar moet je naartoe.
+> Ga 's middags na school -> drukkerij
+> Ga 's nachts, als niemand het ziet -> nacht
+
+# nacht
+Je sluipt 's nachts het huis uit. Het is donker en koud. Bij de kerk hoor je een uil. De deur van de oude drukkerij zit op slot, en het is zo donker dat je niets ziet.
+
+Je bibbert, draait om en gaat terug naar bed. Morgen beter, als het licht is.
+> Ga morgen na school -> drukkerij
+
+# drukkerij
+De oude drukkerij is een laag gebouw met kapotte ramen en een deur die half open staat. Binnen staan grote zwarte machines onder het stof.
+
+Op een tafel ligt een stapel kranten. Morgenbode. Allemaal met de datum van morgen.
+
+Achter een machine zit een oude vrouw met een bril op haar voorhoofd. Ze zet loden letters in een houten bakje.
+
+'Eindelijk,' zegt ze. 'Ik wachtte al op iemand die goed kan lezen.'
+> Vraag wie ze is -> mevrouw
+> Vraag hoe ze het nieuws van morgen weet -> morgen
+
+# mevrouw
+'Ik ben Wil,' zegt ze. 'Ik was ooit de jongste drukker van de Morgenbode. Ik ben gebleven toen de krant stopte.'
+> Vraag hoe ze het nieuws van morgen weet -> morgen
+
+# morgen
+Wil glimlacht en wijst naar de grootste machine. 'Die drukt het nieuws van morgen. Waarom weet ik niet. Maar al vijftig jaar.'
+
+'Ik word oud,' zegt ze. 'Ik zocht iemand die het van me over kan nemen. Iemand die de foutjes ziet. Want wie het nieuws van morgen kent, moet heel precies zijn. Een fout kan alles veranderen.'
+
+Ze legt een vel papier voor je neer. 'Laatste proef. Hier staat een zin. Maak hem foutloos.'
+
+Op het papier staat: Morgen vindt de burgemeester een kat in de boom, en hij word er blij van.
+? Welk woord is fout? Typ het goed. -> wordt -> proef | proef-fout
+
+# proef-fout
+Kijk naar elk werkwoord. Vindt, daar zit al een t aan. Maar 'hij word'? Doe de loop-test: hij loopt.
+> Probeer het nog eens -> morgen
+
+# proef
+'Wordt,' zeg je. 'Hij wordt er blij van.'
+
+Wil klapt in haar handen. 'Perfect. Wil je mijn leerling worden? Elke woensdagmiddag. Dan leer ik je alles.'
+> Ja! -> leerling
+> Nee, dit is je te griezelig -> griezelig
+
+# griezelig
+'Nee,' zeg je. 'Ik wil niet weten wat er morgen gebeurt. Dan is er niks meer om op te wachten.'
+
+Wil kijkt je lang aan. Dan knikt ze. 'Dat is misschien het wijste wat iemand ooit tegen me heeft gezegd.'
+
+De volgende ochtend ligt er geen krant op de stoep. Wel een briefje: Je bent altijd welkom. W.
+== einde: Je koos voor de verrassing van morgen.
+
+# leerling
+Elke woensdag fiets je naar de oude drukkerij. Je leert letters zetten, inkt mengen en de grote machine smeren.
+
+En elke ochtend lees je het nieuws van morgen, op zoek naar foutjes. Want elke fout die je eruit haalt, maakt de wereld een klein beetje beter.
+
+Op de laatste bladzijde van de Morgenbode staat nu een nieuwe naam onder de colofon. De jouwe.
+== einde: Je bent de nieuwe drukker van de Morgenbode!

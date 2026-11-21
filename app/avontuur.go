@@ -619,7 +619,7 @@ func (m *model) toetsAvontuur(msg tea.KeyMsg) tea.Cmd {
 	switch k {
 	case "esc":
 		m.ls.avontuur = nil
-		m.ls.avonturen = m.avonturenLijst()
+		m.ls.avonturen = m.avonturenLijstVan(m.ls.avonturen.sel)
 		return nil
 	case "pgup", "pgdown", "up", "down":
 		scrollToets(k, &s.boven, pagina)
@@ -643,7 +643,7 @@ func (m *model) toetsAvontuur(msg tea.KeyMsg) tea.Cmd {
 			return m.avNaarScene(s.av.begin)
 		case "2":
 			m.ls.avontuur = nil
-			m.ls.avonturen = m.avonturenLijst()
+			m.ls.avonturen = m.avonturenLijstVan(m.ls.avonturen.sel)
 		}
 		return nil
 	}
@@ -785,3 +785,10 @@ func (m model) viewAvontuur(p palet) string {
 }
 
 func (m *model) avonturenLijst() lijst { return lijst{items: avontuurItems()} }
+
+// avonturenLijstVan: opnieuw opbouwen (de eindes kunnen veranderd zijn), op dezelfde plek.
+func (m *model) avonturenLijstVan(sel int) lijst {
+	l := m.avonturenLijst()
+	l.sel = max(0, min(sel, len(l.items)-1))
+	return l
+}
