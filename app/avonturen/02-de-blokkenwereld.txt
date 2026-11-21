@@ -1,0 +1,196 @@
+titel: De blokkenwereld
+over: Je wordt wakker in een wereld van blokken. Voordat het nacht wordt, moet je een veilige plek bouwen.
+
+# start
+% ........gggggggg........
+% ......gggggggggggg......
+% .....gggglggggglggg.....
+% .....gggggggggggggg.....
+% ......gggggglgggggg.....
+% ........nnnn............
+% ........nnnn......wwww..
+% ........nnnn.....wwwwww.
+% ........nnnn.....wwrwww.
+% ........nnnn......wwww..
+% ..................yy.yy.
+% gggggggggggggggggggggggg
+% nnnnnnnnnnnnnnnnnnnnnnnn
+% ssssssssssssssssssssssss
+Je doet je ogen open en kijkt recht in de zon. Een vierkante zon. Je gaat rechtop zitten. Het gras onder je is vierkant, de bomen zijn vierkant, zelfs de wolken zijn vierkant.
+
+Naast je staat een kip. Ook vierkant. Ze kijkt je aan en zegt: 'Tok.'
+
+In de verte zakt de zon al naar de horizon. Je weet niet hoe je het weet, maar je weet het zeker: als het donker wordt, komen hier dingen uit de grond die je niet wilt tegenkomen.
+> Noem de kip Kakel en vraag wat je moet doen -> kakel
+> Ga meteen een boom omhakken -> boom
+
+# kakel
+'Tok,' zegt Kakel, en ze rent naar een boom. Ze pikt tegen de stam. Dan rent ze terug en pikt tegen je schoen. Dan weer naar de boom.
+
+'Oké, oké,' zeg je. 'Ik snap het. Hout.'
+
+Kakel loopt achter je aan. Je hebt een vriend.
+> Ga naar de boom -> boom [+kakel]
+
+# boom
+Je slaat met je vuist tegen de stam. Eén keer, twee keer, drie keer. Met een plop valt er een blok hout op de grond. Je raapt het op. Het past precies in je hand.
+
+Je hakt de hele boom om en houdt vijf boomstammen over. In je hoofd verschijnt een soort lijstje, alsof je een boek leest. Uit 1 boomstam maak je 4 planken.
+
+Voor een werkbank heb je 4 planken nodig, en voor een deur nog eens 6.
+> Ga planken maken -> planken
+
+# planken
+Je legt de boomstammen op een rij. Hoeveel planken kun je maken van al je 5 boomstammen?
+? Hoeveel planken krijg je uit 5 boomstammen? -> 20 -> planken-goed | planken-fout
+
+# planken-fout
+Je telt nog eens. Uit 1 boomstam krijg je 4 planken. Je hebt 5 boomstammen. Dat is dus 5 keer 4.
+> Probeer het nog eens -> planken
+
+# planken-goed
+Twintig planken! Je stapelt ze netjes op. Je maakt een werkbank (4 planken weg) en een deur (6 planken weg).
+
+Je hebt nu nog 10 planken over. Kakel kijkt goedkeurend. 'Tok.'
+
+De zon staat nu laag. De schaduwen worden lang. Je moet een plek vinden om te schuilen.
+> Bouw een hut van planken -> hut
+> Zoek een grot in de heuvel -> grot
+
+# hut
+Je wilt een hut bouwen van 4 blokken breed en 3 blokken hoog. Eén muur, aan de voorkant. Daarin komt je deur, en die neemt 2 blokken in.
+
+Hoeveel planken heb je nodig voor die voorkant?
+? Hoeveel planken heb je nodig? (4 breed, 3 hoog, min 2 voor de deur) -> 10 -> hut-goed | hut-fout
+
+# hut-fout
+Je kijkt nog eens naar de muur. 4 breed en 3 hoog is 4 keer 3 blokken. Daar gaan nog 2 blokken af, want daar komt de deur.
+> Reken het nog eens uit -> hut
+
+# hut-goed
+Precies tien! Je hebt precies genoeg. Je bouwt de voorkant tegen een rotswand aan, zodat je alleen die ene muur nodig hebt. De deur gaat met een klik dicht, net op het moment dat de zon onder gaat.
+
+Buiten hoor je gekreun. Gerommel. Iets dat sist. Maar binnen is het warm en veilig. Kakel kruipt tegen je aan.
+> Ga slapen -> slapen
+> Kijk door een kiertje naar buiten -> kiertje
+
+# kiertje
+Je gluurt door een kier tussen twee planken. Buiten, in het maanlicht, loopt een groene figuur zonder armen. Hij stopt vlak voor je deur. Hij begint te sissen. Steeds harder.
+
+Kakel trekt aan je mouw. 'TOK!'
+> Ga snel naar achteren in de hut -> veilig
+> Blijf kijken -> boem
+
+# boem
+BOEM. De voorkant van je hut vliegt in stukken uit elkaar. Je vliegt achteruit, rolt door het gras en blijft liggen.
+
+Als je je ogen opendoet, lig je weer op dezelfde plek als vanochtend. De zon is net op. Kakel staat naast je. 'Tok,' zegt ze verwijtend.
+
+Je hebt nog wel je werkbank. Maar je hut is weg.
+== einde: Boem! Begin maar opnieuw, maar nu weet je wat sist.
+
+# veilig
+Je trekt Kakel mee naar de achterste hoek. Het sissen houdt op. Er gebeurt niets. Na een tijdje hoor je voetstappen die weglopen.
+
+Je durft niet meer te kijken. Je gaat liggen en slaapt.
+> Slaap tot de ochtend -> slapen
+
+# slapen
+Je slaapt tot de zon door de kieren schijnt. Je hebt de eerste nacht overleefd!
+
+Bij daglicht zie je in de verte iets glinsteren tussen de heuvels. Het lijkt wel een mijn, met rails die naar beneden lopen.
+> Ga naar de mijn -> mijn
+> Blijf thuis en bouw je hut verder af -> thuis
+
+# thuis
+Je besluit dat een mooi huis belangrijker is dan avontuur. Je hakt meer bomen. Je maakt een vloer van 5 bij 5 blokken, een dak, ramen van zand dat je smelt tot glas. Je maakt een tuin met tarwe, zodat Kakel te eten heeft.
+
+Na een week heb je het mooiste huis van de hele blokkenwereld. Nou ja, het enige huis. Maar wel het mooiste.
+== einde: Je bouwde het mooiste huis van de blokkenwereld.
+
+# grot
+Je loopt naar de heuvel. Er zit een donker gat in, een grot. Het ruikt naar steen en vochtige aarde. Diep vanbinnen gloeit iets oranjes.
+
+Je gaat een stukje naar binnen. Het oranje is lava. Het borrelt langzaam in een plas onder in de grot.
+> Ga dieper de grot in -> lava
+> Ga terug en bouw toch maar een hut -> hut
+
+# lava
+Je loopt langs de lava. Het is zo heet dat je het op je gezicht voelt. Aan de andere kant van de plas zie je iets blauwigs glinsteren in de muur. Een diamant!
+
+Maar het pad naar de diamant loopt dwars langs de lava. Eén verkeerde stap...
+> Bouw een brug van planken over de lava -> brug
+> Laat de diamant en ga terug naar buiten -> hut
+
+# brug
+De lavaplas is 7 blokken lang. Je wilt er een brug overheen bouwen, met aan elke kant 1 blok extra om op te staan. Hoeveel planken heb je nodig?
+? Hoeveel planken voor de brug? -> 9 -> brug-goed | brug-fout
+
+# brug-fout
+Je meet nog eens. De plas is 7 blokken. Aan het begin 1 blok extra, aan het eind ook 1 blok extra.
+> Reken het nog eens uit -> brug
+
+# brug-goed
+Negen planken, en je hebt er tien. Je legt ze één voor één neer, voetje voor voetje. Onder je borrelt de lava. Kakel blijft aan de kant staan en kijkt de andere kant op.
+
+Aan de overkant hak je de diamant uit de muur. Hij glinstert in je hand alsof hij licht geeft.
+
+Als je terugloopt, hoor je buiten al gekreun. Het is donker geworden terwijl jij in de grot was.
+> Bouw snel een muur voor de ingang van de grot -> grotmuur
+
+# grotmuur
+Je hebt nog 1 plank over. Dat is niet genoeg voor een muur. Maar dan zie je stenen blokken liggen. Je hakt er zes los en bouwt de ingang dicht: 3 breed en 2 hoog.
+
+Binnen, bij het licht van de lava, kijk je naar je diamant. Kakel slaapt al. Morgen, denk je, ga ik op zoek naar de mijn.
+== einde: Je vond een diamant en sliep veilig bij de lava.
+
+# mijn
+De mijn is oud. Er loopt een spoor met een mijnkarretje naar beneden, diep de berg in. Bij de ingang hangt een bordje: MIJNKARRETJE ZELF STUREN.
+
+Je stapt in het karretje. Kakel springt op je schoot. Voor je ligt de bodem van de mijn: een veld met hier en daar lava. Achterin glinstert een schatkist. Je moet het karretje sturen, zonder in de lava te rijden.
+
+Het karretje staat linksonder en kijkt naar rechts (oost). De ster is de schatkist. De grijze blokken zijn lava.
+robot: 7x5 start=0,4,oost doel=6,0 muur=2,4 2,3 2,2 4,0 4,1 4,2 -> kist | karretje-fout
+// oplossing mijn: vooruit 1, links, vooruit 3, rechts, vooruit 2, rechts, vooruit 2, links, vooruit 3, links, vooruit 3
+
+# karretje-fout
+Het karretje piept en stopt. Gelukkig net op tijd, voor de lava. Kakel kijkt je aan alsof ze het zelf beter kan.
+
+Tip: begin met één stapje naar rechts, en ga dan omhoog (links draaien) om om de eerste lavamuur heen te rijden.
+> Probeer het nog eens -> mijn
+> Ga terug naar boven -> slapen
+
+# kist
+Het karretje rijdt keurig om alle lava heen en stopt precies voor de schatkist. Je doet hem open.
+
+Erin ligt een kaart van de hele blokkenwereld, met een kruisje erop. En een briefje: De weg naar huis. Ga naar x = 120, z = -45.
+
+Je kijkt op het kompas in je hoofd. Je staat nu op x = 80, z = -45.
+? Hoeveel blokken moet je lopen in de x-richting om op x = 120 te komen? -> 40 -> naarhuis | kist-fout
+
+# kist-fout
+Je staat op 80 en je moet naar 120. Het verschil tussen 120 en 80, dat is hoeveel blokken je moet lopen.
+> Reken het nog eens uit -> kist
+
+# naarhuis
+Veertig blokken. Je telt elke stap. Kakel rent voor je uit.
+
+Op x = 120 staat een deur in de lucht. Gewoon een deur, midden in het niets, met licht eromheen. Kakel kijkt je aan. 'Tok,' zegt ze zacht.
+> Neem Kakel mee door de deur -> wakker ?kakel
+> Ga door de deur -> wakker-alleen !kakel
+
+# wakker
+Je stapt door de deur, met Kakel in je armen. Alles wordt wit.
+
+Je wordt wakker in je eigen bed. Het is ochtend. Gewoon ronde zon, gewone ronde wolken. Het was een droom, natuurlijk.
+
+Maar als je je kamer uitloopt, staat er in de gang een kip. Een gewone, ronde kip. Ze kijkt je aan. 'Tok,' zegt ze.
+== einde: Je bent thuis. En Kakel ook.
+
+# wakker-alleen
+Je stapt door de deur. Alles wordt wit.
+
+Je wordt wakker in je eigen bed. Het was een droom. Een gekke droom, met vierkante bomen en een mijnkarretje.
+
+Maar soms, als het stil is, denk je dat je heel ver weg iemand hoort zeggen: 'Tok.'
+== einde: Je bent thuis, maar je mist iemand.

@@ -1,0 +1,152 @@
+titel: De laatste ruimteridder
+over: Je bent een jonge piloot bij de rebellen. De bouwtekeningen van het vijandelijke station zitten in een kleine droid. En die is gevangen.
+
+# start
+% ........................
+% ..........ssss..........
+% ........ssssssss........
+% .......sscsssscss.......
+% .......ssssssssss.......
+% ..........ssss..........
+% ..........sbbs..........
+% .........sbbbbs.........
+% .........sbccbs.........
+% .........sbbbbs.........
+% .........ssssss.........
+% ..........s..s..........
+% .........ss..ss.........
+Je landt je kleine schip met een schok in de hangar van het ruimtestation Zwarte Ster. Het is hier groot, grijs en koud. Overal lopen soldaten in witte pakken.
+
+Via je oortje hoor je de stem van commandant Ilse. 'Luister goed. Onze droid R-4 zit opgesloten in de gevangenis van het station. In zijn geheugen zitten de bouwtekeningen van de Zwarte Ster. Als je hem bevrijdt, weten we hoe we het station kunnen stoppen.'
+
+'En de duistere krijger?' vraag je.
+
+Even is het stil. 'Die is ook aan boord. Vorr. Blijf uit zijn buurt.'
+> Sluip langs de soldaten naar de gang -> gang
+> Verkleed je als soldaat -> verkleed
+
+# verkleed
+In een kast naast je schip hangt een wit soldatenpak. Je trekt het aan. Het is veel te groot. De helm zakt over je ogen en je broek sleept over de grond.
+
+Een echte soldaat loopt langs. Hij kijkt je aan. 'Ben jij niet een beetje klein voor een soldaat?'
+
+'Ik ben nieuw,' zeg je met een zware stem.
+
+'Hm,' zegt de soldaat, en hij loopt door.
+> Loop met opgeheven hoofd de gang in -> gang [+pak]
+
+# gang
+De gang is lang en vol deuren. Op een scherm aan de muur staat een bericht. Het lijkt onzin:
+
+GHXU RSHQ
+
+Commandant Ilse fluistert in je oor: 'Dat is een geheimschrift. Elke letter is drie plaatsen opgeschoven in het alfabet. Een D wordt een A, een E wordt een B. Schuif elke letter drie plaatsen terug.'
+? Wat staat er echt? (twee woorden) -> deur open -> codegoed | codefout
+
+# codefout
+Je kijkt nog eens naar de letters. G, drie terug, is D. H, drie terug, is E. X wordt U. U wordt R.
+
+Het eerste woord begint dus met DEUR...
+> Probeer het nog eens -> gang
+
+# codegoed
+DEUR OPEN. Je typt het in op het scherm. Met een sis schuift de deur aan het eind van de gang open.
+
+Erachter is een kruispunt. Links hoor je zware voetstappen en een zoemend geluid, als van een laserzwaard. Rechts is een smalle ventilatieschacht.
+> Ga links -> vorr
+> Kruip de ventilatieschacht in -> schacht
+
+# vorr
+Je gaat de hoek om en staat oog in oog met hem. Vorr. Een lange figuur in een zwarte mantel, met een rood-zwart masker. In zijn hand gloeit een laserzwaard met aan beide kanten een rode lichtbundel.
+
+'Een kind,' zegt hij. Zijn stem klinkt als grind. 'De rebellen sturen een kind.'
+> Ren terug -> vluchten
+> Zeg dat je een soldaat bent -> bluf ?pak
+
+# bluf
+'Ik ben soldaat,' zeg je, en je trekt je veel te grote helm recht. 'Nieuw.'
+
+Vorr kantelt zijn hoofd. Even denk je dat het werkt. Dan zakt je broek af tot op je enkels.
+
+Vorr zegt niks. Hij wijst alleen naar de gevangenis. Twee soldaten pakken je bij je armen.
+> Laat je meenemen -> gevangen
+
+# vluchten
+Je rent zo hard als je kan. Achter je hoor je het zoemen van het zwaard. Je duikt de ventilatieschacht in, net op tijd. Het rode licht flitst vlak achter je voeten langs.
+> Kruip verder door de schacht -> schacht
+
+# gevangen
+Je zit in een cel. Naast je, in de cel ernaast, piept iets. Een kleine blauwe droid. R-4!
+
+'Piep,' zegt R-4. 'Piep piep boe.'
+
+De deur van je cel heeft een slot met lampjes. Drie lampjes: aan, uit, aan. Commandant Ilse fluistert: 'Dat is een binaire code. Het rechter lampje telt 1, het middelste telt 2, het linker telt 4. Tel op wat er aan staat.'
+? Welk getal toets je in? (lampjes: aan, uit, aan) -> 5 -> celopen | celfout
+
+# celfout
+Kijk welke lampjes aan staan. Het linker lampje (dat telt 4) is aan. Het middelste (dat telt 2) is uit. Het rechter (dat telt 1) is aan. Tel op wat aan staat.
+> Probeer het nog eens -> gevangen
+
+# celopen
+Vijf. De celdeur schuift open. Je maakt ook de cel van R-4 open. Hij rolt een rondje om je heen van blijdschap.
+
+'Piep!' Op zijn kop gaat een lampje branden. De bouwtekeningen!
+
+Nu nog terug naar je schip.
+> Ren met R-4 naar de hangar -> hangar
+
+# schacht
+Je kruipt door de schacht. Het is stoffig en donker. Na een tijdje zie je door een rooster een kamer met cellen. In een van de cellen staat R-4!
+
+Je kunt er niet zelf in, maar door het rooster kun je R-4 een signaal sturen. Hij kan zelf door de schachten naar je toe rijden, als jij hem de weg wijst.
+
+R-4 staat linksboven en kijkt naar rechts (oost). Jij zit bij de ster. De grijze blokken zijn dichte schachten.
+robot: 6x5 start=0,0,oost doel=5,4 muur=0,1 1,1 2,1 3,1 2,3 3,3 4,3 5,3 -> r4 | r4fout
+// oplossing schacht: vooruit 4, rechts, vooruit 2, rechts, vooruit 4, links, vooruit 2, links, vooruit 5
+
+# r4fout
+R-4 botst ergens tegenaan of rijdt de verkeerde kant op. 'Piep boe,' klinkt het, een beetje beledigd.
+
+Tip: de schachten maken een zigzag. Eerst helemaal naar rechts tot vlak voor de rand, dan omlaag, dan helemaal naar links, dan weer omlaag.
+> Probeer het nog eens -> schacht
+
+# r4
+R-4 rijdt keurig door alle schachten en ploft naast je neer. 'Piep piep!' Op zijn kop brandt een lampje. De bouwtekeningen zitten er nog in!
+
+Nu nog terug naar je schip.
+> Kruip met R-4 terug naar de hangar -> hangar
+
+# hangar
+In de hangar staat je schip, maar er staan nu tien soldaten omheen. En in het midden, met zijn rode zwaard: Vorr.
+
+R-4 piept zacht. Op zijn schermpje verschijnt een plattegrond. Er is een knop in de hangar die het licht uit kan zetten. Die knop zit achter een paneel met een code: 1 1 0.
+
+'Binair,' fluistert commandant Ilse. 'Links telt 4, midden telt 2, rechts telt 1.'
+? Welk getal is 110 in binair? -> 6 -> donker | hangarfout
+
+# hangarfout
+Kijk welke lampjes aan staan: links (4) aan, midden (2) aan, rechts (1) uit. Tel op wat aan staat.
+> Probeer het nog eens -> hangar
+
+# donker
+Zes. Het licht gaat uit. Het is pikdonker in de hangar. Soldaten roepen door elkaar. Je rent naar je schip, R-4 rolt achter je aan. Alleen het rode zwaard van Vorr gloeit in het donker, en het komt dichterbij.
+> Start meteen de motoren -> ontsnappen
+> Wacht tot R-4 aan boord is -> samen
+
+# ontsnappen
+Je start de motoren. Het schip schiet weg. Pas als je in de ruimte bent, kijk je achterom. R-4 staat nog in de hangar. Hij piept boos.
+
+'Je bent hem vergeten!' roept commandant Ilse. 'De bouwtekeningen zitten in hem!'
+
+Je draait om. Maar de hangardeur gaat al dicht.
+== einde: Ontsnapt, maar zonder R-4. Oeps.
+
+# samen
+'Kom op, R-4!' Je trekt hem aan boord, net als Vorr de laadklep bereikt. Het rode zwaard flitst langs de klep. Je drukt op de knop. Het schip schiet weg.
+
+Achter je wordt de Zwarte Ster kleiner en kleiner.
+
+Op de basis van de rebellen bekijken ze de bouwtekeningen. Er blijkt een zwakke plek te zijn: een klein buisje in de ventilatie. Precies het soort schacht waar jij doorheen kroop.
+
+'Jij bent onze nieuwe ruimteridder,' zegt commandant Ilse. Ze geeft je een medaille. R-4 piept zo hard dat iedereen moet lachen.
+== einde: Je redde R-4 en de bouwtekeningen!

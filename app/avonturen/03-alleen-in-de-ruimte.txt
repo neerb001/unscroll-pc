@@ -1,0 +1,183 @@
+titel: Alleen in de ruimte
+over: Je wordt wakker op een ruimteschip en je weet niet meer wie je bent. Je bent heel ver van huis.
+
+# start
+% ...........ww...........
+% ..........wwww..........
+% .........wwccww.........
+% .........wwccww.........
+% .........wwwwww.........
+% ........wwwwwwww........
+% ........wwrwwrww........
+% .......wwwwwwwwww.......
+% ......rwwwwwwwwwwr......
+% .....rrwwwwwwwwwwrr.....
+% .....rr..oyyyyo..rr.....
+% ..........oyyo..........
+% ...........oo...........
+Een stem praat tegen je. 'Goedemorgen. Je hebt drie jaar geslapen. Hoe voel je je?'
+
+Je doet je ogen open. Je ligt in een smal bed met slangetjes aan je armen. Het plafond is wit en zoemt. Je weet niet waar je bent. Erger nog: je weet niet wie je bent.
+
+'Ik ben MAX, de computer van dit schip,' zegt de stem. 'Je geheugen komt langzaam terug. Eerst een test, om te kijken of je hersenen goed werken.'
+> Doe de test -> test
+> Vraag eerst waar je bent -> waar
+
+# waar
+'Je bent aan boord van het ruimteschip De Hoop,' zegt MAX. 'We zijn heel ver van de aarde. Zo ver, dat het licht van de zon er jaren over doet om hier te komen.'
+
+'En waarom ben ik hier?'
+
+'Dat weet jij beter dan ik,' zegt MAX. 'Of eigenlijk: dat wist jij. Eerst de test.'
+> Doe de test -> test
+
+# test
+'Een makkelijke om mee te beginnen,' zegt MAX. 'Wat is 7 keer 8?'
+? Wat is 7 × 8? -> 56 -> test-goed | test-fout
+
+# test-fout
+'Hmm,' zegt MAX. 'Je hersenen zijn nog een beetje stijf. Geeft niet. Denk aan 7 keer 7, en tel er dan nog één 7 bij op.'
+> Probeer het nog eens -> test
+
+# test-goed
+'Uitstekend,' zegt MAX. 'Je hersenen werken. Mag ik je nu vertellen waarom je hier bent?'
+
+Je knikt.
+
+'Op aarde wordt de zon zwakker. Het komt door kleine wezentjes die zonlicht opeten. Wetenschappers noemen ze zonnevreters. Als we niks doen, wordt het op aarde steeds kouder. Jij bent wetenschapper. Jij moest uitzoeken hoe we ze kunnen stoppen.'
+
+Er schiet een beeld door je hoofd. Een klaslokaal. Kinderen die naar je kijken. Was je... leraar?
+> Ga naar de stuurkamer -> stuurkamer
+> Ga naar het laboratorium -> lab
+> Draai je om en slaap nog even verder -> dutje
+
+# dutje
+'Echt?' zegt MAX. 'Na drie jaar slapen wil je nog even slapen?'
+
+Je trekt de deken over je hoofd. MAX zucht, voor zover een computer kan zuchten. 'Goed. Ik maak je wakker als we iets belangrijks tegenkomen.'
+
+Je slaapt. En slaapt. Als je wakker wordt, zie je door het raam een groene planeet met drie manen. MAX klinkt een beetje beledigd. 'We zijn er voorbij gevlogen. Het belangrijke ding. Ik heb het je vier keer gezegd.'
+== einde: Je sliep het hele avontuur door.
+
+# stuurkamer
+In de stuurkamer zie je door een groot raam de sterren. Duizenden. Ze knipperen niet, zoals op aarde. Hier is geen lucht die ze laat twinkelen.
+
+'We hebben een probleem,' zegt MAX. 'Voor de terugreis hebben we de helft van een volle tank nodig. De tank is nu voor driekwart vol. Hoeveel houden we over als we thuis zijn?'
+? Hoeveel van de tank houden we over? (een breuk, zoals 1/3) -> 1/4/een kwart/0,25/kwart -> brandstof-goed | brandstof-fout
+
+# brandstof-fout
+'Laten we het tekenen,' zegt MAX. Op het scherm verschijnt een tank in vier stukken. Drie stukken zijn vol. De helft van de tank, dat zijn twee van de vier stukken. Hoeveel stukken blijven er over?
+> Probeer het nog eens -> stuurkamer
+
+# brandstof-goed
+'Een kwart,' zegt MAX. 'Precies. Genoeg om thuis te komen, maar we kunnen niet te veel omwegen maken.'
+
+Op het scherm zie je een vreemde stip naast het schip. Hij beweegt.
+
+'Er is nog een schip,' zegt MAX zacht. 'En het is niet van de aarde.'
+> Stuur een signaal naar het andere schip -> signaal
+> Ga eerst naar het laboratorium -> lab
+
+# lab
+Het laboratorium staat vol buisjes en microscopen. In een glazen bak zie je een grijs stof dat langzaam beweegt. Zonnevreters.
+
+Naast de bak ligt een notitieboekje in jouw handschrift. Op de laatste bladzijde staat: Ze groeien twee keer zo snel als het warm is. Bij min 10 graden houden ze op met eten.
+
+De thermometer bij de bak wijst 15 graden aan.
+? Hoeveel graden moet het kouder worden, van 15 naar min 10? -> 25 -> lab-goed | lab-fout
+
+# lab-fout
+Je kijkt naar de thermometer. Van 15 naar 0 is 15 graden. En van 0 naar min 10 nog eens 10 graden.
+> Reken het nog eens uit -> lab
+
+# lab-goed
+Vijfentwintig graden kouder. Je zet de koeling van de bak aan. Langzaam daalt de temperatuur. 15, 10, 5, 0, min 5, min 10.
+
+Het grijze stof houdt op met bewegen.
+
+'Je hebt het gevonden,' zegt MAX. 'Kou stopt ze. Maar hoe krijg je de hele zon koud? Dat kan niet.'
+
+Je denkt na. Nee, de zon kun je niet afkoelen. Er moet nog iets anders zijn.
+> Ga naar de stuurkamer -> stuurkamer2
+
+# stuurkamer2
+In de stuurkamer piept een alarm. Op het scherm zie je een stip naast het schip. Hij beweegt.
+
+'Er is nog een schip,' zegt MAX. 'En het is niet van de aarde.'
+> Stuur een signaal naar het andere schip -> signaal
+
+# signaal
+Je stuurt een signaal: drie korte piepjes. Het blijft stil. Dan komt er antwoord. Geen woorden, maar tonen. Hoog, laag, hoog. Het klinkt bijna als muziek.
+
+'Ik denk dat het een rekenpuzzel is,' zegt MAX. 'Wiskunde is in het hele heelal hetzelfde. Kijk: het andere schip stuurt deze getallen.'
+
+Op het scherm verschijnt: 2, 4, 8, 16, ...
+
+'Als we het goede volgende getal terugsturen, weten ze dat we slim zijn.'
+? Welk getal komt na 2, 4, 8, 16? -> 32 -> vriend | signaal-fout
+
+# signaal-fout
+'Kijk eens hoe de getallen groeien,' zegt MAX. 'Van 2 naar 4, van 4 naar 8, van 8 naar 16. Wat gebeurt er elke keer?'
+> Probeer het nog eens -> signaal
+
+# vriend
+Je stuurt 32 terug. Even is het stil. Dan klinken er vrolijke tonen, snel achter elkaar, alsof iemand lacht.
+
+Het andere schip komt langzaam dichterbij. Er gaat een luik open. In het luik staat een wezen dat lijkt op een spin van steen, zo groot als een hond. Het tikt met zijn poten op het glas. Tik, tik-tik.
+
+Je noemt het Rots.
+
+Na dagen van tonen, tekeningen en getallen begrijp je elkaar een beetje. Rots komt van een planeet waar de zon ook zwakker wordt. Door dezelfde zonnevreters. En Rots heeft iets bij zich: een buisje met piepkleine rode beestjes.
+
+'Die eten de zonnevreters op,' zegt Rots, in tonen die MAX vertaalt. 'Ze komen van mijn planeet.'
+> Neem de rode beestjes mee naar huis -> naarhuis [+beestjes]
+> Bedank Rots, maar vertrouw de beestjes niet en ga zonder naar huis -> naarhuis
+> Blijf bij Rots om meer te leren -> blijven
+
+# blijven
+Je blijft. Weken worden maanden. Rots leert je de taal van tonen, jij leert Rots schaken (Rots wint na een week elke keer).
+
+Maar op een dag kijk je door het raam en zie je een klein geel sterretje. De zon. Jouw zon. Ver weg, en een beetje zwakker dan vroeger.
+
+'Je moet naar huis,' zegt Rots. 'Ze hebben je nodig.'
+> Ga toch naar huis, met de rode beestjes -> naarhuis [+beestjes]
+
+# naarhuis
+De terugreis duurt lang. MAX rekent uit dat De Hoop 1,5 miljoen kilometer per uur vliegt.
+
+'Het laatste stuk naar de aarde is nog 3 uur vliegen,' zegt MAX. 'Hoeveel kilometer is dat?'
+? Hoeveel miljoen kilometer in 3 uur? (1,5 miljoen km per uur) -> 4,5/4.5/4,5 miljoen/4500000 -> landen | reis-fout
+
+# reis-fout
+'Elk uur 1,5 miljoen kilometer,' zegt MAX. 'Na 1 uur is dat 1,5. Na 2 uur 3. En na 3 uur?'
+> Reken het nog eens uit -> naarhuis
+
+# landen
+De aarde wordt groter en groter in het raam. Blauw met wit. Het mooiste wat je ooit hebt gezien.
+
+'Waar zullen we landen?' vraagt MAX. Op het scherm licht een werelddeel op.
+kaart: wereld deel:Europe
+? Op welk werelddeel landen we? -> europa -> aankomst | landen-fout
+
+# landen-fout
+'Kijk nog eens goed,' zegt MAX. 'Het is het werelddeel waar Nederland ligt. Ten noorden van Afrika.'
+> Kijk nog eens naar de kaart -> landen
+
+# aankomst
+De capsule landt met een plons in de Noordzee. Een boot haalt je op. Op de kade staan honderden mensen te zwaaien. Een groep wetenschappers rent op je af.
+
+'Heb je iets gevonden?' roepen ze.
+> Geef ze het buisje met de rode beestjes van Rots -> thuis ?beestjes
+> Vertel dat kou de zonnevreters stopt -> half !beestjes
+
+# half
+Je vertelt over de kou. De wetenschappers bouwen enorme spiegels in de ruimte, die de zonnevreters in de schaduw zetten zodat ze afkoelen. Het helpt een beetje. De zon wordt niet zwakker meer, maar ook niet sterker.
+
+Soms denk je aan het buisje van Rots. Misschien had je het moeten vertrouwen. Misschien komt Rots ooit nog eens langs.
+== einde: Je kocht tijd voor de aarde, maar de zon is nog niet gered.
+
+# thuis
+Je geeft het buisje met de rode beestjes aan de wetenschappers. Ze kijken er met grote ogen naar door een microscoop. Een jaar later is de zon weer even fel als vroeger. Op school leren kinderen over de zonnevreters, en over Rots.
+
+En jij? Je geheugen is helemaal terug. Je was inderdaad leraar. Je gaat weer lesgeven. Maar soms, 's avonds, kijk je naar de sterren en zing je zachtjes een paar tonen. Hoog, laag, hoog.
+== einde: Je redde de zon, met hulp van een vriend van ver.

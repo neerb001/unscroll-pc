@@ -2,6 +2,26 @@ titel: Het geheim van de klokkentoren
 over: Een nacht op schoolkamp in een oud schoolgebouw. Midden in de nacht hoor je een vreemd getik.
 
 # start
+% ...........rr...........
+% ..........rrrr..........
+% .........rrrrrr.........
+% ........rrrrrrrr........
+% .......rrrrrrrrrr.......
+% .......nnnnnnnnnn.......
+% .......nwwwwwwwwn.......
+% .......nwwwwwwkwn.......
+% .......nwkkkkkwwn.......
+% .......nwwwwwwwwn.......
+% .......nwwwwwwwwn.......
+% .......nnnnnnnnnn.......
+% .......ssssssssss.......
+% .......sscssssccs.......
+% .......ssssssssss.......
+% ...ssssssssssssssssss...
+% ...sscccssssssssccccs...
+% ...ssssssssnnssssssss...
+% ...ssssssssnnssssssss...
+% gggggggggggggggggggggggg
 Het is de laatste nacht van het schoolkamp. Groep 7 slaapt in het oude schoolgebouw van het dorp, in de gymzaal, op luchtbedden. Iedereen slaapt al. Behalve jij.
 
 Want boven je hoofd, ergens hoog in het gebouw, tikt iets. Tik. Tik. Tik. Langzaam en zwaar, als een reusachtige klok.
@@ -77,12 +97,12 @@ De volgende ochtend is het getik weg, en de toren blijft op slot. Maar iedereen 
 # trap-licht
 De zaklamp verlicht de trap. Grote spinnenwebben hangen tussen de muren. Je duikt eronderdoor.
 
-Bovenaan is een houten deur. Erop zit een oud koperen slot. Ernaast, in het hout gekrast, staan woorden: Alleen wie de tijd kent, mag erin.
+Bovenaan is een houten deur. Erop zit een oud koperen slot, met een groot sleutelgat en drie draaiwieltjes met cijfers. Ernaast, in het hout gekrast, staan woorden: Alleen wie de tijd kent, mag erin.
 > Open het slot met de torensleutel -> slot ?sleutel
 > Bekijk het slot beter -> slot2 !sleutel
 
 # slot2
-Het slot heeft geen sleutelgat. Het heeft drie draaiwieltjes met cijfers, zoals bij een fietsslot. Er moeten dus drie cijfers op.
+Zonder sleutel moet je de draaiwieltjes gebruiken, zoals bij een fietsslot. Er moeten drie cijfers op.
 
 Alleen wie de tijd kent... Welke tijd? Je denkt aan wat de meester vanmiddag vertelde over de klok in deze toren.
 ? Welke drie cijfers draai je in? -> 245 -> slot | fout-code
@@ -90,8 +110,8 @@ Alleen wie de tijd kent... Welke tijd? Je denkt aan wat de meester vanmiddag ver
 # fout-code
 Je draait de wieltjes. Klik, klik, klik. Je trekt aan het slot. Niets. Het zit nog steeds dicht.
 
-Denk aan de klok in de toren. Op welke tijd staat die al jaren stil? Kwart voor drie is... hoeveel uur en hoeveel minuten?
-? Probeer het nog eens: welke drie cijfers? -> 245 -> slot | fout-code
+Denk aan de klok in de toren. Op welke tijd staat die al jaren stil? Kwart voor drie is... hoeveel uur en hoeveel minuten? Schrijf het op zoals op een digitale klok, zonder de dubbele punt.
+> Probeer het nog eens -> slot2
 > Geef het op en ga terug naar bed -> slapen
 
 # slot
@@ -109,14 +129,18 @@ Je schijnt met de zaklamp op de tandwielen. Op het grootste tandwiel is iets geg
 Gemaakt door Jan Hofstede, klokkenmaker. Wie mij weer laat lopen, vindt wat ik bewaard heb.
 
 Onder de tekst zit een klein luikje in de vloer, met een cijferslot. Er staat bij: Het jaar dat de Tachtigjarige Oorlog eindigde.
-? Welk jaartal draai je in? -> 1648 -> luikje | fout-jaar
+> Probeer het luikje open te krijgen -> luikje-slot
 > Laat het luikje en kijk achter het gordijn -> gordijn
+
+# luikje-slot
+Je knielt bij het luikje. Vier draaiwieltjes. Het jaar dat de Tachtigjarige Oorlog eindigde...
+? Welk jaartal draai je in? -> 1648 -> luikje | fout-jaar
 
 # fout-jaar
 Klik. Het luikje blijft dicht.
 
-De Tachtigjarige Oorlog... die begon in 1568 en duurde, nou ja, ongeveer tachtig jaar. Hij eindigde met de Vrede van Münster.
-? Welk jaartal probeer je nu? -> 1648 -> luikje | fout-jaar
+De Tachtigjarige Oorlog... die begon in 1568 en duurde, nou ja, ongeveer tachtig jaar. Hij eindigde met de Vrede van Münster. Reken maar: 1568 plus tachtig.
+> Probeer het nog eens -> luikje-slot
 > Kijk eerst achter het gordijn -> gordijn
 
 # luikje

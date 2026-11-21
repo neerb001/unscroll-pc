@@ -211,13 +211,16 @@ func htmlTekst(data []byte) []alinea {
 /* ---------------- staat ---------------- */
 
 type leesStaat struct {
-	plank    int   // 0 korte verhalen, 1 e-books
-	verhalen lijst // de korte verhalen (komen met de app mee)
-	lijst    lijst
-	geladen  bool
-	boek     *openBoek
-	zoeken   bool            // typt in het zoekveld
-	zoek     textinput.Model // zoeken met /
+	plank     int   // 0 korte verhalen, 1 avonturen, 2 e-books
+	verhalen  lijst // de korte verhalen (komen met de app mee)
+	avonturen lijst // de tekstavonturen (komen ook met de app mee)
+	avontuur  *avStaat
+	opnieuw   string // avontuur waarvoor n één keer is ingedrukt (opnieuw beginnen)
+	lijst     lijst
+	geladen   bool
+	boek      *openBoek
+	zoeken    bool            // typt in het zoekveld
+	zoek      textinput.Model // zoeken met /
 }
 
 type openBoek struct {
@@ -283,6 +286,9 @@ func (m *model) lezenOpen() tea.Cmd {
 	if len(ls.verhalen.items) == 0 {
 		ls.verhalen = m.verhalenLijst()
 	}
+	if len(ls.avonturen.items) == 0 {
+		ls.avonturen = m.avonturenLijst()
+	}
 	if ls.geladen || ls.lijst.laden {
 		return nil
 	}
@@ -319,14 +325,20 @@ func (m *model) lezenOpen() tea.Cmd {
 
 // leesLijst: de lijst van de plank die open is.
 func (m *model) leesLijst() *lijst {
-	if m.ls.plank == 0 {
+	switch m.ls.plank {
+	case 0:
 		return &m.ls.verhalen
+	case 1:
+		return &m.ls.avonturen
 	}
 	return &m.ls.lijst
 }
 
 // openLees opent een kort verhaal (meteen, het zit in de app) of een e-book.
 func (m *model) openLees(it item) tea.Cmd {
+	if strings.HasPrefix(it.id, "avontuur:") {
+		return m.openAvontuur(it.id)
+	}
 	if v, ok := zoekVerhaal(it.id); ok {
 		return func() tea.Msg { return boekMsg{id: v.id, titel: v.titel, alineas: m.verhaalAlineas(v)} }
 	}
@@ -453,6 +465,9 @@ func (m *model) bewaarPlek(forceer bool) tea.Cmd {
 func (m *model) toetsLezen(msg tea.KeyMsg) (tea.Cmd, bool) {
 	ls := m.ls
 	k := msg.String()
+	if ls.avontuur != nil {
+		return m.toetsAvontuur(msg), true
+	}
 	if b := ls.boek; b != nil {
 		pagina := m.leesHoogte() - 1
 		switch k {
@@ -523,7 +538,25 @@ func (m *model) toetsLezen(msg tea.KeyMsg) (tea.Cmd, bool) {
 			return m.openLees(it), true
 		}
 	case "tab":
-		ls.plank = 1 - ls.plank
+		ls.plank, ls.opnieuw = (ls.plank+1)%3, ""
+	case "n":
+		// een avontuur opnieuw beginnen: twee keer n, zodat het niet per ongeluk gebeurt
+		it, ok := lj.gekozen()
+		if ls.plank != 1 || !ok {
+			return nil, false
+		}
+		if ls.opnieuw != it.id {
+			ls.opnieuw = it.id
+			m.zeg(m.t("adv.restartask"))
+			return nil, true
+		}
+		ls.opnieuw = ""
+		g := laadAvGeheugen()
+		id := strings.TrimPrefix(it.id, "avontuur:")
+		delete(g.Plek, id)
+		delete(g.Spul, id)
+		g.bewaar()
+		m.zeg(m.t("adv.restarted"))
 	case "r":
 		ls.geladen = false
 		return m.lezenOpen(), true
@@ -547,6 +580,9 @@ func (m *model) stopLeesZoeken() {
 func (m model) viewLezen(p palet) string {
 	ls := m.ls
 	dim := lipgloss.NewStyle().Foreground(p.dim)
+	if ls.avontuur != nil {
+		return m.viewAvontuur(p)
+	}
 	if b := ls.boek; b != nil {
 		if b.breedte != m.leesBreedte() {
 			plek := b.alineaVanRegel(b.bovenste)
@@ -583,14 +619,17 @@ func (m model) viewLezen(p palet) string {
 		inhoud = m.viewRegels(p, lj, m.breed-14, max(m.hoog-10, 3))
 	}
 	toetsen := m.t("read.listkeys")
-	if ls.plank == 0 {
+	switch ls.plank {
+	case 0:
 		toetsen = m.t("read.storykeys")
+	case 1:
+		toetsen = m.t("read.advkeys")
 	}
 	if ls.zoeken {
 		toetsen = m.t("read.searchkeys")
 	}
 	// twee planken: de open plank licht op, Tab wisselt
-	planken := []string{m.t("read.stories"), m.t("read.books")}
+	planken := []string{m.t("read.stories"), m.t("read.adventures"), m.t("read.books")}
 	for i := range planken {
 		if i == ls.plank {
 			planken[i] = lipgloss.NewStyle().Foreground(p.acc).Bold(true).Underline(true).Render(planken[i])
