@@ -317,6 +317,7 @@ func (m *model) toetsDenk(msg tea.KeyMsg) (tea.Cmd, bool) {
 			if n == s.uitkomst() {
 				d.goed, d.terugblik = true, m.t("tables.right")
 				v.Reeks[s.sleutel()]++
+				missieGoed()
 			} else {
 				d.goed, d.terugblik = false, m.t("tables.wrong", s.tekst(), s.uitkomst())
 				v.Reeks[s.sleutel()] = 0

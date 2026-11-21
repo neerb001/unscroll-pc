@@ -41,7 +41,7 @@ func TestGeschiedenisOefenen(t *testing.T) {
 	m.inst.Taal = "nl"
 	m.breed, m.hoog = 112, 29
 	m = toets(m, tabToets(tabLeren))
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 7; i++ {
 		m = toets(m, "down")
 	}
 	m = toets(m, "enter") // geschiedenis

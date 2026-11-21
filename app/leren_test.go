@@ -110,7 +110,7 @@ func TestLerenTabblad(t *testing.T) {
 		t.Fatalf("3 hoort Leren te openen:\n%s", m.View())
 	}
 	// tafels via Leren, en met esc weer terug in het menu van Leren
-	for i := 0; i < 6; i++ {
+	for i := 0; i < 8; i++ { // langs Mijn heelal, Missie Bliep, dictee, flitsen, klok, topo, Engels, geschiedenis
 		m = toets(m, "down")
 	}
 	m = toets(m, "enter")
@@ -138,8 +138,9 @@ func TestDicteeScherm(t *testing.T) {
 	defer func() { spreek = oud }()
 	m.breed, m.hoog = 110, 36
 	m = toets(m, tabToets(tabLeren))
-	m = toets(m, "enter") // dictee
-	m = toets(m, "down")  // b of d
+	m = toets(toets(m, "down"), "down") // langs Mijn heelal en Missie Bliep
+	m = toets(m, "enter")               // dictee
+	m = toets(m, "down")                // b of d
 	m = toets(m, "enter")
 	d := m.lr.dictee
 	if d.scherm != dicteeBezig || len(d.ronde) != 10 || len(gezegd) != 1 {
@@ -173,6 +174,7 @@ func TestDicteeScherm(t *testing.T) {
 	// terug naar het dictee: het staat er nog, en goed overtypen gaat naar het volgende woord
 	m = toets(m, "esc")
 	m = toets(m, tabToets(tabLeren))
+	m = toets(toets(m, "down"), "down") // langs Mijn heelal en Missie Bliep
 	m = toets(m, woord)
 	m = toets(m, "enter")
 	if d.fout != "" || d.nr != 1 {
@@ -194,6 +196,7 @@ func TestFlitslezen(t *testing.T) {
 	m.inst.Taal = "nl"
 	m.breed, m.hoog = 100, 30
 	m = toets(m, tabToets(tabLeren))
+	m = toets(toets(m, "down"), "down") // langs Mijn heelal en Missie Bliep
 	m = toets(m, "down")
 	m = toets(m, "enter") // flitslezen
 	m = toets(m, "+")
@@ -225,6 +228,7 @@ func TestKlokkijken(t *testing.T) {
 	m.inst.Taal = "nl"
 	m.breed, m.hoog = 100, 30
 	m = toets(m, tabToets(tabLeren))
+	m = toets(toets(m, "down"), "down") // langs Mijn heelal en Missie Bliep
 	m = toets(m, "down")
 	m = toets(m, "down")
 	m = toets(m, "enter")

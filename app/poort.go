@@ -126,6 +126,7 @@ func (m *model) toetsPoort(msg tea.KeyMsg) tea.Cmd {
 			v.Goed++
 			pt.goed, pt.terug = true, m.t("gate.right")
 			tv.Reeks[pt.som.sleutel()]++
+			missieGoed()
 		} else {
 			pt.goed, pt.terug = false, m.t("gate.wrong", pt.som.tekst(), pt.som.uitkomst())
 			tv.Reeks[pt.som.sleutel()] = 0

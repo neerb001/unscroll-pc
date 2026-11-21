@@ -14,7 +14,7 @@ func TestTafelsOefenen(t *testing.T) {
 	m.dk = nieuweDenksport()
 	m.inst.Taal = "nl"
 	m = toets(m, tabToets(tabLeren))
-	for i := 0; i < 6; i++ {
+	for i := 0; i < 8; i++ {
 		m = toets(m, "down")
 	}
 	m = toets(m, "enter") // Tafels oefenen
@@ -57,7 +57,7 @@ func TestRekenmachineScherm(t *testing.T) {
 	m.dk = nieuweDenksport()
 	m.inst.Taal = "nl"
 	m = toets(m, tabToets(tabLeren))
-	for i := 0; i < 8; i++ {
+	for i := 0; i < 10; i++ {
 		m = toets(m, "down")
 	}
 	m = toets(m, "enter") // rekenen met typen
@@ -129,7 +129,7 @@ func TestRekenmachineKnoppen(t *testing.T) {
 	m.inst.Taal = "nl"
 	m.breed, m.hoog = 100, 34
 	m = toets(m, tabToets(tabLeren))
-	for i := 0; i < 7; i++ {
+	for i := 0; i < 9; i++ {
 		m = toets(m, "down")
 	}
 	m = toets(m, "enter") // rekenmachine met knoppen
@@ -185,7 +185,7 @@ func TestTafelVanZevenMetEenCijfer(t *testing.T) {
 	m.dk = nieuweDenksport()
 	m.inst.Taal = "nl"
 	m = toets(m, tabToets(tabLeren))
-	for i := 0; i < 6; i++ {
+	for i := 0; i < 8; i++ {
 		m = toets(m, "down")
 	}
 	m = toets(m, "enter")
@@ -211,7 +211,7 @@ func TestTafelKiezenMetPijlEnEnter(t *testing.T) {
 	m.dk = nieuweDenksport()
 	m.inst.Taal = "nl"
 	m = toets(m, tabToets(tabLeren))
-	for i := 0; i < 6; i++ {
+	for i := 0; i < 8; i++ {
 		m = toets(m, "down")
 	}
 	m = toets(m, "enter")

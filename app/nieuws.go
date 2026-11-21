@@ -19,6 +19,10 @@ type nieuwsItem struct {
 
 // nieuwsLijst: nieuwste bovenaan.
 var nieuwsLijst = []nieuwsItem{
+	{"v0.36.0", [2]string{
+		"Nieuw bovenaan 3 Leren: Mijn heelal (al je vakken als sterren die feller gaan schijnen) en Missie Bliep: met goede antwoorden repareer je het ruimteschip van Bliep, en elke week wacht er een baas. Bij Bliep kun je nu ook zelf de leraar zijn: kies Leg het uit.",
+		"New at the top of 3 Learn: My universe (all your subjects as stars that shine brighter) and Mission Bliep: right answers repair Bliep's spaceship, and every week a boss is waiting. With Bliep you can now be the teacher too: choose Explain it.",
+	}},
 	{"v0.35.0", [2]string{
 		"Nieuw bij 2 Lezen: elf avonturen waarin jij kiest wat er gebeurt. Los sommen, codes en kaartpuzzels op, stuur een robot en zoek alle eindes. Druk op Tab bij Lezen.",
 		"New in 2 Read: eleven adventures where you choose what happens. Solve sums, codes and map puzzles, steer a robot and find every ending. Press Tab in Read.",

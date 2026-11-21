@@ -79,7 +79,7 @@ func TestTopoOverhoren(t *testing.T) {
 	m.inst.Taal = "nl"
 	m.breed, m.hoog = 112, 29
 	m = toets(m, tabToets(tabLeren))
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 5; i++ {
 		m = toets(m, "down")
 	}
 	m = toets(m, "enter") // topografie
@@ -175,7 +175,7 @@ func TestEngelseWoordjes(t *testing.T) {
 	m.inst.Taal = "nl"
 	m.breed, m.hoog = 112, 29
 	m = toets(m, tabToets(tabLeren))
-	for i := 0; i < 4; i++ {
+	for i := 0; i < 6; i++ {
 		m = toets(m, "down")
 	}
 	m = toets(m, "enter") // Engels

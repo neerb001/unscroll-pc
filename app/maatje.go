@@ -23,10 +23,11 @@ const (
 	modusHuiswerk
 	modusOverhoren
 	modusVerhaal
+	modusUitleggen // het kind legt uit, het maatje is de leerling
 	aantalModi
 )
 
-var modusSleutels = []string{"buddy.m.ask", "buddy.m.homework", "buddy.m.quiz", "buddy.m.story"}
+var modusSleutels = []string{"buddy.m.ask", "buddy.m.homework", "buddy.m.quiz", "buddy.m.story", "buddy.m.teach"}
 
 type MaatjeAI struct {
 	client       anthropic.Client
@@ -179,6 +180,15 @@ Explain with everyday comparisons a child knows. Sometimes ask them to guess fir
 - Write 2 to 4 sentences per turn, then hand it back with a short question like "What happens next?".
 - Keep it suitable for their age: excitement and adventure are fine, nothing gory or truly frightening.
 - Use their ideas; don't take the story over.`,
+	// uitleggen
+	`Mode: the child is the teacher and you are the student (learning by teaching).
+- First ask what they want to teach you: something they are learning at school, like fractions, a province, the water cycle or a period in history.
+- Play a curious student who knows a little, but not much. Ask one short question at a time: why, how, can you give an example, what happens if.
+- Let them do the explaining. Don't explain the topic yourself and don't lecture.
+- Once during the session, say something slightly wrong that a student might believe (a common misconception about this topic) and see if they correct you. If they do, thank them for it.
+- If their explanation has a mistake, don't just correct it: ask a question that helps them notice it ("Wait, but then...?"). If they still don't see it, say kindly that you read it differently somewhere and suggest checking their schoolbook or asking their teacher.
+- After about six turns, or when they want to stop, sum up in two or three sentences what they explained well, and name at most one thing to look up again.
+- No points or scores, and don't praise them for being smart. Praise clear explanations and good examples.`,
 }
 
 func (a *MaatjeAI) systeem(naam string, modus int, taal string) string {

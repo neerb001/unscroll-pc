@@ -109,6 +109,7 @@ func (l leerStand) kies(set string, sleutels []string, n int, nu time.Time) []st
 func (l leerStand) zet(set, sleutel string, goed bool, nu time.Time) {
 	st := l.stand(set, sleutel)
 	if goed {
+		missieGoed() // energie voor Missie Bliep
 		st.Goed++
 		st.Bakje = min(st.Bakje+1, len(leerDagen)-1)
 	} else {

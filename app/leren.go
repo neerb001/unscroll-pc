@@ -20,6 +20,8 @@ const (
 	lerenTopo
 	lerenEngels
 	lerenGeschiedenis
+	lerenHeelal
+	lerenMissie
 	lerenDenk // een scherm van Denksport (tafels, rekenmachine), maar dan onder Leren
 )
 
@@ -30,6 +32,8 @@ type lerenItem struct {
 }
 
 var lerenItems = []lerenItem{
+	{"univ.title", lerenHeelal, 0},
+	{"mission.title", lerenMissie, 0},
 	{"learn.dictation", lerenDictee, 0},
 	{"learn.flash", lerenFlits, 0},
 	{"learn.clock", lerenKlok, 0},
@@ -52,10 +56,12 @@ type lerenStaat struct {
 	topo          *topoStaat
 	engels        *engelsStaat
 	gesch         *geschStaat
+	heelal        *heelalStaat
+	missie        *missieStaat
 }
 
 func nieuwLeren() *lerenStaat {
-	return &lerenStaat{dictee: nieuwDictee(), flits: nieuwFlitsen(), klok: nieuweKlok(), topo: nieuweTopo(), engels: nieuwEngels(), gesch: nieuweGeschiedenis()}
+	return &lerenStaat{dictee: nieuwDictee(), flits: nieuwFlitsen(), klok: nieuweKlok(), topo: nieuweTopo(), engels: nieuwEngels(), gesch: nieuweGeschiedenis(), heelal: &heelalStaat{}, missie: &missieStaat{}}
 }
 
 // lerenOpen: bij het openen van Leren of Denksport niet in een scherm van de ander blijven hangen.
@@ -92,6 +98,10 @@ func (m *model) toetsLeren(msg tea.KeyMsg) (tea.Cmd, bool) {
 		return m.toetsEngels(msg)
 	case lerenGeschiedenis:
 		return m.toetsGeschiedenis(msg)
+	case lerenHeelal:
+		return m.toetsHeelal(msg)
+	case lerenMissie:
+		return m.toetsMissie(msg)
 	case lerenDenk:
 		cmd, ok := m.toetsDenk(msg)
 		if m.dk.scherm == denkMenu { // esc in een Denksport-scherm: terug naar het menu van Leren
@@ -118,6 +128,10 @@ func (m *model) toetsLeren(msg tea.KeyMsg) (tea.Cmd, bool) {
 			l.engels.scherm = engelsKiezen
 		case lerenGeschiedenis:
 			l.gesch.bezig = false
+		case lerenHeelal:
+			l.heelal.open = false
+		case lerenMissie:
+			m.missieOpen()
 		case lerenKlok:
 			l.klok.terug = nil
 			l.klok.nieuweTijd()
@@ -148,6 +162,10 @@ func (m model) viewLeren(p palet) string {
 		return m.viewEngels(p, kop, breed)
 	case lerenGeschiedenis:
 		return m.viewGeschiedenis(p, kop, breed)
+	case lerenHeelal:
+		return m.viewHeelal(p, kop, breed)
+	case lerenMissie:
+		return m.viewMissie(p, kop, max(min(m.breed-8, 100), 60))
 	case lerenDenk:
 		return m.viewDenk(p)
 	}

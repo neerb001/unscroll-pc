@@ -41,7 +41,7 @@ func sessieMap(modus int) string {
 	return unscrollData("huiswerk")
 }
 
-var modusBestand = map[int]string{modusHuiswerk: "-huiswerk", modusOverhoren: "-overhoren", modusVraag: "-vraag"}
+var modusBestand = map[int]string{modusHuiswerk: "-huiswerk", modusOverhoren: "-overhoren", modusVraag: "-vraag", modusUitleggen: "-uitleg"}
 
 // bewaarDagen: zo lang blijven gesprekken (niet de verhalen) en de logboeken bewaard.
 const bewaarDagen = 28
