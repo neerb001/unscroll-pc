@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"math/rand/v2"
 	"os"
 	"path/filepath"
@@ -19,18 +20,52 @@ import (
 // geschiedenis, en de sommen van Eerst oefenen) geeft energie, en met energie repareer je het
 // schip, onderdeel voor onderdeel. Is het af, dan vliegt Bliep weg en begint een nieuw seizoen.
 //
-// Eén keer per week is er een baasgevecht: een rekenmix, vooral met de sommen die nog lastig
-// zijn. Winnen geeft een flinke bonus en een beker voor die week. Verliezen kan: morgen mag je
-// het opnieuw proberen.
+// Elke dag staat er een baas klaar: een rekenmix, vooral met de sommen die nog lastig zijn.
+// Gevechten die je niet gebruikt, spaar je op (hooguit drie): wie een dag niet kon, heeft de
+// volgende dag twee gevechten. Winnen geeft een beker en extra energie; verliezen kost het
+// gevecht, en dezelfde baas wacht je de volgende keer weer op.
+//
+// De verhalen per seizoen staan in app/missies (zie seizoenen.go). Daarna gaan de verhalen
+// opnieuw rond; ouders zien in de ouderstand wanneer er nieuwe seizoenen nodig zijn.
 //
 // Alleen schoolvakken leveren energie op. Lezen, luisteren, spelletjes en avonturen niet: dat
 // doet een kind uit zichzelf.
 
 type missieStand struct {
-	Energie  int      `json:"energie"`  // alles bij elkaar, over alle seizoenen
-	Gezien   int      `json:"gezien"`   // de energie toen het kind de missie het laatst bekeek
-	Gewonnen []string `json:"gewonnen"` // weken (2026-W47) waarin de baas verslagen is
-	Verloren string   `json:"verloren"` // datum van het laatste verloren gevecht
+	Energie  int      `json:"energie"`   // alles bij elkaar, over alle seizoenen
+	Gezien   int      `json:"gezien"`    // de energie toen het kind de missie het laatst bekeek
+	Gewonnen []string `json:"gewonnen"`  // dagen (vroeger weken) waarop een baas verslagen is: de bekers
+	Tegoed   int      `json:"tegoed"`    // gevechten die nog gespeeld mogen worden
+	TegoedOp string   `json:"tegoed_op"` // de dag waarop het tegoed het laatst is bijgewerkt
+	Baas     int      `json:"baas"`      // welke baas nu aan de beurt is (na winnen de volgende)
+	Begin    string   `json:"begin"`     // de eerste dag met de missie: voor het tempo
+}
+
+// maxTegoed: zoveel gevechten kun je hooguit opsparen.
+const maxTegoed = 3
+
+// bijwerken: elke nieuwe dag een gevecht erbij, tot maxTegoed.
+func (s *missieStand) bijwerken(nu time.Time) {
+	vandaag := nu.Format("2006-01-02")
+	if s.Begin == "" {
+		s.Begin = vandaag
+	}
+	if s.TegoedOp == "" {
+		s.Tegoed, s.TegoedOp = 1, vandaag
+		return
+	}
+	if d := dagenTussen(s.TegoedOp, vandaag); d > 0 {
+		s.Tegoed, s.TegoedOp = min(maxTegoed, s.Tegoed+d), vandaag
+	}
+}
+
+func dagenTussen(van, tot string) int {
+	a, err1 := time.ParseInLocation("2006-01-02", van, time.Local)
+	b, err2 := time.ParseInLocation("2006-01-02", tot, time.Local)
+	if err1 != nil || err2 != nil {
+		return 1
+	}
+	return int(math.Round(b.Sub(a).Hours() / 24))
 }
 
 func missiePad() string { return filepath.Join(filepath.Dir(instellingenPad()), "missie.json") }
@@ -81,7 +116,7 @@ var missieDelen = []missieDeel{
 var seizoenLengte = missieDelen[len(missieDelen)-1].nodig
 
 // bonusBaas: zoveel energie geeft een verslagen baas.
-const bonusBaas = 25
+const bonusBaas = 15
 
 // het schip, linkerhelft; de rechterhelft is het spiegelbeeld (vleugel 3 wordt 4)
 var schipHelft = []string{
@@ -153,11 +188,12 @@ func schipPlaatje(klaar int) []string {
 /* ---------------- de bazen ---------------- */
 
 type baas struct {
+	soort   int
 	plaatje []string
 }
 
 var bazen = []baas{
-	{[]string{ // robot
+	{baasMix, []string{ // robot
 		".....ssssss.....",
 		"....ssssssss....",
 		"....srrssrrs....",
@@ -171,7 +207,7 @@ var bazen = []baas{
 		"....ss....ss....",
 		"...ddd....ddd...",
 	}},
-	{[]string{ // draak
+	{baasMix, []string{ // draak
 		"..g..........g..",
 		"..gg........gg..",
 		"...gggggggggg...",
@@ -185,7 +221,7 @@ var bazen = []baas{
 		"...gggllllggg...",
 		"...gg......gg...",
 	}},
-	{[]string{ // piraat
+	{baasMix, []string{ // piraat
 		".....kkkkkk.....",
 		"....kkkkkkkk....",
 		"...kkkwkkwkkk...",
@@ -199,7 +235,7 @@ var bazen = []baas{
 		"..rr.rrrrrr.rr..",
 		"....nn....nn....",
 	}},
-	{[]string{ // mistheks
+	{baasMix, []string{ // mistheks
 		".......vv.......",
 		"......vvvv......",
 		".....vvvvvv.....",
@@ -213,6 +249,62 @@ var bazen = []baas{
 		"..cvvvvvvvvvvc..",
 		".ccc.vvvvvv.ccc.",
 	}},
+	{baasDelen, []string{ // generaal
+		".....gggggg.....",
+		"....gggggggg....",
+		"...gggggggggg...",
+		"....kkkkkkkk....",
+		"....hhhhhhhh....",
+		"....hkhhhhkh....",
+		"....hhhhhhhh....",
+		".....hrrrrh.....",
+		"...gggyggyggg...",
+		"..ggggyggygggg..",
+		"..gg.gggggg.gg..",
+		"....kk....kk....",
+	}},
+	{baasKeer, []string{ // tafeltrol
+		"...n........n...",
+		"...nn......nn...",
+		"....llllllll....",
+		"...llllllllll...",
+		"...llwkllwklll..",
+		"...llllllllll...",
+		"...lllwwwwlll...",
+		"....llllllll....",
+		"..nnnnnnnnnnnn..",
+		".lnnnnnnnnnnnnl.",
+		".l..nnnnnnnn..l.",
+		"....ll....ll....",
+	}},
+	{baasPittig, []string{ // robo-rex
+		"........ssssss..",
+		".......ssrsssss.",
+		".......ssssssss.",
+		".......sssswwww.",
+		"......ssssss....",
+		"..s..sssssss....",
+		"..ssssssssss....",
+		"...ssssssssss...",
+		"....sssssss.s...",
+		"....ss...ss.....",
+		"....ss...ss.....",
+		"...ddd..ddd.....",
+	}},
+	{baasMix, []string{ // sneeuwman
+		".....dddddd.....",
+		".....dddddd.....",
+		"....dddddddd....",
+		".....wwwwww.....",
+		"....wkwwwwkw....",
+		"....wwwoowww....",
+		".....wwwwww.....",
+		"...rrrrrrrrrr...",
+		"...wwwwwwwwww...",
+		"..wwwwwkwwwwww..",
+		"..wwwwwkwwwwww..",
+		"...wwwwwwwwww...",
+	}},
 }
 
 const (
@@ -220,31 +312,8 @@ const (
 	baasSchilden = 3  // zoveel fouten mag je maken
 )
 
-func weekVan(t time.Time) string {
-	j, w := t.ISOWeek()
-	return fmt.Sprintf("%d-W%02d", j, w)
-}
-
-// welkeBaas: elke week een andere.
-func welkeBaas(t time.Time) int {
-	_, w := t.ISOWeek()
-	return w % len(bazen)
-}
-
-func (s missieStand) baasVerslagen(t time.Time) bool {
-	w := weekVan(t)
-	for _, g := range s.Gewonnen {
-		if g == w {
-			return true
-		}
-	}
-	return false
-}
-
-// baasKan: mag het kind nu vechten? Eén keer winnen per week; na verliezen de volgende dag weer.
-func (s missieStand) baasKan(t time.Time) bool {
-	return !s.baasVerslagen(t) && s.Verloren != t.Format("2006-01-02")
-}
+// welkeBaas: de baas die nu aan de beurt is.
+func (s missieStand) welkeBaas() int { return ((s.Baas % len(bazen)) + len(bazen)) % len(bazen) }
 
 type baasGevecht struct {
 	wie      int
@@ -258,15 +327,32 @@ type baasGevecht struct {
 	gewonnen bool
 }
 
-// baasSom: een rekenmix uit de tafels van 2 tot en met 10, vaker wat nog niet zit, en een op de
-// drie is een deelsom.
-func baasSom(v tafelVoortgang, vorige tafelSom) tafelSom {
+// Soorten bazen: welke sommen ze geven.
+const (
+	baasMix    = iota // tafels van 2 tot en met 10, een op de drie is een deelsom
+	baasKeer          // alleen keersommen
+	baasDelen         // alleen deelsommen
+	baasPittig        // de lastige tafels: 6, 7, 8 en 9
+)
+
+// baasSom: een som voor dit soort baas, vaker wat nog niet zit.
+func baasSom(v tafelVoortgang, vorige tafelSom, soort int) tafelSom {
+	van, tot := 2, 10
+	if soort == baasPittig {
+		van, tot = 6, 9
+	}
 	for {
 		var kandidaten []tafelSom
 		var gewichten []int
 		totaal := 0
 		delen := rand.IntN(3) == 0
-		for t := 2; t <= 10; t++ {
+		switch soort {
+		case baasKeer:
+			delen = false
+		case baasDelen:
+			delen = true
+		}
+		for t := van; t <= tot; t++ {
 			for a := 2; a <= 10; a++ {
 				s := tafelSom{a: a, b: t, delen: delen}
 				g := 4 - min(v.Reeks[s.sleutel()], 3)
@@ -312,6 +398,7 @@ func (m *model) missieOpen() {
 	ms.klaarNu = klaar
 	ms.gevecht = nil
 	s.Gezien = s.Energie
+	s.bijwerken(m.nu)
 	s.bewaar()
 }
 
@@ -325,16 +412,13 @@ func (m *model) toetsMissie(msg tea.KeyMsg) (tea.Cmd, bool) {
 		m.lr.scherm = lerenMenu
 	case "b", "enter":
 		s := laadMissie()
-		if !s.baasKan(m.nu) {
-			if s.baasVerslagen(m.nu) {
-				m.zeg(m.t("mission.bosswon"))
-			} else {
-				m.zeg(m.t("mission.bosstomorrow"))
-			}
+		s.bijwerken(m.nu)
+		if s.Tegoed <= 0 {
+			m.zeg(m.t("mission.bossnone"))
 			return nil, true
 		}
-		g := &baasGevecht{wie: welkeBaas(m.nu), schilden: baasSchilden}
-		g.som = baasSom(laadTafels(), tafelSom{})
+		g := &baasGevecht{wie: s.welkeBaas(), schilden: baasSchilden}
+		g.som = baasSom(laadTafels(), tafelSom{}, bazen[g.wie].soort)
 		ms.gevecht = g
 	default:
 		return nil, false
@@ -380,20 +464,21 @@ func (m *model) toetsBaas(msg tea.KeyMsg, g *baasGevecht) (tea.Cmd, bool) {
 		case g.raak >= baasLevens:
 			g.klaar, g.gewonnen = true, true
 			s := laadMissie()
-			s.Gewonnen = append(s.Gewonnen, weekVan(m.nu))
-			if len(s.Gewonnen) > 60 {
-				s.Gewonnen = s.Gewonnen[len(s.Gewonnen)-60:]
-			}
+			s.bijwerken(m.nu)
+			s.Gewonnen = append(s.Gewonnen, m.nu.Format("2006-01-02"))
+			s.Tegoed = max(s.Tegoed-1, 0)
+			s.Baas++
 			s.Energie += bonusBaas
 			s.bewaar()
 			m.zegLang(m.t("mission.won", bonusBaas))
 		case g.schilden <= 0:
 			g.klaar = true
 			s := laadMissie()
-			s.Verloren = m.nu.Format("2006-01-02")
+			s.bijwerken(m.nu)
+			s.Tegoed = max(s.Tegoed-1, 0) // dezelfde baas wacht de volgende keer weer
 			s.bewaar()
 		default:
-			g.som = baasSom(tv, g.som)
+			g.som = baasSom(tv, g.som, bazen[g.wie].soort)
 		}
 	default:
 		return nil, false
@@ -407,28 +492,29 @@ func (m model) viewMissie(p palet, kop string, breed int) string {
 		return m.viewBaas(p, kop, breed, g)
 	}
 	s := laadMissie()
+	s.bijwerken(m.nu)
 	seizoen, klaar, binnen := seizoenEnDelen(s.Energie)
+	verhaal := seizoenVoor(seizoen)
+	taal := m.inst.Taal
 	dim := lipgloss.NewStyle().Foreground(p.dim)
 	acc := lipgloss.NewStyle().Foreground(p.acc).Bold(true)
 	tekstBreed := max(breed-34, 24)
 	tekst := lipgloss.NewStyle().Width(tekstBreed)
 
 	var r []string
-	r = append(r, acc.Render(m.t("mission.season", seizoen)), "")
+	r = append(r, acc.Render(tekst.Render(m.t("mission.season", seizoen, verhaal.zeg("titel", taal)))), "")
 	switch {
 	case ms.weg:
-		r = append(r, lipgloss.NewStyle().Foreground(p.groen).Bold(true).Render(tekst.Render(m.t(fmt.Sprintf("mission.story.%d", len(missieDelen)-1)))), "")
+		r = append(r, lipgloss.NewStyle().Foreground(p.groen).Bold(true).Render(tekst.Render(seizoenVoor(seizoen-1).deel(len(missieDelen)-1, taal))), "")
 		if klaar == 0 {
-			r = append(r, tekst.Render(m.t("mission.intro2")), "")
+			r = append(r, tekst.Render(verhaal.zeg("intro", taal)), "")
 		}
 	case len(ms.nieuw) > 0:
 		laatste := ms.nieuw[len(ms.nieuw)-1]
 		r = append(r, lipgloss.NewStyle().Foreground(p.groen).Bold(true).Render(m.t("mission.fixed", m.t(fmt.Sprintf("mission.part.%d", laatste)))),
-			tekst.Render(m.t(fmt.Sprintf("mission.story.%d", laatste))), "")
-	case klaar == 0 && seizoen == 1:
-		r = append(r, tekst.Render(m.t("mission.intro")), "")
+			tekst.Render(verhaal.deel(laatste, taal)), "")
 	case klaar == 0:
-		r = append(r, tekst.Render(m.t("mission.intro2")), "")
+		r = append(r, tekst.Render(verhaal.zeg("intro", taal)), "")
 	}
 	if klaar < len(missieDelen) {
 		d := missieDelen[klaar]
@@ -440,20 +526,41 @@ func (m model) viewMissie(p palet, kop string, breed int) string {
 			voortgangsbalk(p, binnen-vorig, d.nodig-vorig, min(24, tekstBreed)),
 			dim.Render(m.t("mission.energy", binnen-vorig, d.nodig-vorig)), "")
 	}
-	r = append(r, dim.Render(tekst.Render(m.t("mission.how"))), "")
-	switch {
-	case s.baasVerslagen(m.nu):
-		r = append(r, lipgloss.NewStyle().Foreground(p.groen).Render(m.t("mission.bosswon")))
-	case !s.baasKan(m.nu):
-		r = append(r, lipgloss.NewStyle().Foreground(p.geel).Render(m.t("mission.bosstomorrow")))
-	default:
-		r = append(r, lipgloss.NewStyle().Foreground(p.geel).Bold(true).Render(m.t("mission.bossready", m.t(fmt.Sprintf("mission.boss.%d", welkeBaas(m.nu))))))
+	if !ms.weg && len(ms.nieuw) == 0 && !m.ouderModus { // niet te hoog worden op een klein scherm
+		r = append(r, dim.Render(tekst.Render(m.t("mission.how"))), "")
+	}
+	if s.Tegoed > 0 {
+		r = append(r, lipgloss.NewStyle().Foreground(p.geel).Bold(true).Render(m.t("mission.bossready", m.t(fmt.Sprintf("mission.boss.%d", s.welkeBaas())))))
+		if s.Tegoed > 1 {
+			r = append(r, lipgloss.NewStyle().Foreground(p.geel).Render(m.t("mission.fights", s.Tegoed)))
+		}
+	} else {
+		r = append(r, lipgloss.NewStyle().Foreground(p.groen).Render(tekst.Render(m.t("mission.bossnone"))))
 	}
 	if n := len(s.Gewonnen); n > 0 {
 		r = append(r, dim.Render(m.t("mission.cups", n)))
 	}
+	if m.ouderModus {
+		r = append(r, "", lipgloss.NewStyle().Foreground(p.geel).Render(tekst.Render(m.missieVoorOuders(s))))
+	}
 	inhoud := lipgloss.JoinHorizontal(lipgloss.Top, "  "+strings.ReplaceAll(plaatjeTekst(schipPlaatje(klaar)), "\n", "\n  ")+"    ", strings.Join(r, "\n"))
 	return kop + "\n\n" + paneel(p, m.t("mission.title"), inhoud, breed, true) + "\n" + dim.Render(m.t("mission.keys"))
+}
+
+// missieVoorOuders: hoe lang de geschreven verhalen nog meegaan, bij het tempo tot nu toe.
+func (m model) missieVoorOuders(s missieStand) string {
+	geschreven := len(alleSeizoenen())
+	seizoen, _, _ := seizoenEnDelen(s.Energie)
+	dagen := max(dagenTussen(s.Begin, m.nu.Format("2006-01-02"))+1, 1)
+	tempo := float64(s.Energie) / float64(dagen)
+	if seizoen > geschreven {
+		return m.t("mission.parentrepeat", seizoen, geschreven)
+	}
+	over := geschreven*seizoenLengte - s.Energie
+	if tempo < 1 || dagen < 3 {
+		return m.t("mission.parentnew", seizoen, geschreven)
+	}
+	return m.t("mission.parent", seizoen, geschreven, int(math.Round(tempo)), int(math.Ceil(float64(over)/tempo)))
 }
 
 func (m model) viewBaas(p palet, kop string, breed int, g *baasGevecht) string {

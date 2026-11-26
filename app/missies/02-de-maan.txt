@@ -1,0 +1,20 @@
+titel: Gestrand op de maan
+titel.en: Stranded on the Moon
+intro: Bliep was nog maar net weg, of er kwam een regen van meteorieten. Pok, pok, pok! Het schip moest een noodlanding maken op de maan. Via de antenne komt een bericht: 'Help! Ik heb weer energie nodig.'
+intro.en: Bliep had only just left when a shower of meteors hit. Pock, pock, pock! The ship had to make an emergency landing on the Moon. A message comes in over the antenna: 'Help! I need energy again.'
+0: Er zaten drie gaten in de romp, zo groot als knikkers. Bliep plakt ze dicht met maanstof en lijm. Op de maan weeg je bijna niks, dus Bliep zweeft een beetje tijdens het werken.
+0.en: There were three holes in the hull, as big as marbles. Bliep patches them with moon dust and glue. On the Moon you weigh almost nothing, so Bliep floats a little while working.
+1: Het raam is weer heel. Bliep ziet de aarde opkomen boven de grijze maanbergen, blauw en wit. 'Daar woon jij,' piept Bliep.
+1.en: The window is whole again. Bliep sees the Earth rise above the grey moon mountains, blue and white. 'That's where you live,' Bliep beeps.
+2: Achter een krater vindt Bliep een oud maanwagentje. Het heet Rolly en staat hier al vijftig jaar. Rolly helpt de linkervleugel recht te buigen.
+2.en: Behind a crater Bliep finds an old moon buggy. It's called Rolly and has been standing here for fifty years. Rolly helps to bend the left wing straight.
+3: Ook de rechtervleugel is klaar. Rolly kan niet praten, maar knippert blij met zijn lampjes. Bliep knippert terug.
+3.en: The right wing is done too. Rolly can't talk, but blinks its lights happily. Bliep blinks back.
+4: De motor doet het weer. Op de maan hoor je hem niet, want er is geen lucht om het geluid te dragen. Maar Bliep voelt hem trillen. Brrrr.
+4.en: The engine works again. On the Moon you can't hear it, because there is no air to carry the sound. But Bliep can feel it shake. Brrrr.
+5: De antenne vangt een vreemd signaal op. Het komt van Mars. 'Iemand roept om hulp,' zegt Bliep. 'We moeten erheen.'
+5.en: The antenna picks up a strange signal. It comes from Mars. 'Someone is calling for help,' says Bliep. 'We have to go there.'
+6: De lichten branden. Een nacht op de maan duurt veertien dagen, dus dat is fijn. Rolly mag in het schip komen schuilen.
+6.en: The lights are on. A night on the Moon lasts fourteen days, so that's nice. Rolly is allowed to shelter inside the ship.
+7: Volle tank! Bliep neemt Rolly mee aan boord, en samen stijgen ze op. Op naar Mars, om te zien wie daar om hulp roept.
+7.en: Full tank! Bliep takes Rolly on board, and together they lift off. On to Mars, to see who is calling for help.

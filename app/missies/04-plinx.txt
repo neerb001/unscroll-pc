@@ -1,0 +1,20 @@
+titel: Thuis op Plinx
+titel.en: Home on Plinx
+intro: Het schip komt aan op Plinx, maar bij de landing gaat alles weer stuk. Het is ook een heel oud schip. Morgen is het grote Sterrenfeest, en dan moet het schip vooraan in de optocht vliegen. 'Help je nog één keer?' vraagt Bliep.
+intro.en: The ship arrives on Plinx, but everything breaks again on landing. It is a very old ship, after all. Tomorrow is the big Star Festival, and the ship has to fly at the front of the parade. 'Will you help one more time?' asks Bliep.
+0: De romp glanst als nieuw. De buren van Bliep komen kijken. Ze hebben drie ogen en zijn heel beleefd: ze knipperen met alle drie tegelijk.
+0.en: The hull shines like new. Bliep's neighbours come to look. They have three eyes and are very polite: they blink with all three at once.
+1: Het raam is klaar. Door het raam zie je twee zonnen ondergaan, een oranje en een blauwe. Op Plinx is de lucht 's avonds paars.
+1.en: The window is done. Through it you see two suns set, an orange one and a blue one. On Plinx the evening sky is purple.
+2: De linkervleugel zit erop. Rolly en Zoem helpen mee. Zoem vliegt de kleine schroefjes naar boven.
+2.en: The left wing is on. Rolly and Buzz help out. Buzz flies the tiny screws up to the top.
+3: Ook de rechtervleugel is klaar. Het kleine zusje van Bliep, Bliepje, mag de laatste schroef aandraaien.
+3.en: The right wing is done too. Bliep's little sister, Bleepy, gets to tighten the last screw.
+4: De motor zingt. Op Plinx maken motoren muziek in plaats van herrie. Deze speelt een liedje dat klinkt als een fluitketel.
+4.en: The engine sings. On Plinx, engines make music instead of noise. This one plays a tune that sounds like a whistling kettle.
+5: De antenne staat recht. Bliep stuurt een bericht naar de aarde: 'Kijk vanavond naar de sterren. Een ervan knipoogt naar jou.'
+5.en: The antenna stands straight. Bliep sends a message to Earth: 'Look at the stars tonight. One of them is winking at you.'
+6: De lichten branden in alle kleuren. Het is het mooiste schip van de hele optocht, zeggen de buren.
+6.en: The lights shine in every colour. It is the most beautiful ship in the whole parade, the neighbours say.
+7: Het Sterrenfeest! Het schip vliegt vooraan in de optocht, met Rolly, Zoem en Bliepje aan boord. Bliep geeft jou een medaille: Beste Monteur van het Heelal. 'Zonder jou was ik nooit thuisgekomen,' piept Bliep.
+7.en: The Star Festival! The ship flies at the front of the parade, with Rolly, Buzz and Bleepy on board. Bliep gives you a medal: Best Mechanic in the Universe. 'Without you I'd never have made it home,' Bliep beeps.

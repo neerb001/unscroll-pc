@@ -1,0 +1,20 @@
+titel: Zandstorm op Mars
+titel.en: Sandstorm on Mars
+intro: Net bij de landing op Mars komt er een enorme zandstorm. Het schip raakt half bedolven onder rood zand. Bliep en Rolly zitten vast. 'Hé, jij daar op aarde,' piept Bliep. 'Help je weer mee?'
+intro.en: Just as they land on Mars, a huge sandstorm blows in. The ship ends up half buried in red sand. Bliep and Rolly are stuck. 'Hey, you there on Earth,' Bliep beeps. 'Will you help again?'
+0: De romp is uitgegraven en weer heel. Overal zit rood stof, zelfs tussen de knopjes van Bliep. Waar het hulpsignaal vandaan komt, weet nog niemand.
+0.en: The hull is dug out and whole again. There is red dust everywhere, even between Bliep's buttons. Nobody knows yet where the call for help comes from.
+1: Door het schone raam zie je de Olympus Mons, de hoogste vulkaan van het zonnestelsel. Hij is ruim twee keer zo hoog als de Mount Everest.
+1.en: Through the clean window you can see Olympus Mons, the highest volcano in the solar system. It is more than twice as high as Mount Everest.
+2: Het signaal wordt sterker. Achter een rotsblok vinden Bliep en Rolly een kleine helikopterrobot met een kapotte propeller. Hij heet Zoem.
+2.en: The signal gets stronger. Behind a rock Bliep and Rolly find a small helicopter robot with a broken propeller. It's called Buzz.
+3: Bliep repareert eerst de propeller van Zoem, en dan de rechtervleugel. Zoem vliegt blije rondjes om het schip.
+3.en: Bliep first fixes Buzz's propeller, and then the right wing. Buzz flies happy circles around the ship.
+4: De motor loopt. Zoem vertelt dat hij hier al jaren rondvliegt om foto's van Mars te maken. 'Maar het was wel eenzaam,' zoemt hij.
+4.en: The engine runs. Buzz tells them it has been flying around here for years, taking pictures of Mars. 'But it was lonely,' it buzzes.
+5: De antenne vangt eindelijk een bericht op van thuis, van de planeet Plinx. 'Kom gauw,' zegt de moeder van Bliep. 'Overmorgen is het Sterrenfeest!'
+5.en: The antenna finally picks up a message from home, from the planet Plinx. 'Come soon,' says Bliep's mother. 'The Star Festival is the day after tomorrow!'
+6: De lichten branden. Een dag op Mars duurt maar veertig minuten langer dan een dag op aarde, dus Bliep heeft bijna geen last van jetlag.
+6.en: The lights are on. A day on Mars is only forty minutes longer than a day on Earth, so Bliep hardly has any jet lag.
+7: Volle tank! Met Rolly en Zoem aan boord stijgt het schip op uit het rode zand. Op naar Plinx, de planeet van Bliep, ver voorbij de laatste planeet.
+7.en: Full tank! With Rolly and Buzz on board, the ship rises out of the red sand. On to Plinx, Bliep's planet, far beyond the last planet.

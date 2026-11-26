@@ -19,6 +19,10 @@ type nieuwsItem struct {
 
 // nieuwsLijst: nieuwste bovenaan.
 var nieuwsLijst = []nieuwsItem{
+	{"v0.38.0", [2]string{
+		"Missie Bliep: nu staat er elke dag een baas klaar! Kon je een dag niet? Dan heb je de volgende dag twee gevechten. Er zijn vier nieuwe bazen, en na het eerste schip gaat het verhaal verder: op de maan, op Mars en bij Bliep thuis.",
+		"Mission Bliep: now there's a boss waiting every day! Missed a day? Then you get two fights the next day. There are four new bosses, and after the first ship the story goes on: on the Moon, on Mars and at Bliep's home.",
+	}},
 	{"v0.37.0", [2]string{
 		"Vast bij een vraag in een avontuur? Bliep helpt je nu: na een fout antwoord krijg je een tip, en met ? vraag je er zelf om. Eerst een duwtje, dan hoe je het kunt bedenken. Het antwoord typ je altijd zelf.",
 		"Stuck on a question in an adventure? Bliep helps you now: after a wrong answer you get a hint, and ? asks for one. First a nudge, then how to work it out. You always type the answer yourself.",

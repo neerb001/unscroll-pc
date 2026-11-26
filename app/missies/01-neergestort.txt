@@ -1,0 +1,20 @@
+titel: Neergestort in de tuin
+titel.en: Crashed in the garden
+intro: Krak! Het ruimteschip van Bliep is neergestort, vlak achter je huis. Alles is kapot en Bliep kan niet meer naar huis. Elk goed antwoord bij Leren geeft energie, en met energie repareer je het schip, stukje voor stukje.
+intro.en: Crash! Bliep's spaceship came down right behind your house. Everything is broken and Bliep can't get home. Every right answer in Learn gives energy, and with energy you repair the ship, piece by piece.
+0: De romp is weer heel. Er zitten nog wat deuken in, maar de regen komt er niet meer in. Bliep klopt er tevreden op. Tok tok.
+0.en: The hull is whole again. There are still a few dents, but the rain stays out. Bliep taps it happily. Knock knock.
+1: Het raam is gerepareerd! Bliep kijkt naar buiten en ziet voor het eerst de sterren weer. 'Daar ergens woon ik,' piept Bliep.
+1.en: The window is fixed! Bliep looks out and sees the stars again. 'Somewhere over there is my home,' Bliep beeps.
+2: De linkervleugel zit er weer aan. Het schip hangt nog scheef naar één kant, maar dat komt goed.
+2.en: The left wing is back on. The ship still leans to one side, but that will be fine.
+3: Beide vleugels zijn klaar en het schip staat weer recht. Bliep doet een klein vreugdedansje.
+3.en: Both wings are done and the ship stands straight again. Bliep does a little happy dance.
+4: De motor bromt! Eerst hoest hij een wolkje rook, dan loopt hij zacht en regelmatig. Prrrr.
+4.en: The engine hums! First it coughs out a puff of smoke, then it runs smooth and steady. Purrr.
+5: De antenne werkt. Bliep vangt een bericht op van thuis: 'Waar blijf je? We maken ons zorgen!' Bliep stuurt terug: 'Ik kom eraan. Ik heb hulp.'
+5.en: The antenna works. Bliep picks up a message from home: 'Where are you? We're worried!' Bliep replies: 'I'm on my way. I have help.'
+6: De lichten branden. 's Nachts gloeit het schip groen in de tuin. De buren denken dat het kerstversiering is.
+6.en: The lights are on. At night the ship glows green in the garden. The neighbours think it's a Christmas decoration.
+7: Volle tank! De vlam spuit uit de motor en het schip stijgt op. Bliep zwaait door het raam: 'Bedankt! Ik kom terug, beloofd!' Er begint een nieuw seizoen.
+7.en: Full tank! Flames shoot from the engine and the ship lifts off. Bliep waves through the window: 'Thank you! I'll be back, promise!' A new season begins.
